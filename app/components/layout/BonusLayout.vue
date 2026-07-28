@@ -14,16 +14,13 @@
       />
     </div>
   </div>
-  <nuxt-link
+  <a
     v-if="isRenderBonus"
     v-show="!isVisible"
-    :to="
-      useFakeRefLink({
-        type: 'casino',
-        slug: 'mafia-casino',
-      })
-    "
-    trailing-slash="append"
+    :href="useFakeRefLink(seoConfig.site.brandSlug)"
+    target="_blank"
+    rel="nofollow noopener"
+    data-id="ref_link"
     class="bg-primary-300 border fixed bottom-10 left-1/2 -translate-1/2 rounded-primary z-998 border-accent-300 w-[95%] md:w-[50%] px-6 py-2.5"
   >
     <button

@@ -76,7 +76,6 @@ const { entityLogo, entitySlug } = defineProps<{
   };
   entitySlug: string;
   bonus: Pick<IBonus, "title" | "text" | "wager" | "minDeposit">;
-  type: RefLinkType;
 }>();
 
 const showModal = ref(false);

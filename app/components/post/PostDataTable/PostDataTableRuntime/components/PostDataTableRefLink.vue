@@ -3,7 +3,6 @@
     :slug="slug"
     size="medium"
     variant="link"
-    type="casino"
     :padding="false"
     position="left"
   >

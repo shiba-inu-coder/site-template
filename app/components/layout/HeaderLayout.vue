@@ -4,22 +4,24 @@
   >
     <div class="flex justify-between items-center w-full">
       <div class="flex items-center space-x-3">
-        <nuxt-link
-          :to="refLink"
+        <a
+          :href="refLink"
           target="_blank"
+          rel="nofollow noopener"
           data-id="ref_link"
           class="font-bold bg-primary-200 transition ease-in-out duration-500 hover:bg-primary-100 px-7 py-3 rounded-primary"
         >
           {{ seoConfig.translates.auth.login }}
-        </nuxt-link>
-        <nuxt-link
-          :to="refLink"
+        </a>
+        <a
+          :href="refLink"
           target="_blank"
+          rel="nofollow noopener"
           data-id="ref_link"
           class="hidden md:block font-bold bg-active-300 text-primary-300 transition ease-in-out duration-500 hover:bg-active-100 px-7 py-3 rounded-primary"
         >
           {{ seoConfig.translates.auth.register }}
-        </nuxt-link>
+        </a>
       </div>
       <div class="flex items-center gap-3.5">
         <nuxt-link
@@ -35,15 +37,17 @@
             :src="seoConfig.logo.src"
           />
         </nuxt-link>
-        <nuxt-link
+        <a
           v-for="(headerLink, i) in seoConfig.layout.header.links"
           :key="i"
-          :to="refLink"
+          :href="refLink"
+          target="_blank"
+          rel="nofollow noopener"
           data-id="ref_link"
           class="transition hidden lg:block ease-in-out duration-500 hover:text-active-200 font-semibold"
         >
           {{ headerLink }}
-        </nuxt-link>
+        </a>
       </div>
     </div>
   </nav>
@@ -57,8 +61,5 @@ const emit = defineEmits<{
   (e: "toggle"): void;
 }>();
 
-const refLink = useFakeRefLink({
-  type: "casino",
-  slug: "mafia-casino",
-});
+const refLink = useFakeRefLink(seoConfig.site.brandSlug);
 </script>

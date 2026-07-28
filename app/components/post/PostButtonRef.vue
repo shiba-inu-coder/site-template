@@ -3,11 +3,11 @@
     class="flex"
     :class="containerClasses"
   >
-    <nuxt-link
-      trailing-slash="append"
+    <a
       data-id="ref_link"
-      :to="useFakeRefLink({ type, slug })"
+      :href="useFakeRefLink(slug)"
       target="_blank"
+      rel="nofollow noopener"
       class="font-semibold rounded-primary inline-flex justify-center transition-all items-center gap-x-2 whitespace-pre-wrap focus:outline-none focus:ring-2 text-center"
       :class="buttonClasses"
     >
@@ -25,13 +25,14 @@
         <template v-if="name">{{ name }}</template>
         <slot v-else>{{ name }}</slot>
       </span>
-    </nuxt-link>
+    </a>
   </span>
 </template>
 
 <script setup lang="ts">
 import { computed } from "vue";
 import { useFakeRefLink } from "#rc/composables/useFakeRefLink";
+import { seoConfig } from "@@/seo.conf";
 
 interface Props {
   variant?: "solid" | "outline" | "soft" | "link";
@@ -42,18 +43,16 @@ interface Props {
   name?: string;
   showMobileIcon?: boolean;
   slug?: string;
-  type?: RefLinkType;
 }
 
 const {
   variant = "solid",
   position = "center",
   size = "small",
-  type = "casino",
   fullWidth = false,
   padding = true,
   name,
-  slug = "mafia-casino",
+  slug = seoConfig.site.brandSlug,
   showMobileIcon = false,
 } = defineProps<Props>();
 

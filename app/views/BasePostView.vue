@@ -22,10 +22,14 @@ import RuntimeTemplateLayout from "#rc/components/layout/RuntimeTemplateLayout.v
 import IntroLayout from "#rc/components/layout/IntroLayout.vue";
 import ButtonFastUpLayout from "#rc/components/layout/ButtonFastUpLayout.vue";
 import { seoConfig } from "@@/seo.conf";
+import { getCloudinaryBaseUrl } from "#rc/utils/get-cloudinary-base-url";
 
 const { createdAt, updatedAt, content, slug, metaTags, title } = usePost();
 
 const SITE_URL = computed(() => useRuntimeConfig().public.SITE_URL);
+const CLOUDINARY_BASE_URL = computed(() =>
+  getCloudinaryBaseUrl(useRuntimeConfig().public.CLOUDINARY_CLOUD_NAME),
+);
 const DOMAIN_NAME = computed(() => useRuntimeConfig().public.DOMAIN_NAME);
 const articleUrl = computed(() => `${SITE_URL.value}${useRoute().path}`);
 const websiteId = computed(() => `${SITE_URL.value}#website`);
@@ -85,7 +89,7 @@ useSchemaOrg([
       url: `${SITE_URL.value}/`,
       logo: {
         "@type": "ImageObject",
-        url: `https://res.cloudinary.com/duhutcvan/image/upload/f_auto,q_auto,r_15,h_45/${seoConfig.logo.src}.svg`,
+        url: `${CLOUDINARY_BASE_URL.value}f_auto,q_auto,r_15,h_45/${seoConfig.logo.src}`,
         width: 152,
         height: 35,
       },

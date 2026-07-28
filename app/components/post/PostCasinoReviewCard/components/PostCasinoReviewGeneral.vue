@@ -4,16 +4,13 @@
       v-if="website"
       title="Webová stránka"
     >
-      <nuxt-link
+      <a
         target="_blank"
+        rel="nofollow noopener"
+        data-id="ref_link"
         class="underline text-blue-500"
-        :to="
-          useFakeRefLink({
-            type: 'casino',
-            slug,
-          })
-        "
-        >{{ website }}</nuxt-link
+        :href="useFakeRefLink(slug)"
+        >{{ website }}</a
       >
     </PostCasinoReviewInfo>
     <PostCasinoReviewInfo

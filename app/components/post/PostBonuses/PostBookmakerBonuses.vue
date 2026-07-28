@@ -13,7 +13,6 @@
           :entity-logo="item.entity.logo"
           :entity-slug="item.entity.slug"
           :bonus="item.bonus"
-          type="bookmaker"
         />
       </template>
     </div>

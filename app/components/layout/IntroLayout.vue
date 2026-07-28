@@ -8,7 +8,7 @@
     }"
     :style="
       introImg.isFullScreen
-        ? `background-image: url(https://res.cloudinary.com/duhutcvan/image/upload/f_auto,q_auto,o_30/${introImg.img.path});`
+        ? `background-image: url(${CLOUDINARY_BASE_URL}f_auto,q_auto,o_30/${introImg.img.path});`
         : ''
     "
   >
@@ -43,7 +43,7 @@
             <PostButtonRef
               v-if="isAllow"
               :size="'big'"
-              slug="mafia-casino"
+              :slug="seoConfig.site.brandSlug"
               position="left"
               >{{ seoConfig.translates.playNow }}</PostButtonRef
             >
@@ -73,7 +73,11 @@
 import BreadcrumbsLayout from "#rc/components/layout/BreadcrumbsLayout.vue";
 import PostButtonRef from "#rc/components/post/PostButtonRef.vue";
 import { seoConfig } from "@@/seo.conf";
+import { getCloudinaryBaseUrl } from "#rc/utils/get-cloudinary-base-url";
 const { title, postDated, intro, breadcrumbs, introImg } = usePost();
 
 const isAllow = computed(() => breadcrumbs.value.length === 0);
+const CLOUDINARY_BASE_URL = computed(() =>
+  getCloudinaryBaseUrl(useRuntimeConfig().public.CLOUDINARY_CLOUD_NAME),
+);
 </script>

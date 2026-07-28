@@ -3,7 +3,6 @@
     :slug="slug"
     size="small-medium"
     :padding="false"
-    type="casino"
   >
     <template #default>
       <slot></slot>

@@ -61,9 +61,10 @@ types/constants/utils). Aliases: `#sg` → `server/`, `#rc` → `app/`.
 - All UI strings/branding (German) come from `seo.conf.ts` — do not hardcode.
 - Trailing slashes everywhere (`site.trailingSlash`, NuxtLink `trailingSlash: "append"`,
   url_normalize 301) — keep all three in sync.
-- Images are Cloudinary public IDs rendered via `<NuxtImg provider="cloudinary">`.
-  Known debt: cloud name `duhutcvan` is hardcoded in `app/components/layout/IntroLayout.vue`
-  and `app/views/BasePostView.vue` — parametrize when templating for a new site.
+- Images are Cloudinary public IDs rendered via `<NuxtImg provider="cloudinary">`. Raw URLs
+  (schema.org logo, CSS background) are built with `getCloudinaryBaseUrl(CLOUDINARY_CLOUD_NAME)` —
+  never hardcode the cloud name. `logo.src` carries no file extension: Cloudinary `f_auto`
+  serves whatever format was uploaded (svg/webp/png/jpg).
 - No auth/JWT anywhere: inactive (`isActive: false`) and deleted posts are 404 for everyone.
 - env vars: see `.env.example` (MONGO_URI, DB_NAME, SITE_URL, DOMAIN_NAME, CANONICAL_DOMAIN,
   CLOUDINARY_CLOUD_NAME, CACHE_PURGE_SECRET).

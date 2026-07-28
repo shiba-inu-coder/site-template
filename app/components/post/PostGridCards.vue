@@ -66,13 +66,10 @@
 
           <a
             v-if="(item.refLink || globalRefLink) && item.buttonText"
-            :href="
-              useFakeRefLink({
-                type: item.refLinkType || globalRefLinkType,
-                slug: item.refLink || globalRefLink,
-              })
-            "
+            :href="useFakeRefLink(item.refLink || globalRefLink)"
             target="_blank"
+            rel="nofollow noopener"
+            data-id="ref_link"
             class="w-5/6 block bg-accent-200 px-4 py-2.5 text-center rounded-primary text-white font-medium text-primary-2 mt-3 mb-5"
           >
             {{ item.buttonText }}
@@ -128,9 +125,6 @@ const imgHeight = computed(() =>
 
 const globalRefLink = computed(() => {
   return list.value.data.refLink;
-});
-const globalRefLinkType = computed(() => {
-  return list.value.data.refLinkType;
 });
 </script>
 <style lang="css">

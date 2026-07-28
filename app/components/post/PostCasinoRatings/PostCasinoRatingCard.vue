@@ -59,7 +59,6 @@
             full-width
             container-class
             variant="soft"
-            type="casino"
             :padding="false"
             component-name="CasinosRatingShortcode"
             context="Casino Rating card in Post"

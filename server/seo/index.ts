@@ -12,6 +12,6 @@ const seoUsecase = new SeoUsecase(casinoRepo, bookmakerRepo, postRepo);
 const seoController = new SeoController(seoUsecase);
 
 export class SeoComposition {
-  static GetRefLink = seoController.getRefLink;
+  static GetRefLinkRedirect = seoController.getRefLinkRedirect;
   static GetSitemap = seoController.getSitemap;
 }

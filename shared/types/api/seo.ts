@@ -1,5 +1,5 @@
 export interface ISeoUsecasePublic {
-  getRefLink(param: { type: RefLinkType; slug: string }): Promise<string>;
+  getRefLink(slug: string): Promise<string>;
 
   getSitemap(): Promise<
     {

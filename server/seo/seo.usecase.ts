@@ -6,12 +6,17 @@ export class SeoUsecase implements ISeoUsecasePublic {
     private postRepository: IPostRepository,
   ) {}
 
-  async getRefLink({ type, slug }: { type: RefLinkType; slug: string }) {
-    const repo =
-      type === "casino" ? this.casinoRepository : this.boomakerRepository;
+  // Слаг один на казино и букмекеров: сначала ищем казино (их подавляющее
+  // большинство), потом букмекера. Ничего не нашли — уводим на главную,
+  // а не в 404: пользователь уже кликнул по кнопке.
+  async getRefLink(slug: string) {
+    const casino = await this.casinoRepository.getBySlug(slug);
+    if (casino?.refLink) {
+      return casino.refLink;
+    }
 
-    const entity = await repo.getBySlug(slug);
-    return entity?.refLink ?? "/";
+    const bookmaker = await this.boomakerRepository.getBySlug(slug);
+    return bookmaker?.refLink ?? "/";
   }
 
   async getSitemap() {

@@ -62,7 +62,6 @@
             container-class
             variant="soft"
             :padding="false"
-            type="bookmaker"
             component-name="BookmakersRatingShortcode"
             context="Bookmaker Rating card in Post"
             >Hrát nyní

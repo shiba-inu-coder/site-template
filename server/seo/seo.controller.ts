@@ -4,30 +4,33 @@ import { AppLogger } from "#sg/lib/app-logger";
 export class SeoController {
   constructor(private seoUsecase: ISeoUsecasePublic) {}
 
-  getRefLink = defineEventHandler({
+  getRefLinkRedirect = defineEventHandler({
     handler: async (e) => {
-      const log = AppLogger("handler.seo.getRefLink");
-      const { slug, type } = getRouterParams(e) as {
-        slug: string;
-        type: RefLinkType;
-      };
+      const log = AppLogger("handler.seo.getRefLinkRedirect");
+      // Роут catch-all, поэтому в slug приходит хвост пути целиком:
+      // "mafia-casino/" → "mafia-casino".
+      const { slug: rawSlug } = getRouterParams(e) as { slug: string };
+      const slug = rawSlug.replace(/^\/+|\/+$/g, "");
+
+      setHeader(e, "X-Robots-Tag", "noindex, nofollow");
+      setHeader(e, "Cache-Control", "no-store");
 
       try {
-        const res = await this.seoUsecase.getRefLink({
-          type,
-          slug,
-        });
+        const refLink = await this.seoUsecase.getRefLink(slug);
 
-        log.info("Fetched ref link successfully", { slug, type });
-        return res;
+        log.info("Resolved ref link successfully", { slug });
+        // 302, не 301: партнёрская ссылка меняется, а 301 браузер
+        // закэшировал бы бессрочно и увёл бы юзеров на мёртвый URL.
+        return sendRedirect(e, refLink, 302);
       } catch (error: any) {
-        log.error("Failed to fetch ref link", {
+        log.error("Failed to resolve ref link", {
           error: error.message,
           stack: error.stack,
           slug,
-          type,
         });
-        throw AppError.ClientError(error);
+        // Пользователь уже кликнул по кнопке — 500 ему показывать незачем,
+        // уводим на главную.
+        return sendRedirect(e, "/", 302);
       }
     },
   });

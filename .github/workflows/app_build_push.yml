@@ -1,7 +1,13 @@
 name: Build Image to Docker Hub
+run-name: Build Image to Docker Hub (${{ inputs.request_id }})
 
 on:
   workflow_dispatch:
+    inputs:
+      request_id:
+        description: "Request ID (ставится appspro, вручную не заполнять)"
+        required: false
+        default: ""
 
 jobs:
   build_push:

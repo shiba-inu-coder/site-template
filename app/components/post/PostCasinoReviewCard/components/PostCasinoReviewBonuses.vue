@@ -19,7 +19,6 @@
       <PostButtonRef
         :slug="slug"
         size="big"
-        type="casino"
         :padding="false"
         >Hrát nyní
       </PostButtonRef>

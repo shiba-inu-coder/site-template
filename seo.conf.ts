@@ -2,6 +2,8 @@ export const seoConfig = {
   site: {
     name: "Mafia Casino",
     lang: "de",
+    // Слаг бренда для реф-ссылок: имя казино в нижнем регистре, пробелы → дефис.
+    brandSlug: "mafia-casino",
   },
   logo: {
     src: "mafia-casinode-de/mafia-casino-logo",
@@ -14,16 +16,7 @@ export const seoConfig = {
   },
   layout: {
     header: {
-      links: [
-        // { name: "Revolut casino", href: "/revolut-casino/" },
-        // { name: "Paysafecard v casinu", href: "/paysafecard-casino/" },
-        // {
-        //   name: "Zahraniční sázkové kanceláře",
-        //   href: "/zahranicni-sazkove-kancelare/",
-        // },
-        // { name: "O nás", href: "/o-nas/" },
-        // { name: "Kontaktujte nás", href: "/kontaktujte-nas/" },
-      ],
+      links: [],
     },
 
     footer: {
@@ -57,18 +50,6 @@ export const seoConfig = {
           alt: "18+",
           src: "casino-f1-cz/responsible-gaming/18plus.svg",
         },
-        // {
-        //   alt: "Zodpovědné hraní",
-        //   src: "casino-f1-cz/responsible-gaming/zodpovednehrani",
-        // },
-        // {
-        //   alt: "Hraj s rozumem",
-        //   src: "casino-f1-cz/responsible-gaming/hraj-s-rozumem",
-        // },
-        // {
-        //   alt: "Hazardní hraní",
-        //   src: "casino-f1-cz/responsible-gaming/hazardni-hrani",
-        // },
         {
           alt: "Gordon Moody",
           src: "casino-f1-cz/responsible-gaming/gordon-moody",
