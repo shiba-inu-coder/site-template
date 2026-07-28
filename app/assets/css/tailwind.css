@@ -1,0 +1,252 @@
+@import "tailwindcss";
+@config "../../../tailwind.config.js";
+
+@theme {
+  /* CLIENT */
+  --color-primary-300: var(--color-primary-300);
+  --color-primary-200: var(--color-primary-200);
+  --color-primary-100: var(--color-primary-100);
+
+  --color-active-300: var(--color-active-300);
+  --color-active-200: var(--color-active-200);
+  --color-active-100: var(--color-active-100);
+
+  --color-accent-300: var(--color-accent-300);
+  --color-accent-200: var(--color-accent-200);
+  --color-accent-100: var(--color-accent-100);
+
+  --shadow-primary: var(--shadow-xl);
+
+  --radius-primary: var(--radius-lg);
+
+  --text-primary-1: 1.3rem;
+  --text-primary-2: 1.2rem;
+  --text-primary-3: 1.1rem;
+  --text-primary-4: 0.95rem;
+  --text-primary-5: 0.85rem;
+  --text-primary-6: 0.75rem;
+  --text-primary-icon: 1.1rem;
+
+  --spacing-primary-1: calc(var(--spacing) * 3.5) calc(var(--spacing) * 2);
+
+  --font-primary: "Lato", sans-serif;
+}
+
+:root {
+  /* Fluid Font Size Config */
+  --fs-min: 0.9rem;
+  --fs-max: 1rem;
+  --min-vw: 360px;
+  --max-vw: 1280px;
+  --fs-slope: calc(
+    (var(--fs-max) - var(--fs-min)) / (var(--max-vw) - var(--min-vw))
+  );
+  --fs-intercept: calc(var(--fs-min) - var(--min-vw) * var(--fs-slope));
+
+  /* Theme Shadow */
+  --shadow-primary: var(--shadow-xl);
+  /* Theme Colors */
+
+  /* Primary */
+  --color-primary-100: #4b5563;
+  --color-primary-200: #374151;
+  --color-primary-300: #1f2937;
+
+  /* Accent */
+  --color-accent-100: #ff7a8a;
+  --color-accent-200: #e94f64;
+  --color-accent-300: #c5304a;
+
+  /* Active */
+  --color-active-100: #ffe7a3;
+  --color-active-200: #eab85a;
+  --color-active-300: #b7791f;
+}
+
+@layer base {
+  *,
+  ::after,
+  ::before,
+  ::backdrop,
+  ::file-selector-button {
+    border-color: var(--color-gray-200);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    box-sizing: border-box;
+    margin: 0px;
+  }
+
+  html {
+    font-size: clamp(
+      var(--fs-min),
+      calc(var(--fs-intercept) + var(--fs-slope) * 100vw),
+      var(--fs-max)
+    );
+    line-height: 1.6;
+    color: var(--color-white);
+  }
+
+  #article {
+    h1 {
+      font-size: 2rem;
+      line-height: 1.35;
+    }
+
+    h2 {
+      font-size: 1.8rem;
+    }
+
+    h3 {
+      font-size: 1.6rem;
+    }
+
+    h4 {
+      font-size: 1.5rem;
+    }
+
+    h5 {
+      font-size: 1.4rem;
+    }
+
+    h6 {
+      font-size: 1.3rem;
+    }
+
+    p {
+      font-size: 1.1rem;
+      font-weight: 400;
+      margin: 15px 0;
+    }
+
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6 {
+      margin: 20px 0 20px 0;
+      font-weight: 500;
+      word-break: break-word;
+      color: var(--color-active-200);
+    }
+
+    .no-format h1,
+    .no-format h2,
+    .no-format h3,
+    .no-format h4,
+    .no-format h5,
+    .no-format h6,
+    .no-format p,
+    .no-format ul {
+      margin: 0 !important;
+    }
+
+    ol:not(.not-format),
+    ul:not(.not-format) {
+      margin-bottom: calc(var(--spacing) * 3);
+      margin-top: calc(var(--spacing) * 3.5);
+    }
+
+    ol:not(.not-format) > li + li,
+    ul:not(.not-format) > li + li {
+      margin-block-start: calc(var(--spacing) * 3);
+    }
+
+    ol:not(.not-format) {
+      counter-reset: my-counter;
+    }
+
+    ol:not(.not-format) > li {
+      counter-increment: my-counter;
+      padding-left: 25px;
+      position: relative;
+    }
+
+    ol:not(.not-format) > li::before {
+      content: counter(my-counter);
+      position: absolute;
+      left: 1px;
+      top: 4.5px;
+      min-width: 16.5px;
+      line-height: 16.5px;
+      text-align: center;
+      border-radius: 50%;
+      background-color: var(--color-accent-200);
+      font-size: 11px;
+      font-weight: 500;
+    }
+
+    @media (min-width: 48rem) {
+      ol:not(.not-format) > li::before {
+        top: 3px;
+        color: var(--color-white);
+      }
+    }
+
+    ul:not(.not-format) > li {
+      margin-left: 18px;
+      position: relative;
+    }
+
+    ul:not(.not-format) > li::before {
+      content: "";
+      position: absolute;
+      left: -17px;
+      top: 6.5px;
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background-color: var(--color-accent-200);
+    }
+
+    @media (min-width: 48rem) {
+      ul:not(.not-format) > li::before {
+        top: 6.5px;
+      }
+    }
+  }
+}
+
+.shortcode {
+  margin-top: calc(var(--spacing) * 10);
+  margin-bottom: calc(var(--spacing) * 10);
+}
+
+.app-link {
+  text-wrap: pretty;
+  color: var(--color-active-200);
+  text-decoration-line: underline;
+  text-underline-offset: 4px;
+  font-weight: 400;
+  transition: color 0.5s ease-in-out;
+  word-wrap: break-word;
+}
+
+.app-link:hover {
+  color: var(--color-active-300);
+}
+
+.app-link_no_underline {
+  text-wrap: pretty;
+  color: var(--color-active-200);
+  transition: ease-in-out 0.3s;
+  font-weight: 500;
+  text-decoration-line: none;
+
+  &:hover {
+    color: var(--color-active-200);
+    text-decoration-line: underline;
+    text-underline-offset: 2px;
+  }
+
+  &:focus-within {
+    text-decoration-line: underline;
+    text-underline-offset: 2px;
+    color: var(--color-active-200);
+  }
+}
+
+button:not(:disabled),
+[role="button"]:not(:disabled) {
+  cursor: pointer;
+}

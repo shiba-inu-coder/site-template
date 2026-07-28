@@ -1,0 +1,144 @@
+import { initialClientStatePost } from "#shared/constants/initial-states";
+import deepClone from "rfdc/default";
+import "dayjs/locale/cs";
+
+export const POST_MODULE_NAME = "post";
+
+export const usePost = <E>() => {
+  const { $api } = useNuxtApp();
+
+  const state = useState<{
+    currentPost: IPostBySlug<E>;
+  }>("post", () => shallowRef({ currentPost: { ...initialClientStatePost } }));
+
+  const title = computed(() => state.value.currentPost.title);
+  const metaTags = computed(() => state.value.currentPost.metaTag);
+  const content = computed(() => state.value.currentPost.content);
+  const isActive = computed(() => state.value.currentPost.isActive);
+  const slug = computed(() => state.value.currentPost.slug);
+  const tableContent = computed(() =>
+    state.value.currentPost.shortcodesConfig.tableContent.data.filter(
+      (item) => item.isActive,
+    ),
+  );
+  const banner = computed(() => state.value.currentPost.banner);
+  const introImg = computed(() => state.value.currentPost.introImg);
+  const createdAt = computed(() => state.value.currentPost.createdAt);
+  const updatedAt = computed(() => state.value.currentPost.updatedAt);
+  const entity = computed(() => state.value.currentPost.entity);
+  const faq = computed(() => state.value.currentPost.shortcodesConfig.faq);
+  const intro = computed(() => state.value.currentPost.intro);
+  const isReviewPost = computed(() => state.value.currentPost.isReviewPost);
+  const breadcrumbs = computed(() => state.value.currentPost.breadcrumbs);
+  const entityBonus = computed(() => state.value.currentPost.entityBonus);
+  const postDated = computed(
+    () =>
+      state.value.currentPost.datePosted || state.value.currentPost.updatedAt,
+  );
+  function getShortcode(params: {
+    uniqId: string;
+    shortcode: "gridCards";
+  }): IPostBySlug["shortcodesConfig"]["gridCards"][number] | undefined;
+  function getShortcode(params: {
+    uniqId: string;
+    shortcode: "casinoRatings";
+  }): IPostBySlug["shortcodesConfig"]["casinoRatings"][number] | undefined;
+  function getShortcode(params: {
+    uniqId: string;
+    shortcode: "bookmakerRatings";
+  }): IPostBySlug["shortcodesConfig"]["bookmakerRatings"][number] | undefined;
+  function getShortcode(params: {
+    uniqId: string;
+    shortcode: "casinoBonuses";
+  }): IPostBySlug["shortcodesConfig"]["casinoBonuses"][number] | undefined;
+  function getShortcode(params: {
+    uniqId: string;
+    shortcode: "bookmakerBonuses";
+  }): IPostBySlug["shortcodesConfig"]["bookmakerBonuses"][number] | undefined;
+  function getShortcode(params: {
+    uniqId: string;
+    shortcode: "prosConsPosts";
+  }): IPostBySlug["shortcodesConfig"]["prosConsPosts"][number] | undefined;
+  function getShortcode(params: {
+    uniqId: string;
+    shortcode: "biographyWriters";
+  }): IPostBySlug["shortcodesConfig"]["biographyWriters"][number] | undefined;
+  function getShortcode(params: {
+    uniqId: string;
+    shortcode: "dataTables";
+  }): IPostBySlug["shortcodesConfig"]["dataTables"][number] | undefined;
+  function getShortcode(params: {
+    uniqId: string;
+    shortcode: "miniBookmakerReviews";
+  }):
+    | IPostBySlug["shortcodesConfig"]["miniBookmakerReviews"][number]
+    | undefined;
+  function getShortcode(params: {
+    uniqId: string;
+    shortcode: "miniCasinoReviews";
+  }): IPostBySlug["shortcodesConfig"]["miniCasinoReviews"][number] | undefined;
+  function getShortcode({
+    uniqId,
+    shortcode,
+  }: {
+    uniqId: string;
+    shortcode: Extract<
+      keyof IPostBySlug["shortcodesConfig"],
+      | "gridCards"
+      | "listsCards"
+      | "gridCardsWithButton"
+      | "sliders"
+      | "bookmakerRatings"
+      | "casinoRatings"
+      | "casinoBonuses"
+      | "bookmakerBonuses"
+      | "imgBlocks"
+      | "prosConsPosts"
+      | "biographyWriters"
+      | "dataTables"
+      | "miniCasinoReviews"
+      | "miniBookmakerReviews"
+    >;
+  }) {
+    const post = state.value.currentPost as IPostBySlug;
+    return post.shortcodesConfig[shortcode].find(
+      (table) => table.data.uniqId === uniqId,
+    );
+  }
+
+  const setPost = (post: ObjectIdToStr<IPostBySlug<E>>) => {
+    const { _id: _, isDeleted: ___, ...restPost } = post;
+
+    state.value.currentPost =
+      deepClone<ObjectIdToStr<IPostBySlug<E>>>(restPost);
+  };
+
+  const GET_POST_BY_SLUG = <E>(slug: string) => {
+    return $api()<ObjectIdToStr<IPostBySlug<E>>>("/api/v1/public/posts/slug", {
+      query: { slug },
+    });
+  };
+
+  return {
+    GET_POST_BY_SLUG,
+    introImg,
+    isReviewPost,
+    entityBonus,
+    setPost,
+    entity,
+    postDated,
+    isActive,
+    intro,
+    breadcrumbs,
+    getShortcode,
+    faq,
+    title,
+    updatedAt,
+    createdAt,
+    banner,
+    tableContent,
+    slug,
+    content,
+    metaTags,
+  };
+};
