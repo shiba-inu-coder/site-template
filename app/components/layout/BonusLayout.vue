@@ -43,7 +43,7 @@
         {{ banner.text }}
       </span>
     </div>
-  </nuxt-link>
+  </a>
 </template>
 
 <script lang="ts" setup>

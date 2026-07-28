@@ -56,7 +56,6 @@
             :padding="false"
             component-name="CasinosRatingShortcode"
             context="Casino Rating card in Post"
-            :type="type"
             >Hrát nyní
           </PostButtonRef>
         </span>
