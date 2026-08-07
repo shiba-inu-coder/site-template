@@ -24,6 +24,24 @@ export interface PostGridCard {
   };
 }
 
+export interface PostTextImage {
+  data: {
+    uniqId: string;
+    text: string;
+    img: {
+      path: string;
+      alt: string;
+    } | null;
+    imgSide: "left" | "right";
+    imgMobileSide: "top" | "bottom";
+    imgWidth: string;
+    imgHeight: string;
+    imgRoundCorner: string;
+    buttonText: string;
+    refLink: string;
+  };
+}
+
 export interface PostProsCons {
   data: {
     uniqId: string;
@@ -273,6 +291,7 @@ export interface IPost<
     dataTables: PostDataTable[];
     biographyWriters: PostBiographyWriter<BiographyWriter>[];
     tableContent: PostTableContent;
+    textImages: PostTextImage[];
   };
   isDeleted: boolean;
   createdAt?: Date;

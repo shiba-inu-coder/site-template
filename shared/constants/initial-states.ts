@@ -46,6 +46,7 @@ const baseInital: Omit<IPost, "_id" | "isReviewPost" | "breadcrumbs"> = {
       data: [],
     },
     biographyWriters: [],
+    textImages: [],
   },
   isDeleted: false,
 };

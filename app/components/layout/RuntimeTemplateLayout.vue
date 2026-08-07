@@ -42,6 +42,13 @@ const ContactUs = defineLazyHydrationComponent(
   "visible",
   () => import("#rc/components/post/PostContactUs.vue"),
 );
+
+// is="vue:text-image" резолвится в ключ TextImage: Vue камелизует
+// и капитализует имя, прежде чем искать его в components.
+const TextImage = defineLazyHydrationComponent(
+  "visible",
+  () => import("#rc/components/post/PostTextImage.vue"),
+);
 // const CasinoRatings = defineLazyHydrationComponent(
 //   "visible",
 //   () => import("#rc/components/post/PostCasinoRatings/PostCasinoRatings.vue"),
@@ -70,6 +77,7 @@ const components = {
   ProsConsPost,
   DataTable,
   ContactUs,
+  TextImage,
   // CasinoRatings,
   // BookmakerRatings,
   // MiniCasinoReview,

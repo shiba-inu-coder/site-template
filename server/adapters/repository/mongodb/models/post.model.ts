@@ -19,6 +19,7 @@ import { BiographyWriterSchema } from "./schemas/BiographyWriter";
 import { DataTableSchema } from "./schemas/DataTable";
 import { MiniCasinoReviewSchema } from "./schemas/MiniCasinoReview";
 import { MiniBookmakerReviewSchema } from "./schemas/MiniBookmakerReview";
+import { TextImageSchema } from "./schemas/TextImage";
 
 const ModelSchema = new Schema<IPostDocument, IPostModel>(
   {
@@ -167,6 +168,10 @@ const ModelSchema = new Schema<IPostDocument, IPostModel>(
       tableContent: {
         type: TableContentSchema,
         default: () => ({ data: [] }),
+      },
+      textImages: {
+        type: TextImageSchema,
+        default: () => [],
       },
     },
     isDeleted: {

@@ -77,6 +77,10 @@ export const usePost = <E>() => {
     uniqId: string;
     shortcode: "miniCasinoReviews";
   }): IPostBySlug["shortcodesConfig"]["miniCasinoReviews"][number] | undefined;
+  function getShortcode(params: {
+    uniqId: string;
+    shortcode: "textImages";
+  }): IPostBySlug["shortcodesConfig"]["textImages"][number] | undefined;
   function getShortcode({
     uniqId,
     shortcode,
@@ -98,6 +102,7 @@ export const usePost = <E>() => {
       | "dataTables"
       | "miniCasinoReviews"
       | "miniBookmakerReviews"
+      | "textImages"
     >;
   }) {
     const post = state.value.currentPost as IPostBySlug;
