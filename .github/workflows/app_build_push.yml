@@ -1,6 +1,8 @@
 name: Build Image to Docker Hub
 run-name: Build Image to Docker Hub (${{ inputs.request_id }})
 
+# run-name с request_id — не украшение: appspro находит запуск именно по нему,
+# другого способа связать dispatch с run у GitHub нет.
 on:
   workflow_dispatch:
     inputs:
@@ -26,16 +28,6 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      - name: Retrieve Secrets from Vault and set as Environment Variables
-        uses: hashicorp/vault-action@v2
-        with:
-          url: ${{ secrets.VAULT_URL }}
-          tlsSkipVerify: false
-          token: ${{ secrets.VAULT_PROJECT_TOKEN }}
-          secrets: |
-            secret/data/ci/${{ secrets.VAULT_SECRET_POLICY_NAME }} mongo_uri ;
-            secret/data/ci/${{ secrets.VAULT_SECRET_POLICY_NAME }} cloudinary_cloud_name ;
-
       - name: Build and Push Image to Docker Hub
         uses: docker/build-push-action@v5
         with:
@@ -45,13 +37,16 @@ jobs:
           tags: |
             ${{ secrets.DOCKERHUB_USERNAME }}/${{ secrets.DOCKERHUB_REPO_NAME }}:latest
             ${{ secrets.DOCKERHUB_USERNAME }}/${{ secrets.DOCKERHUB_REPO_NAME }}:${{ github.sha }}
-          build-args: |
-            mongo_uri=${{ env.MONGO_URI }}
-            cloudinary_cloud_name=${{ env.CLOUDINARY_CLOUD_NAME }}
-            docker_hub_tag=${{ github.sha }}
-            canonical_domain=${{ secrets.CANONICAL_DOMAIN }}
-            db_name=${{ secrets.DB_NAME }}
-            domain_name=${{ secrets.DOMAIN_NAME }}
-            site_url=${{ secrets.SITE_URL }}
+          # Ни build-аргументов, ни похода в Vault: конфигурация целиком
+          # подставляется на ноде переменными NUXT_*. Образ одинаков для любого
+          # окружения, и в его слоях нечему утечь.
           platforms: linux/amd64
-          outputs: type=registry,compression=gzip,compression-level=9
+
+          # Сжатие оставлено по умолчанию. С compression-level=9 экспорт слоёв
+          # занимал 192 с из 312 — при том, что заливка в реестр укладывается
+          # в 9 с. Максимальный gzip выигрывает проценты размера ценой минут.
+          #
+          # provenance/sbom выключены: подписи происхождения добавляют лишний
+          # проход по слоям, а образ и так собирается только этим workflow.
+          provenance: false
+          sbom: false

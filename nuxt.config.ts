@@ -1,4 +1,4 @@
-import { isDev } from "./shared/constants/base";
+import { CLOUDINARY_CLOUD_NAME, isDev } from "./shared/constants/base";
 import { seoConfig } from "./seo.conf";
 import tailwindcss from "@tailwindcss/vite";
 import { getCloudinaryBaseUrl } from "./app/utils/get-cloudinary-base-url";
@@ -79,9 +79,11 @@ export default defineNuxtConfig({
     disableStylesheets: true,
   },
 
+  // url и name живут не здесь, а в runtimeConfig.site: nuxt-site-config кладёт
+  // значения из nuxt.config с приоритетом -3, а рантайм-конфиг подмешивает
+  // свои с 0 и перебивает их. Так sitemap и schema-org получают домен из Vault,
+  // а не тот, что был на машине сборки.
   site: {
-    url: process.env.SITE_URL,
-    name: process.env.DOMAIN_NAME,
     cacheTtl: 0,
     trailingSlash: true,
     xslTips: false,
@@ -100,9 +102,7 @@ export default defineNuxtConfig({
 
   image: {
     cloudinary: {
-      baseURL: getCloudinaryBaseUrl(
-        process.env.CLOUDINARY_CLOUD_NAME as string,
-      ),
+      baseURL: getCloudinaryBaseUrl(CLOUDINARY_CLOUD_NAME),
     },
     screens: {
       xs: 320,
@@ -115,16 +115,22 @@ export default defineNuxtConfig({
     },
   },
 
+  // В контейнере ни одно из этих значений не приходит из .env: entrypoint.mjs
+  // забирает их из Vault и кладёт в окружение под именами NUXT_* до того, как
+  // Nitro соберёт конфиг. Ключ, не объявленный здесь, невидим для
+  // useRuntimeConfig() — поэтому каждый перечислен поимённо.
   runtimeConfig: {
     MONGO_URI: process.env.MONGO_URI,
     MONGO_DB_NAME: process.env.DB_NAME,
     CACHE_PURGE_SECRET: process.env.CACHE_PURGE_SECRET,
+    site: {
+      url: process.env.SITE_URL,
+      name: process.env.DOMAIN_NAME,
+    },
     public: {
-      CLOUDINARY_CLOUD_NAME: process.env.CLOUDINARY_CLOUD_NAME,
-      DOCKER_HUB_TAG: process.env.DOCKER_HUB_TAG || "unset",
+      CLOUDINARY_CLOUD_NAME,
       SITE_URL: process.env.SITE_URL,
       DOMAIN_NAME: process.env.DOMAIN_NAME,
-      CANONICAL_DOMAIN: process.env.CANONICAL_DOMAIN,
     },
   },
 

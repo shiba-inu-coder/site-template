@@ -21,7 +21,11 @@ npm run lintfix    # eslint --fix + prettier
 
 - No test suite exists.
 - `npm install` requires `legacy-peer-deps` (set in `.npmrc`). Vite is overridden to `rolldown-vite`.
-- Deploy: manual GitHub Actions workflows → Docker image (Vault secrets) → VPS Docker Swarm.
+- Deploy: GitHub Actions builds the image with **no build args** → VPS Docker Swarm.
+  `docker/entrypoint.mjs` reads the site's Vault record at container start and exports every
+  key as `NUXT_*` before importing Nitro; on an unreachable Vault it falls back to the cached
+  copy in `RUNTIME_CONFIG_CACHE`. A new runtime value is therefore two edits — the
+  `runtimeConfig` line here and the Vault record — and no rebuild. See README, "Deploy".
 
 ## Architecture
 
@@ -66,8 +70,10 @@ types/constants/utils). Aliases: `#sg` → `server/`, `#rc` → `app/`.
   never hardcode the cloud name. `logo.src` carries no file extension: Cloudinary `f_auto`
   serves whatever format was uploaded (svg/webp/png/jpg).
 - No auth/JWT anywhere: inactive (`isActive: false`) and deleted posts are 404 for everyone.
-- env vars: see `.env.example` (MONGO_URI, DB_NAME, SITE_URL, DOMAIN_NAME, CANONICAL_DOMAIN,
-  CLOUDINARY_CLOUD_NAME, CACHE_PURGE_SECRET).
+- env vars: see `.env.example` (MONGO_URI, DB_NAME, SITE_URL, DOMAIN_NAME, CACHE_PURGE_SECRET).
+  `.env` is for local dev only — in the container the same values come from Vault. The one
+  exception is `CLOUDINARY_CLOUD_NAME`: `@nuxt/image` bakes the provider baseURL into the
+  build, so it lives in `shared/constants/base.ts` and cannot be changed at runtime.
 
 ## Commit messages
 
