@@ -6,7 +6,7 @@
       provider="cloudinary"
       width="75"
       height="55"
-      class="rounded-lg border border-active-200 bg-white p-0.5 app-animation-scale"
+      class="rounded-primary border border-primary-100 bg-surface-raised p-0.5 app-animation-scale"
       :alt="item.logo.alt"
       format="svg"
       loading="lazy"
@@ -17,7 +17,7 @@
     <button
       v-if="showBtn"
       type="button"
-      class="h-[50px] w-[75px] shadow-sm border border-active-300 py-1.5 text-base rounded-md font-medium text-active-300 focus:border-active-500 focus:outline-hidden"
+      class="h-[50px] w-[75px] shadow-sm border border-active-200 py-1.5 text-step-7 rounded-primary font-medium text-active-200 hover:border-active-300 hover:text-active-300 focus:border-active-300 focus:outline-hidden"
       @click="toggle"
     >
       {{ btnName }}

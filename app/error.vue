@@ -8,10 +8,10 @@
       class="grid min-h-[85vh] place-items-center px-6 py-24 sm:py-32 lg:px-8"
     >
       <div class="text-center">
-        <p class="text-5xl font-semibold text-accent-300">
+        <p class="text-step-1 font-semibold text-accent-200">
           {{ error.statusCode }}
         </p>
-        <p class="mt-6 text-2xl font-medium text-pretty text-white">
+        <p class="mt-6 text-step-3 font-medium text-pretty text-surface-text">
           {{
             error.statusCode === 404
               ? "Stránka nenalezena – vraťme se na hlavní stránku"
@@ -23,7 +23,7 @@
             to="/"
             trailing-slash="append"
             prefetch-on="interaction"
-            class="rounded-md bg-accent-200 px-3.5 py-2.5 text-base font-semibold text-white shadow-xs hover:bg-accent-300 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent-300"
+            class="rounded-primary bg-active-200 px-3.5 py-2.5 text-step-7 font-semibold text-surface-text shadow-xs hover:bg-active-300 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-active-300"
             >Zpět na hlavní stránku</nuxt-link
           >
         </div>

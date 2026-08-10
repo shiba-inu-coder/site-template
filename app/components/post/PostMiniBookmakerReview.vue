@@ -1,28 +1,28 @@
 <template>
   <div
-    class="bg-accent-300/10 rounded-4xl px-3 py-4 border-2 border-primary-300 no-format"
+    class="bg-accent-300/10 rounded-primary px-3 py-4 border-2 border-primary-300 no-format"
   >
     <div v-html="safeHTMLWrap(data.title)"></div>
 
     <ul>
       <li>
-        <span class="font-semibold text-primary-3">Licence</span>:
+        <span class="font-semibold text-step-6">Licence</span>:
         {{ data.entity.licence }}
       </li>
       <li>
-        <span class="font-semibold text-primary-3">Sporty</span>:
+        <span class="font-semibold text-step-6">Sporty</span>:
         {{ sports }}
       </li>
       <li>
-        <span class="font-semibold text-primary-3">Platebni Metody</span>:
+        <span class="font-semibold text-step-6">Platebni Metody</span>:
         {{ paymentMethods }}
       </li>
       <li>
-        <span class="font-semibold text-primary-3">Rok Založení</span>:
+        <span class="font-semibold text-step-6">Rok Založení</span>:
         {{ data.entity.yearEstablished }}
       </li>
       <li>
-        <span class="font-semibold text-primary-3">{{
+        <span class="font-semibold text-step-6">{{
           data.bonuses.length > 1 ? "Bonusy" : "Bonus"
         }}</span
         >:
@@ -30,9 +30,9 @@
           <div
             v-for="(bonus, i) in data.bonuses"
             :key="i"
-            class="bg-primary-200 px-2 py-3 border-2 border-primary-200 rounded-lg"
+            class="bg-primary-200 px-2 py-3 border-2 border-primary-100 rounded-primary"
           >
-            <span class="font-semibold text-primary-4 text-active-300">
+            <span class="font-semibold text-step-7 text-accent-200">
               {{ bonus.title }} {{ bonus.text }}
             </span>
           </div>

@@ -3,7 +3,7 @@
     <button
       :id="`accordion-header-post-table-content`"
       type="button"
-      class="p-primary-1 border-accent-200 bg-primary-300 rounded-primary flex items-center justify-between w-full text-accent-200 transition duration-300 ease-in-out hover:text-accent-300"
+      class="p-primary-1 border-active-200 bg-primary-300 rounded-primary flex items-center justify-between w-full text-active-200 transition duration-500 ease-in-out hover:text-active-300"
       :class="{
         'rounded-bl-none rounded-br-none rounded-t-primary border-y-2 border-x-2 ':
           isShow,
@@ -13,7 +13,7 @@
       :aria-controls="`accordion-content-post-table-content`"
       @click="toggle"
     >
-      <span class="text-primary-1 font-semibold px-3">
+      <span class="text-step-4 font-semibold px-3">
         {{ seoConfig.translates.tableContent }}
       </span>
       <svg-icon
@@ -28,7 +28,7 @@
         v-show="isShow"
         :id="`accordion-content-post-table-content`"
         role="region"
-        class="bg-accent-100/10 p-primary-1 rounded-b-4xl text-primary-4 border-x-2 border-b-2 border-accent-200"
+        class="bg-active-100/10 p-primary-1 rounded-b-primary text-step-7 border-x-2 border-b-2 border-active-200"
         :aria-labelledby="`accordion-header-post-table-content`"
       >
         <ul>
@@ -39,7 +39,7 @@
             <a
               :title="contentItem.title"
               :href="`#${contentItem.value}`"
-              class="block text-primary-2 transition duration-500 ease-in-out hover:border-accent-300 hover:text-accent-300"
+              class="block text-step-5 transition duration-500 ease-in-out hover:text-active-200"
               @click.prevent="scrollTo(contentItem.value)"
             >
               {{ contentItem.title }}

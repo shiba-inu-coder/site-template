@@ -62,7 +62,9 @@ const loadCache = () => {
     const missing = missingRequiredKeys(secrets);
 
     if (missing.length > 0) {
-      console.error(`[entrypoint] В кеше не хватает ключей: ${missing.join(", ")}`);
+      console.error(
+        `[entrypoint] В кеше не хватает ключей: ${missing.join(", ")}`,
+      );
       return null;
     }
 
@@ -86,7 +88,9 @@ const loadFromVault = async (token) => {
       }
 
       const wait = RETRY_DELAYS_MS[attempt];
-      console.error(`[entrypoint] ${error.message} — повтор через ${wait / 1000} с`);
+      console.error(
+        `[entrypoint] ${error.message} — повтор через ${wait / 1000} с`,
+      );
       await sleep(wait);
     }
   }
@@ -105,7 +109,9 @@ const load = async () => {
   // Ни Vault, ни кеша: стартовать нечем. Выходим с ошибкой — swarm перезапустит
   // контейнер и попробует ещё раз, и это честнее сайта, отдающего 500.
   if (!cached) {
-    console.error("[entrypoint] Конфигурации нет ни в Vault, ни в кеше — старт невозможен");
+    console.error(
+      "[entrypoint] Конфигурации нет ни в Vault, ни в кеше — старт невозможен",
+    );
     process.exit(1);
   }
 
@@ -118,6 +124,8 @@ const load = async () => {
 
 const applied = applyRuntimeEnv(toRuntimeEnv(await load()));
 
-console.log(`[entrypoint] Конфигурация применена: ${applied.length} переменных`);
+console.log(
+  `[entrypoint] Конфигурация применена: ${applied.length} переменных`,
+);
 
 await import("./.output/server/index.mjs");

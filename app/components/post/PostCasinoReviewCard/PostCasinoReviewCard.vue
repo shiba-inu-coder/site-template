@@ -1,6 +1,6 @@
 <template>
   <div
-    class="border-2 rounded-2xl border-primary-300 bg-primary-200 shadow-xl shadow-accent-300 mb-10 mx-1.5"
+    class="border-2 rounded-primary border-primary-300 bg-primary-200 shadow-xl shadow-accent-300 mb-10 mx-1.5"
   >
     <div
       class="grid grid-cols-12 items-center justify-between px-4 py-4 md:py-8 gap-4"
@@ -21,14 +21,14 @@
             :modifiers="seoConfig.img.modifiers"
           ></NuxtImg>
           <div
-            class="inline-flex items-center space-x-2 rounded-lg order-3 col-span-3 lg:col-span-5 justify-center lg:justify-center"
+            class="inline-flex items-center space-x-2 rounded-primary order-3 col-span-3 lg:col-span-5 justify-center lg:justify-center"
           >
             <svg-icon
-              class="text-2xl mb-[2.6px] text-yellow-300"
+              class="text-step-3 mb-[2.6px] text-status-warning"
               name="client/star"
             ></svg-icon>
-            <span class="text-primary-2">
-              <span class="font-medium text-accent-300">{{
+            <span class="text-step-5">
+              <span class="font-medium text-accent-200">{{
                 casino.rating
               }}</span
               >/5</span
@@ -57,7 +57,7 @@
             >{{ casino.maximumCashout }}</PostCasinoReviewInfo
           >
         </div>
-        <!-- <ul class="not-format space-y-4.5 rounded-md w-full">
+        <!-- <ul class="not-format space-y-4.5 rounded-primary w-full">
 
         </ul> -->
       </div>
@@ -69,13 +69,13 @@
           <span class="flex justify-center items-center">
             <svg-icon
               name="client/gift"
-              class="text-xl text-active-300"
+              class="text-step-5 text-accent-200"
             ></svg-icon>
-            <span class="pl-3 text-sm uppercase font-medium"
+            <span class="pl-3 text-step-8 uppercase font-medium"
               >Uvítací Bonus</span
             ></span
           >
-          <span class="font-medium text-center text-primary-1 text-accent-300">
+          <span class="font-medium text-center text-step-4 text-accent-200">
             {{ entityBonus.title }}
             {{ entityBonus.text }}
           </span>
@@ -92,7 +92,7 @@
     <div>
       <div class="bg-primary-300 border-y-2 border-primary-100">
         <nav
-          class="-mb-0.5 flex justify-start px-5 gap-x-6 text-base overflow-x-auto"
+          class="-mb-0.5 flex justify-start px-5 gap-x-6 text-step-7 overflow-x-auto"
           role="tablist"
           aria-orientation="horizontal"
         >
@@ -101,11 +101,11 @@
             :key="i"
             type="button"
             :class="{
-              'font-medium  border-x-transparent border-t-transparent border-active-300 text-active-200':
+              'font-medium  border-x-transparent border-t-transparent border-active-200 text-active-200':
                 activeIndex === i,
-              'text-white border-transparent': activeIndex !== i,
+              'text-surface-text border-transparent': activeIndex !== i,
             }"
-            class="py-4 px-1 items-center gap-x-2 border border-b-2 whitespace-nowrap hover:text-active-300 focus:outline-hidden focus:text-active-300"
+            class="py-4 px-1 items-center gap-x-2 border border-b-2 whitespace-nowrap hover:text-active-200 focus:outline-hidden focus:text-active-200"
             role="tab"
             @click="setActiveIndex(i)"
           >

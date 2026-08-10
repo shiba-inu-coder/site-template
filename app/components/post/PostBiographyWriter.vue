@@ -8,20 +8,20 @@
         provider="cloudinary"
         height="auto"
         width="auto"
-        class="rounded-sm size-12 object-cover"
+        class="rounded-primary size-12 object-cover"
         :src="writer.avatar.path"
         :alt="writer.avatar.alt"
       />
       <div class="grow space-y-1">
-        <span class="block text-base font-medium">{{ writer.fullName }}</span>
+        <span class="block text-step-7 font-medium">{{ writer.fullName }}</span>
         <span
-          class="text-primary-5 text-white font-medium bg-accent-300 rounded-primary py-1 px-2"
+          class="text-step-8 text-surface-text font-medium bg-accent-200 rounded-primary py-1 px-2"
           >{{ writer.position }}</span
         >
       </div>
     </div>
     <span
-      class="text-primary-4 p-primary-1 border-x-2 border-b-2 border-primary-300 rounded-b-primary"
+      class="text-step-7 p-primary-1 border-x-2 border-b-2 border-primary-300 rounded-b-primary"
       >{{ writer.info }}</span
     >
 
@@ -31,7 +31,7 @@
         :key="index"
       >
         <a
-          class="text-2xl transition duration-500 text-active-100 hover:text-active-300"
+          class="text-step-3 transition duration-500 text-active-200 hover:text-active-300"
           :href="item.url"
           target="_blank"
         >

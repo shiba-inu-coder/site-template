@@ -33,7 +33,7 @@
             </div>
             <div
               v-if="item.title"
-              class="text-center text-primary-2 mt-2 font-medium text-accent-200"
+              class="text-center text-step-5 mt-2 font-medium text-accent-200"
               v-html="safeHTMLWrap(item.title)"
             ></div>
           </div>
@@ -45,7 +45,7 @@
         >
           <div
             v-if="item.title"
-            class="text-center text-primary-2 font-medium text-accent-200"
+            class="text-center text-step-5 font-medium text-accent-200"
             v-html="safeHTMLWrap(item.title)"
           ></div>
           <NuxtImg
@@ -60,7 +60,7 @@
           />
           <div
             v-if="item.text"
-            class="text-center text-primary-4"
+            class="text-center text-step-7"
             v-html="safeHTMLWrap(item.text)"
           ></div>
 
@@ -70,7 +70,7 @@
             target="_blank"
             rel="nofollow noopener"
             data-id="ref_link"
-            class="w-5/6 block bg-accent-200 px-4 py-2.5 text-center rounded-primary text-white font-medium text-primary-2 mt-3 mb-5"
+            class="w-5/6 block bg-active-200 hover:bg-active-300 transition duration-500 ease-in-out px-4 py-2.5 text-center rounded-primary text-surface-text font-medium text-step-5 mt-3 mb-5"
           >
             {{ item.buttonText }}
           </a>

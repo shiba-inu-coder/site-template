@@ -35,7 +35,7 @@
           </a>
         </div>
         <div
-          class="col-span-5 md:col-span-4 leading-5 text-xs font-normal text-white"
+          class="col-span-5 md:col-span-4 leading-5 text-step-9 font-normal text-surface-text"
         >
           <p v-html="seoConfig.layout.footer.disclaimer"></p>
           <p v-html="seoConfig.layout.footer.notice"></p>
@@ -43,7 +43,7 @@
       </div>
     </div>
     <div
-      class="flex-col-reverse bg-primary-200 md:flex-row items-center flex flex-wrap justify-around py-3 text-sm gap-4"
+      class="flex-col-reverse bg-primary-200 md:flex-row items-center flex flex-wrap justify-around py-3 text-step-8 gap-4"
     >
       <!-- <div class="flex space-x-3.5"> -->
       <nuxt-link
@@ -59,15 +59,14 @@
     <div
       class="bg-primary-300 flex-wrap flex-col gap-5 md:px-0 pb-6 pt-6 flex justify-center items-center mt-5"
     >
-      <p class="text-white text-xs uppercase text-center">
+      <p class="text-surface-text text-step-9 uppercase text-center">
         {{ seoConfig.layout.footer.title }}
       </p>
       <nuxt-link to="/">
         <NuxtImg
           provider="cloudinary"
           loading="lazy"
-          width="120"
-          height="auto"
+          v-bind="logoSize(32)"
           :alt="seoConfig.logo.alt"
           :src="seoConfig.logo.src"
         />
@@ -78,6 +77,7 @@
 
 <script setup lang="ts">
 // import { useFakeRefLink } from "#rc/composables/useFakeRefLink";
+import { logoSize } from "#rc/utils/logo-size";
 import { seoConfig } from "@@/seo.conf";
 
 // Payment Icons

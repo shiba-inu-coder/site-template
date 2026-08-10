@@ -8,14 +8,14 @@
       >
         <thead
           v-if="state.data.showTableHead"
-          class="bg-primary-300 text-white"
+          class="bg-primary-300 text-surface-text"
         >
           <tr class="">
             <th
               v-for="(column, columnIndex) in state.data.columns"
               :key="columnIndex"
               scope="col"
-              class="break-words p-primary-1 text-primary-3"
+              class="break-words p-primary-1 text-step-6"
             >
               {{ column.title }}
             </th>
@@ -37,7 +37,7 @@
                 'last:rounded-primary': columnIndex === 0,
                 'border-b border-primary-300': formatedRows.length - 1 !== i,
               }"
-              class="break-words px-2 py-1.5 text-primary-3"
+              class="break-words px-2 py-1.5 text-step-6"
             >
               <PostDataTableRuntime :template="row[column.name]" />
             </td>
@@ -53,7 +53,7 @@
       <button
         v-show="isShowMoreBtn"
         type="button"
-        class="bg-primary-100 border-2 border-accent-200 text-accent-200 hover:border-accent-200 hover:text-white font-medium hover:bg-accent-300 transition ease-in-out duration-500 px-3.5 rounded-primary py-2.5"
+        class="bg-primary-100 border-2 border-active-200 text-active-200 hover:border-active-300 hover:text-surface-text font-medium hover:bg-active-300 transition ease-in-out duration-500 px-3.5 rounded-primary py-2.5"
         @click="setCount(state.data.rows.length)"
       >
         {{ seoConfig.translates.showMore }}
@@ -61,7 +61,7 @@
       <button
         v-show="!isShowMoreBtn"
         type="button"
-        class="bg-primary-100 border-2 border-accent-200 text-accent-200 hover:border-accent-200 hover:text-white font-medium hover:bg-accent-300 transition ease-in-out duration-500 px-3.5 rounded-primary py-2.5"
+        class="bg-primary-100 border-2 border-active-200 text-active-200 hover:border-active-300 hover:text-surface-text font-medium hover:bg-active-300 transition ease-in-out duration-500 px-3.5 rounded-primary py-2.5"
         @click="setCount(defaultCountRows)"
       >
         {{ seoConfig.translates.showLess }}

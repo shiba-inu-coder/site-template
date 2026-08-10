@@ -6,13 +6,7 @@
       :index="index"
     ></PostBookmakerDrawer>
     <div
-      class="h-full bg-primary-200/50 rounded-primary relative flex flex-col"
-      style="
-        box-shadow:
-          -16.605px -6.227px 83.023px 0 rgb(248 249 249 / 0.03) inset,
-          37.36px 0 33.209px 0 rgb(2 3 3 / 0.7),
-          -12.453px -20.756px 58.116px 0 rgb(232 237 243 / 0.05);
-      "
+      class="h-full bg-primary-200/50 rounded-primary shadow-primary relative flex flex-col"
       @keydown.esc="toggle(false)"
     >
       <PostEntityRibbon v-if="bookmaker.ribbon">
@@ -37,7 +31,7 @@
         </div>
         <div class="flex-1 flex shrink-[0] justify-start md:justify-center">
           <div class="flex flex-col items-center shrink-[0]">
-            <span class="text-left mb-[8px] block text-[18px] font-semibold">{{
+            <span class="text-left mb-[8px] block text-step-6 font-semibold">{{
               bookmaker.title
             }}</span>
             <PostBookmakerRating
@@ -71,14 +65,14 @@
           <li
             v-for="(benefit, i) in bookmaker.benefits"
             :key="i"
-            class="flex-1 pl-2 py-1.5 text-xs font-medium text-left first:rounded-t-primary first:rounded-tl-primary first:rounded-tr-primary last:rounded-b-primary last:rounded-bl-primary last:rounded-br-primary"
+            class="flex-1 pl-2 py-1.5 text-step-9 font-medium text-left first:rounded-t-primary first:rounded-tl-primary first:rounded-tr-primary last:rounded-b-primary last:rounded-bl-primary last:rounded-br-primary"
           >
             {{ benefit }}
           </li>
         </ul>
         <!-- Button More Info  -->
         <button
-          class="mt-3 py-2 bg-primary-200 text-sm text-slate-200 flex items-center justify-center gap-x-2 rounded-b-primary"
+          class="mt-3 py-2 bg-primary-200 text-step-8 text-surface-muted hover:text-surface-text transition duration-500 ease-in-out flex items-center justify-center gap-x-2 rounded-b-primary"
           @click="toggle(true)"
         >
           <span>{{ seoConfig.translates.btnMoreInfo }}</span>

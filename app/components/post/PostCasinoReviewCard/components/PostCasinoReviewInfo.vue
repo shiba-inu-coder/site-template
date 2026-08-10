@@ -10,13 +10,13 @@
       }"
     >
       <span
-        class="text-primary-3 block font-bold"
+        class="text-step-6 block font-bold"
         :class="{
           'mb-2': !isMobileRow,
         }"
         >{{ title }}</span
       >
-      <div class="text-primary-4 block">
+      <div class="text-step-7 block">
         <slot></slot>
       </div>
     </div>

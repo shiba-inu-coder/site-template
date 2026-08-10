@@ -1,8 +1,11 @@
 @import "tailwindcss";
 @config "../../../tailwind.config.js";
 
-@theme {
-  /* CLIENT */
+/* Девять бренд-цветов. `reference` — Tailwind собирает из них утилиты, но НЕ выдаёт
+   переменные в свой слой, поэтому единственное объявление живёт в :root ниже.
+   С обычным @theme (и с `inline` тоже) сюда попадало `--color-primary-300:
+   var(--color-primary-300)` — объявление, ссылающееся само на себя. */
+@theme reference {
   --color-primary-300: var(--color-primary-300);
   --color-primary-200: var(--color-primary-200);
   --color-primary-100: var(--color-primary-100);
@@ -15,21 +18,47 @@
   --color-accent-200: var(--color-accent-200);
   --color-accent-100: var(--color-accent-100);
 
-  --shadow-primary: var(--shadow-xl);
+  /* Нейтральный слой. Не бренд: переворачивается вместе со светлой/тёмной темой,
+     а не приходит из манифеста. */
+  --color-surface-text: var(--color-surface-text);
+  --color-surface-muted: var(--color-surface-muted);
+  --color-surface-raised: var(--color-surface-raised);
+}
+
+@theme {
+  /* Статусные цвета — ни бренд, ни тема. Зелёный «хорошо» и красный «плохо»
+     значат одно и то же на любом сайте и при любой теме. */
+  --color-status-positive: #22c55e;
+  --color-status-negative: #f43f5e;
+  --color-status-warning: #fde047;
+
+  /* Тень карточек. Живёт только здесь и бренд-манифестом не патчится: утилиты
+     тени в Tailwind v4 подставляют значение из @theme прямо в правило, а
+     переменную из :root не читают — патчить её было бы пустой операцией. */
+  --shadow-primary: -16.605px -6.227px 83.023px 0 rgb(248 249 249 / 0.03) inset,
+    37.36px 0 33.209px 0 rgb(2 3 3 / 0.7),
+    -12.453px -20.756px 58.116px 0 rgb(232 237 243 / 0.05);
 
   --radius-primary: var(--radius-lg);
 
-  --text-primary-1: 1.3rem;
-  --text-primary-2: 1.2rem;
-  --text-primary-3: 1.1rem;
-  --text-primary-4: 0.95rem;
-  --text-primary-5: 0.85rem;
-  --text-primary-6: 0.75rem;
-  --text-primary-icon: 1.1rem;
+  /* Шкала размеров текста, 1 — самый крупный. Названа `step`, а не `primary`:
+     text-primary-3 (размер) и text-primary-300 (цвет) отличались одним символом,
+     оба были валидны, и перепутать их не стоило ничего. */
+  --text-step-1: 3rem;
+  --text-step-2: 1.875rem;
+  --text-step-3: 1.5rem;
+  --text-step-4: 1.3rem;
+  --text-step-5: 1.2rem;
+  --text-step-6: 1.1rem;
+  --text-step-7: 0.95rem;
+  --text-step-8: 0.85rem;
+  --text-step-9: 0.75rem;
 
   --spacing-primary-1: calc(var(--spacing) * 3.5) calc(var(--spacing) * 2);
 
   --font-primary: "Lato", sans-serif;
+  /* Заголовки статьи. Если у бренда шрифт один, сюда приезжает то же семейство. */
+  --font-heading: "Lato", sans-serif;
 }
 
 :root {
@@ -43,8 +72,6 @@
   );
   --fs-intercept: calc(var(--fs-min) - var(--min-vw) * var(--fs-slope));
 
-  /* Theme Shadow */
-  --shadow-primary: var(--shadow-xl);
   /* Theme Colors */
 
   /* Primary */
@@ -61,6 +88,19 @@
   --color-active-100: #ffe7a3;
   --color-active-200: #eab85a;
   --color-active-300: #b7791f;
+
+  /* Нейтральный слой тёмной темы. Бренд-патчер его не трогает. */
+  --color-surface-text: #ffffff;
+  --color-surface-muted: #cbd5e1;
+  --color-surface-raised: #ffffff;
+}
+
+/* Светлая тема. Переворачивается только нейтраль: шкала primary — это уже
+   светлые цвета бренда из манифеста, а active/accent одинаково работают на обеих. */
+:root[data-theme="light"] {
+  --color-surface-text: #0f172a;
+  --color-surface-muted: #475569;
+  --color-surface-raised: #f1f5f9;
 }
 
 @layer base {
@@ -83,7 +123,7 @@
       var(--fs-max)
     );
     line-height: 1.6;
-    color: var(--color-white);
+    color: var(--color-surface-text);
   }
 
   #article {
@@ -125,9 +165,10 @@
     h5,
     h6 {
       margin: 20px 0 20px 0;
+      font-family: var(--font-heading);
       font-weight: 500;
       word-break: break-word;
-      color: var(--color-active-200);
+      color: var(--color-accent-200);
     }
 
     .no-format h1,
@@ -179,7 +220,7 @@
     @media (min-width: 48rem) {
       ol:not(.not-format) > li::before {
         top: 3px;
-        color: var(--color-white);
+        color: var(--color-surface-text);
       }
     }
 
@@ -234,7 +275,7 @@
   text-decoration-line: none;
 
   &:hover {
-    color: var(--color-active-200);
+    color: var(--color-active-300);
     text-decoration-line: underline;
     text-underline-offset: 2px;
   }
@@ -242,7 +283,7 @@
   &:focus-within {
     text-decoration-line: underline;
     text-underline-offset: 2px;
-    color: var(--color-active-200);
+    color: var(--color-active-300);
   }
 }
 

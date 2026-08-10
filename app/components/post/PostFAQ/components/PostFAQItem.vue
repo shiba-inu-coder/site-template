@@ -3,7 +3,7 @@
     <!-- <button
       :id="`accordion-header-${id}`"
       type="button"
-      class="p-primary-1 flex items-center justify-between w-full text-accent-200 transition duration-300 ease-in-out hover:text-accent-300 border-b-2 border-primary-300"
+      class="p-primary-1 flex items-center justify-between w-full text-active-200 transition duration-500 ease-in-out hover:text-active-300 border-b-2 border-primary-300"
       :class="{
         'rounded-bl-none rounded-br-none bg-primary-200 rounded-t-primary':
           isShow,
@@ -13,19 +13,19 @@
       :aria-expanded="isShow"
       :aria-controls="`accordion-content-${id}`"
     > -->
-    <!-- <span class="flex items-center gap-x-2 text-primary-3"> -->
+    <!-- <span class="flex items-center gap-x-2 text-step-6"> -->
     <!-- <svg-icon
           name="client/question"
           class="fill-active-200 size-5"
         ></svg-icon> -->
-    <h3 class="my-0! text-left! text-primary-3">
+    <h3 class="my-0! text-left! text-step-6">
       {{ faqItem.label }}
     </h3>
     <!-- </span> -->
     <!-- <svg-icon
         data-accordion-icon
         name="client/solid-up"
-        class="m-2 text-primary-3 shrink-0"
+        class="m-2 text-step-6 shrink-0"
         :class="{ 'rotate-180': isShow }"
       /> -->
     <!-- </button> -->
@@ -34,7 +34,7 @@
       v-show="isShow"
       :id="`accordion-content-${id}`"
       role="region"
-      class="p-primary-1 rounded-b-primary text-primary-4"
+      class="p-primary-1 rounded-b-primary text-step-7"
       :aria-labelledby="`accordion-header-${id}`"
     > -->
     <div
@@ -61,7 +61,7 @@ const id = computed(() =>
 const html = computed(() =>
   isHTML(faqItem.value)
     ? faqItem.value
-    : `<p class="m-0! text-primary-4">${faqItem.value}</p>`,
+    : `<p class="m-0! text-step-7">${faqItem.value}</p>`,
 );
 
 const isShow = ref(true);

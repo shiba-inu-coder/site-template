@@ -1,7 +1,7 @@
 <template>
   <nav class="flex mt-4 w-full">
     <ol
-      class="flex items-center overflow-x-auto not-format overflow-y-hidden text-sm"
+      class="flex items-center overflow-x-auto not-format overflow-y-hidden text-step-8"
     >
       <li
         v-for="(crumb, index) in breadcrumbs"
@@ -12,7 +12,7 @@
           v-if="index !== breadcrumbs.length - 1"
           trailing-slash="append"
           prefetch-on="interaction"
-          class="font-semibold text-active-100 hover:text-active-300 transition duration-500 ease-in-out"
+          class="font-semibold text-active-200 hover:text-active-300 transition duration-500 ease-in-out"
           :to="crumb.slug"
           :class="{
             breadcrumb: index !== breadcrumbs.length - 1,
@@ -28,7 +28,7 @@
         </span>
         <svg-icon
           v-if="index !== breadcrumbs.length - 1"
-          class="mx-2 rotate-90 text-active-200 size-5"
+          class="mx-2 rotate-90 text-surface-muted size-5"
           name="client/chevron-up"
         />
       </li>

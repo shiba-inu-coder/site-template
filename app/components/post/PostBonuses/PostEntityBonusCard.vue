@@ -1,13 +1,7 @@
 <template>
   <div class="h-full">
     <div
-      class="h-full bg-primary-200/50 rounded-primary relative flex flex-col"
-      style="
-        box-shadow:
-          -16.605px -6.227px 83.023px 0 rgb(248 249 249 / 0.03) inset,
-          37.36px 0 33.209px 0 rgb(2 3 3 / 0.7),
-          -12.453px -20.756px 58.116px 0 rgb(232 237 243 / 0.05);
-      "
+      class="h-full bg-primary-200/50 rounded-primary shadow-primary relative flex flex-col"
       @keydown.esc="toggle(false)"
     >
       <div
@@ -30,7 +24,7 @@
       <div class="flex flex-col px-10 gap-y-3">
         <div
           v-if="bonus.wager.length"
-          class="flex justify-between border-b border-slate-600 pb-2 text-md"
+          class="flex justify-between border-b border-primary-100 pb-2 text-md"
         >
           <span class="block">Wager</span>
           <span class="block">{{ bonus.wager }}</span>

@@ -8,7 +8,7 @@
         target="_blank"
         rel="nofollow noopener"
         data-id="ref_link"
-        class="underline text-blue-500"
+        class="app-link"
         :href="useFakeRefLink(slug)"
         >{{ website }}</a
       >
@@ -36,18 +36,18 @@
           <svg-icon
             v-if="mobileApps.includes('ios')"
             name="client/brand-apple"
-            class="text-xl text-blue-500"
+            class="text-step-5 text-surface-text"
           ></svg-icon>
           <svg-icon
             v-if="mobileApps.includes('android')"
             name="client/brand-android"
-            class="text-xl text-blue-500"
+            class="text-step-5 text-surface-text"
           ></svg-icon>
         </div>
       </div>
       <div
         v-else
-        class="mb-3 text-sm"
+        class="mb-3 text-step-8"
       >
         Ne
       </div>

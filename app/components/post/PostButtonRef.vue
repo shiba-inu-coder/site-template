@@ -17,7 +17,7 @@
       >
         <svg-icon
           name="client/play"
-          class="text-xl"
+          class="text-step-5"
         />
       </span>
 
@@ -64,19 +64,19 @@ const positionClassesMap: Record<Props["position"], string> = {
 
 const variantClasses: Record<Props["variant"], string> = {
   solid:
-    "border border-transparent bg-accent-200 text-white hover:bg-accent-100 focus:bg-accent-100",
+    "border border-transparent bg-active-200 text-surface-text hover:bg-active-300 focus:bg-active-300",
   outline:
-    "border text-accent-300 bg-primary-200 border-accent-300 hover:bg-accent-200 transition duration-400 easy-in-out hover:text-white focus:bg-accent-100",
-  soft: "border border-transparent bg-accent-200 hover:bg-accent-200 text-white focus:text-white",
-  link: "app-link text-left text-lg!",
+    "border text-active-200 bg-primary-200 border-active-200 hover:bg-active-200 transition duration-500 ease-in-out hover:text-surface-text focus:bg-active-300",
+  soft: "border border-transparent bg-active-100 text-primary-300 hover:bg-active-200 focus:bg-active-200",
+  link: "app-link text-left text-step-6!",
 };
 
 const textClasses: Record<Props["size"], string> = {
-  small: "text-sm",
-  "small-medium": "text-base",
-  medium: "text-xl",
-  "medium-big": "text-2xl",
-  big: "text-3xl",
+  small: "text-step-8",
+  "small-medium": "text-step-7",
+  medium: "text-step-5",
+  "medium-big": "text-step-3",
+  big: "text-step-2",
 };
 
 const paddingClasses: Record<Props["size"], string> = {

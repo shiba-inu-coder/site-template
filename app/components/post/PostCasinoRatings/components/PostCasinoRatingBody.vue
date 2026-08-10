@@ -65,12 +65,12 @@
           <svg-icon
             v-if="casino.mobileApps.includes('ios')"
             name="client/brand-apple"
-            class="text-xl text-white"
+            class="text-step-5 text-surface-text"
           ></svg-icon>
           <svg-icon
             v-if="casino.mobileApps.includes('android')"
             name="client/brand-android"
-            class="text-xl text-white"
+            class="text-step-5 text-surface-text"
           ></svg-icon>
         </div>
         <div
@@ -164,10 +164,10 @@ const gameTypes = computed(
 .casino-rating__text {
   margin-bottom: calc(var(--spacing) * 1);
   display: block;
-  font-size: var(--text-size-primary-3);
+  font-size: var(--text-primary-3);
   line-height: 1.5;
   font-weight: 400;
   padding-left: calc(var(--spacing) * 8);
-  color: var(--color-white);
+  color: var(--color-surface-text);
 }
 </style>

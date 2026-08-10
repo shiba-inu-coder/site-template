@@ -5,7 +5,7 @@
     @click="toggleGiftIconVisibility"
   >
     <div
-      class="bg-active-200 border-2 transition duration-500 ease-in-out hover:bg-accent-300 border-primary-300 group rounded-primary inline-block p-2.5 left-3 z-30 fixed bottom-5 cursor-pointer"
+      class="bg-active-200 border-2 transition duration-500 ease-in-out hover:bg-active-300 border-primary-300 group rounded-primary inline-block p-2.5 left-3 z-30 fixed bottom-5 cursor-pointer"
     >
       <svg-icon
         class="size-10 block"
@@ -25,7 +25,7 @@
   >
     <button
       type="button"
-      class="bg-primary-300 hover:border-accent-300 hover:text-accent-300 transition duration-500 ease-in-out text-accent-200 cursor-pointer shrink-0 absolute right-0 top-0 rounded-l-xs rounded-b-xs rounded-t-primary md:rounded-primary inline-flex justify-center w-6 h-6 items-center"
+      class="bg-primary-300 hover:border-active-300 hover:text-active-300 transition duration-500 ease-in-out text-active-200 cursor-pointer shrink-0 absolute right-0 top-0 rounded-l-xs rounded-b-xs rounded-t-primary md:rounded-primary inline-flex justify-center w-6 h-6 items-center"
       @click.prevent="toggleGiftIconVisibility"
     >
       <svg-icon name="close" />
@@ -39,7 +39,7 @@
         :src="banner.entity.logo.path"
         :modifiers="seoConfig.img.modifiers"
       ></NuxtImg>
-      <span class="text-active-200 font-medium text-xl text-center">
+      <span class="text-accent-200 font-medium text-step-5 text-center">
         {{ banner.text }}
       </span>
     </div>

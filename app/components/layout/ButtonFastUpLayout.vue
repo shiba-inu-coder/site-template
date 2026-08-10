@@ -2,12 +2,12 @@
   <PostShowOnScroll>
     <button
       type="button"
-      class="bg-primary-200 border-2 border-active-300 group hover:border-accent-300 transition duration-500 ease-in-out rounded-full fixed right-5 bottom-[3%] z-20 size-15 lg:h-14 lg:w-14 flex items-center justify-center outline-none cursor-pointer"
+      class="bg-primary-200 border-2 border-active-200 group hover:border-active-300 transition duration-500 ease-in-out rounded-full fixed right-5 bottom-[3%] z-20 size-15 lg:h-14 lg:w-14 flex items-center justify-center outline-none cursor-pointer"
       @click="onClick"
     >
       <svg-icon
         name="arrow-up"
-        class="size-7 fill-active-200 group-hover:fill-accent-300"
+        class="size-7 fill-active-200 group-hover:fill-active-300"
       />
     </button>
   </PostShowOnScroll>

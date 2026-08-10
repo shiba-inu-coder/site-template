@@ -79,7 +79,7 @@ type Props = Pick<ICasino, "licence" | "safety">;
 defineProps<Props>();
 
 const getClassName = (value: boolean) =>
-  `text-2xl ${value ? "text-green-500" : "text-rose-500"}`;
+  `text-step-3 ${value ? "text-status-positive" : "text-status-negative"}`;
 
 const getIcon = (value: boolean) =>
   value ? "client/check" : "client/close-round";

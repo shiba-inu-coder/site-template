@@ -20,7 +20,7 @@
       <div class="px-2.5 md:px-4 xl:px-0 w-full max-w-7xl mx-auto">
         <span
           v-if="postDated"
-          class="text-primary-5 text-accent-200 font-medium block"
+          class="text-step-8 text-accent-200 font-medium block"
         >
           {{ seoConfig.translates.lastUpdated }}:
           <NuxtTime
@@ -37,7 +37,7 @@
           <div>
             <h1>{{ title }}</h1>
             <div
-              class="text-white"
+              class="text-surface-text"
               v-html="intro"
             ></div>
             <PostButtonRef
@@ -56,7 +56,7 @@
             fetchpriority="high"
             :src="introImg.img.path"
             :alt="introImg.img.alt"
-            :modifiers="{ roundCorner: '15' }"
+            :modifiers="seoConfig.img.modifiers"
           />
         </div>
 

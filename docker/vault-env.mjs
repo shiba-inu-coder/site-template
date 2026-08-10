@@ -76,11 +76,16 @@ export const applyRuntimeEnv = (env, target = process.env) => {
 export const missingRequiredKeys = (secrets = {}) =>
   REQUIRED_KEYS.filter((key) => !secrets[key]);
 
-export const readVaultSecrets = async (
-  { addr, token, path, fetchImpl = fetch } = {},
-) => {
+export const readVaultSecrets = async ({
+  addr,
+  token,
+  path,
+  fetchImpl = fetch,
+} = {}) => {
   if (!addr || !token) {
-    throw new Error("Нет VAULT_ADDR или VAULT_TOKEN — конфигурацию взять неоткуда");
+    throw new Error(
+      "Нет VAULT_ADDR или VAULT_TOKEN — конфигурацию взять неоткуда",
+    );
   }
 
   if (!path) {

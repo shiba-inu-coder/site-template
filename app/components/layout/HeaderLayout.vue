@@ -18,7 +18,7 @@
           target="_blank"
           rel="nofollow noopener"
           data-id="ref_link"
-          class="hidden md:block font-bold bg-active-300 text-primary-300 transition ease-in-out duration-500 hover:bg-active-100 px-7 py-3 rounded-primary"
+          class="hidden md:block font-bold bg-active-200 text-primary-300 transition ease-in-out duration-500 hover:bg-active-300 hover:text-surface-text px-7 py-3 rounded-primary"
         >
           {{ seoConfig.translates.auth.register }}
         </a>
@@ -31,8 +31,7 @@
         >
           <NuxtImg
             provider="cloudinary"
-            width="120"
-            height="auto"
+            v-bind="logoSize(36)"
             :alt="seoConfig.logo.alt"
             :src="seoConfig.logo.src"
           />
@@ -55,6 +54,7 @@
 
 <script setup lang="ts">
 import { useFakeRefLink } from "#rc/composables/useFakeRefLink";
+import { logoSize } from "#rc/utils/logo-size";
 import { seoConfig } from "@@/seo.conf";
 
 const emit = defineEmits<{

@@ -50,9 +50,9 @@ types/constants/utils). Aliases: `#sg` → `server/`, `#rc` → `app/`.
 
 ### Client
 
-- `app/pages/[...slug].vue` — all content pages; renders `views/BasePostView.vue` or
-  `views/AuthorView.vue`. `app/pages/go/` — affiliate redirect pages.
-- `app/components/post/RuntimeTemplateLayout.vue` compiles post HTML from the DB at runtime —
+- `app/pages/[...slug].vue` and `app/pages/index.vue` — all content pages; both render
+  `views/BasePostView.vue`. Affiliate redirects are a Nitro route, `server/routes/go/[...slug].ts`.
+- `app/components/layout/RuntimeTemplateLayout.vue` compiles post HTML from the DB at runtime —
   `vue.runtimeCompiler: true` in nuxt.config is REQUIRED; removing it silently breaks every post body.
 - `app/plugins/api.ts` — thin `$api()` / `$apiAbort()` wrapper around `$fetch` (no auth).
 - SVG icons: `app/assets/icons/` compiled to sprites by nuxt-svg-sprite-icon (`<svg-icon>`).
@@ -74,6 +74,26 @@ types/constants/utils). Aliases: `#sg` → `server/`, `#rc` → `app/`.
   `.env` is for local dev only — in the container the same values come from Vault. The one
   exception is `CLOUDINARY_CLOUD_NAME`: `@nuxt/image` bakes the provider baseURL into the
   build, so it lives in `shared/constants/base.ts` and cannot be changed at runtime.
+
+## UI & theme
+
+Read `docs/ui.md` before touching anything visual — `app/assets/css/tailwind.css`, any
+component's classes, or a new page. The three rules that break things silently:
+
+- **Colour by role, not by eye.** `primary` = surfaces, `active` = anything interactive
+  (CTA, links, hover, focus), `accent` = static brightness (badges, ribbons, article
+  headings). The scale is inverted: 300 is darkest, 200 is the base, hover moves one step.
+  These nine values are written in by the AppsPro brand patcher, so a misplaced family puts
+  a brand's button colour on a heading. Body text is `text-surface-text`, never `text-white`
+  — that token is what flips between the light and dark themes.
+- **Sizes come from `text-step-1` … `text-step-9`** (1 is the largest), radii from
+  `rounded-primary`. Not `text-sm`/`rounded-lg`.
+- **`:root` in `tailwind.css` is a contract with that patcher**, comments included. It throws
+  on a renamed anchor, a reordered family, or a second `--radius-primary` — in production,
+  for every site. Run the patcher over the file after editing it.
+- **`@config` disables Tailwind's source detection.** Only the globs in `tailwind.config.js`
+  are scanned, so a class name built in a `.ts` file or coming from Mongo never compiles.
+  Spell runtime-chosen classes out as literals.
 
 ## Commit messages
 
