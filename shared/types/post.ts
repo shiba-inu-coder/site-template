@@ -168,7 +168,7 @@ export type PostCasinoRatingEntity = Omit<
     Pick<IGameType, "title" | "order">,
     Pick<ISoftwareProvider, "title" | "logo">,
     Pick<IPaymentMethod, "title" | "logo">,
-    Pick<IPost, "slug" | "isReviewPost">
+    Pick<IPost, "slug">
   >,
   "refLink" | "createdAt" | "updatedAt" | "website" | "owner" | "closedYear"
 >;
@@ -302,7 +302,6 @@ export interface IPost<
   content: string;
   sections: PostSection[];
   isActive: boolean;
-  isReviewPost: boolean;
   breadcrumbTitle: string;
   breadcrumbs: PostBreadcrumb[];
   datePosted: string;

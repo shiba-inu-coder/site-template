@@ -259,10 +259,6 @@ ModelSchema.statics.getBreadcrumbs = async function (
   return breadcrumbs;
 };
 
-ModelSchema.virtual("isReviewPost").get(function () {
-  return Boolean(this.entity);
-});
-
 ModelSchema.index({ slug: 1, title: 1, isDeleted: 1 });
 
 ModelSchema.plugin(uniqueValidator, {

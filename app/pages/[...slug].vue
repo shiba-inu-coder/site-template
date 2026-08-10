@@ -14,10 +14,14 @@ const params = computed(() => {
 
 const slug = computed(() => params.value.join("/"));
 
+// Токен предпросмотра входит в ключ: иначе SSR отдал бы черновику payload,
+// собранный для обычного посетителя, — то есть 404.
+const preview = computed(() => (route.query.preview as string) || "");
+
 const { data, status } = await useAsyncData(
-  `post-${slug.value}`,
+  `post-${slug.value}${preview.value ? ":preview" : ""}`,
   () => {
-    return GET_POST_BY_SLUG(slug.value);
+    return GET_POST_BY_SLUG(slug.value, preview.value);
   },
   {
     deep: false,

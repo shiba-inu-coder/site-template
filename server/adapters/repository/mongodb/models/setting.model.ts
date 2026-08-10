@@ -6,6 +6,7 @@ import {
 } from "#shared/types";
 import { RedirectsRoutesSchema } from "./schemas/RedirectsRoutes";
 import { HeaderLinkSchema } from "./schemas/HeaderLink";
+import { PreviewGrantSchema } from "./schemas/PreviewGrant";
 
 const ModelSchema = new Schema<ISettingDocument, ISettingModel>(
   {
@@ -22,6 +23,10 @@ const ModelSchema = new Schema<ISettingDocument, ISettingModel>(
     redirectsRoutes: RedirectsRoutesSchema,
     headerLinks: {
       type: [HeaderLinkSchema],
+      default: () => [],
+    },
+    previewGrants: {
+      type: [PreviewGrantSchema],
       default: () => [],
     },
   },

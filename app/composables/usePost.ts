@@ -31,7 +31,6 @@ export const usePost = <E>() => {
   const entity = computed(() => state.value.currentPost.entity);
   const faq = computed(() => state.value.currentPost.shortcodesConfig.faq);
   const intro = computed(() => state.value.currentPost.intro);
-  const isReviewPost = computed(() => state.value.currentPost.isReviewPost);
   const breadcrumbs = computed(() => state.value.currentPost.breadcrumbs);
   const entityBonus = computed(() => state.value.currentPost.entityBonus);
   const postDated = computed(
@@ -121,16 +120,19 @@ export const usePost = <E>() => {
       deepClone<ObjectIdToStr<IPostBySlug<E>>>(restPost);
   };
 
-  const GET_POST_BY_SLUG = <E>(slug: string) => {
+  // preview — токен из адреса страницы. Сам он сюда не долетает: $api это
+  // голый $fetch без переноса запроса, и параметр надо передать руками.
+  // Пустой в query не кладём, иначе у обычного посетителя ключ кеша nginx
+  // отличался бы от того же адреса без него.
+  const GET_POST_BY_SLUG = <E>(slug: string, preview = "") => {
     return $api()<ObjectIdToStr<IPostBySlug<E>>>("/api/v1/public/posts/slug", {
-      query: { slug },
+      query: preview ? { slug, preview } : { slug },
     });
   };
 
   return {
     GET_POST_BY_SLUG,
     introImg,
-    isReviewPost,
     entityBonus,
     setPost,
     entity,

@@ -5,11 +5,17 @@
 import BasePostView from "#rc/views/BasePostView.vue";
 
 const { setPost, GET_POST_BY_SLUG } = usePost();
-const slug = useRoute().name as string;
+const route = useRoute();
+const slug = route.name as string;
+
+// Как и на остальных страницах: токен входит в ключ, иначе SSR отдал бы
+// черновику payload обычного посетителя — то есть 404.
+const preview = (route.query.preview as string) || "";
+
 const { data, status } = await useAsyncData(
-  `post-${slug}`,
+  `post-${slug}${preview ? ":preview" : ""}`,
   () => {
-    return GET_POST_BY_SLUG(slug);
+    return GET_POST_BY_SLUG(slug, preview);
   },
   {
     deep: false,

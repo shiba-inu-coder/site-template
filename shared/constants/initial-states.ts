@@ -1,6 +1,6 @@
 import deepClone from "rfdc/default";
 
-const baseInital: Omit<IPost, "_id" | "isReviewPost" | "breadcrumbs"> = {
+const baseInital: Omit<IPost, "_id" | "breadcrumbs"> = {
   title: "",
   slug: "",
   entity: undefined,
@@ -94,6 +94,7 @@ export const initialStateSetting: ISetting = {
   externalSitemapUrl: "",
   redirectsRoutes: [],
   headerLinks: [],
+  previewGrants: [],
 };
 
 export const initialStateSoftwareProvider: Omit<

@@ -123,6 +123,7 @@ export default defineNuxtConfig({
     MONGO_URI: process.env.MONGO_URI,
     MONGO_DB_NAME: process.env.DB_NAME,
     CACHE_PURGE_SECRET: process.env.CACHE_PURGE_SECRET,
+    PREVIEW_TOKEN: process.env.PREVIEW_TOKEN,
     site: {
       url: process.env.SITE_URL,
       name: process.env.DOMAIN_NAME,

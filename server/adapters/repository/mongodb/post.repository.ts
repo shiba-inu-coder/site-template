@@ -117,7 +117,7 @@ export class PostRepository implements IPostRepository {
                   },
                   {
                     path: "reviewPost",
-                    select: "slug entity",
+                    select: "slug",
                   },
                 ],
               },

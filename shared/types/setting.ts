@@ -19,12 +19,24 @@ type GroupItem<Id = ObjectId> = {
 
 type HeaderLink<Id = ObjectId> = LinkItem<Id> | GroupItem<Id>;
 
+// Именная ссылка на черновик, выданная из панели. Наружу не отдаётся ни в
+// одном ответе: `id` — это и есть секрет.
+export interface SettingPreviewGrant {
+  id: string;
+  name: string;
+  slug: string;
+  expiresAt: Date;
+  createdAt: Date;
+  createdBy: string;
+}
+
 export interface ISetting<Id = ObjectId> {
   robotsTXT: string;
   externalSitemapUrl: string;
   redirectsRoutes: SettingRedirectRoute[];
 
   headerLinks: HeaderLink<Id>[];
+  previewGrants: SettingPreviewGrant[];
 }
 
 export type ISettingPublic = Pick<
