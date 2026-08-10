@@ -20,6 +20,7 @@ import { DataTableSchema } from "./schemas/DataTable";
 import { MiniCasinoReviewSchema } from "./schemas/MiniCasinoReview";
 import { MiniBookmakerReviewSchema } from "./schemas/MiniBookmakerReview";
 import { TextImageSchema } from "./schemas/TextImage";
+import { SectionSchema } from "./schemas/Section";
 
 const ModelSchema = new Schema<IPostDocument, IPostModel>(
   {
@@ -71,6 +72,13 @@ const ModelSchema = new Schema<IPostDocument, IPostModel>(
       type: String,
       trim: true,
       default: "",
+    },
+    // Источник правды для статьи из конструктора. `content` при этом остаётся
+    // заполненным: панель собирает из тех же секций плоский HTML, и пост
+    // остаётся читаемым сайтом, который на секционный рендер ещё не переехал.
+    sections: {
+      type: [SectionSchema],
+      default: () => [],
     },
     intro: {
       type: String,

@@ -6,6 +6,7 @@ const baseInital: Omit<IPost, "_id" | "isReviewPost" | "breadcrumbs"> = {
   entity: undefined,
   entityModel: undefined,
   content: "",
+  sections: [],
   entityBonus: undefined,
   intro: "",
   introImg: {

@@ -5,7 +5,19 @@
   >
     <slot>
       <IntroLayout></IntroLayout>
-      <div class="px-2.5 md:px-4 xl:px-0 w-full max-w-7xl mx-auto relative">
+      <!-- Статья из конструктора рисуется секциями и БЕЗ общего контейнера:
+           у каждой секции свой фон и своя ширина, а внешний max-w-7xl обрезал
+           бы полноширинные по колонке текста. Пост без секций — всё, что
+           написано до конструктора, — идёт прежним путём. -->
+      <PostSections
+        v-if="sections?.length"
+        :sections="sections"
+        :slug="slug"
+      />
+      <div
+        v-else
+        class="px-2.5 md:px-4 xl:px-0 w-full max-w-7xl mx-auto relative"
+      >
         <RuntimeTemplateLayout
           :slug="slug"
           :template="content"
@@ -19,12 +31,15 @@
 <script setup lang="ts">
 import BonusLayout from "#rc/components/layout/BonusLayout.vue";
 import RuntimeTemplateLayout from "#rc/components/layout/RuntimeTemplateLayout.vue";
+import PostSections from "#rc/components/post/PostSections.vue";
 import IntroLayout from "#rc/components/layout/IntroLayout.vue";
 import ButtonFastUpLayout from "#rc/components/layout/ButtonFastUpLayout.vue";
 import { seoConfig } from "@@/seo.conf";
 import { getCloudinaryBaseUrl } from "#rc/utils/get-cloudinary-base-url";
+import { logoSize } from "#rc/utils/logo-size";
 
-const { createdAt, updatedAt, content, slug, metaTags, title } = usePost();
+const { createdAt, updatedAt, content, sections, slug, metaTags, title } =
+  usePost();
 
 const SITE_URL = computed(() => useRuntimeConfig().public.SITE_URL);
 const CLOUDINARY_BASE_URL = computed(() =>
@@ -90,8 +105,7 @@ useSchemaOrg([
       logo: {
         "@type": "ImageObject",
         url: `${CLOUDINARY_BASE_URL.value}f_auto,q_auto,r_15,h_45/${seoConfig.logo.src}`,
-        width: 152,
-        height: 35,
+        ...logoSize(45),
       },
     },
   },

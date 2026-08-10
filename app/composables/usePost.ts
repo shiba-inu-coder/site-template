@@ -14,6 +14,9 @@ export const usePost = <E>() => {
   const title = computed(() => state.value.currentPost.title);
   const metaTags = computed(() => state.value.currentPost.metaTag);
   const content = computed(() => state.value.currentPost.content);
+  // Секции статьи из конструктора. Пусто — пост написан до него и
+  // рисуется из `content` как раньше.
+  const sections = computed(() => state.value.currentPost.sections ?? []);
   const isActive = computed(() => state.value.currentPost.isActive);
   const slug = computed(() => state.value.currentPost.slug);
   const tableContent = computed(() =>
@@ -133,6 +136,7 @@ export const usePost = <E>() => {
     entity,
     postDated,
     isActive,
+    sections,
     intro,
     breadcrumbs,
     getShortcode,

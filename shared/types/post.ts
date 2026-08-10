@@ -63,6 +63,49 @@ export interface PostTableContent {
   data: PostTableContentItem[];
 }
 
+/**
+ * Секция статьи — H2 со всеми детьми. Пишется конструктором AppsPro; поля
+ * повторяют `initialStateArticleSection()` оттуда, а `layout` читает
+ * `shared/utils/section-style.ts`.
+ *
+ * `body` — HTML секции БЕЗ своего `<h2>`: заголовок живёт в `title`, иначе
+ * он был бы то в теле, то в поле, в зависимости от того, кто секцию записал.
+ */
+export interface PostSectionBg {
+  token: string;
+  hex: string;
+  opacity: number;
+}
+
+export interface PostSectionImage {
+  path: string;
+  alt: string;
+  overlay: number;
+}
+
+export interface PostSectionLayout {
+  width: "container" | "full";
+  bg: PostSectionBg;
+  image: PostSectionImage;
+  padding: "none" | "sm" | "md" | "lg";
+}
+
+export interface PostSectionChild {
+  tag: "h3" | "h4";
+  title: string;
+  comment: string;
+}
+
+export interface PostSection {
+  uid: string;
+  title: string;
+  comment: string;
+  children: PostSectionChild[];
+  body: string;
+  blocks: string[];
+  layout: PostSectionLayout;
+}
+
 export interface PostMetaTag {
   title?: string;
   description?: string;
@@ -257,6 +300,7 @@ export interface IPost<
     isFullScreen: boolean;
   };
   content: string;
+  sections: PostSection[];
   isActive: boolean;
   isReviewPost: boolean;
   breadcrumbTitle: string;
