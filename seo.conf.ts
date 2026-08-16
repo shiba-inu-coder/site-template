@@ -2,8 +2,7 @@ export const seoConfig = {
   site: {
     name: "Mafia Casino",
     lang: "de",
-    // "dark" | "light". Переворачивает только нейтральный слой (--color-surface-*):
-    // шкала primary — это уже цвета бренда, светлые у светлого бренда.
+    // "dark" | "light"
     theme: "dark",
     // Слаг бренда для реф-ссылок: имя казино в нижнем регистре, пробелы → дефис.
     brandSlug: "mafia-casino",
@@ -11,8 +10,6 @@ export const seoConfig = {
   logo: {
     src: "mafia-casinode-de/mafia-casino-logo",
     alt: "Mafia Casino",
-    // Собственные размеры файла. Отрисовка идёт по высоте, ширина считается
-    // отсюда — см. app/utils/logo-size.ts.
     width: 152,
     height: 35,
   },

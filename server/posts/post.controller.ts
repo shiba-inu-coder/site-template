@@ -6,7 +6,7 @@ import { SettingModel } from "#sg/adapters/repository/mongodb/models/setting.mod
 import { findPreviewGrant } from "#shared/utils/preview-link";
 
 /**
- * Пускать ли к неопубликованной странице. Два разных ключа, и это намеренно.
+ * Два разных ключа, и это намеренно.
  *
  * PREVIEW_TOKEN — один на сайт, лежит в записи Vault рядом с
  * CACHE_PURGE_SECRET. Это «глаз» оператора в панели: посмотреть свой черновик,

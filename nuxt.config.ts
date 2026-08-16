@@ -56,25 +56,16 @@ export default defineNuxtConfig({
   },
 
   svgSprite: {
-    // Source directory for SVG files
     input: "./app/assets/icons",
-
-    // Output directory for generated sprites
     output: "./app/assets/icons-gen",
-
-    // Default sprite name (for files in root of input directory)
     defaultSprite: "icons",
-
-    // Global CSS class for all svg-icon instances
     elementClass: "svg-icon",
-
-    // Whether to optimize SVG files (requires svgo)
     optimize: false,
   },
 
   vitalizer: {
     disablePrefetchLinks: true,
-    disablePreloadLinks: true, // improving the FCP (First Contentful Paint)
+    disablePreloadLinks: true,
     // if set 'entry' as result fonts download will be twice
     disableStylesheets: true,
   },
@@ -93,7 +84,7 @@ export default defineNuxtConfig({
   sitemap: {
     excludeAppSources: true,
     sources: ["/api/v1/public/seo/sitemap/"],
-    cacheMaxAgeSeconds: 3600, // 1 hour
+    cacheMaxAgeSeconds: 3600,
     xslColumns: [
       { label: "URL", width: "75%" },
       { label: "Last Modified", select: "sitemap:lastmod", width: "25%" },
@@ -115,10 +106,8 @@ export default defineNuxtConfig({
     },
   },
 
-  // В контейнере ни одно из этих значений не приходит из .env: entrypoint.mjs
-  // забирает их из Vault и кладёт в окружение под именами NUXT_* до того, как
-  // Nitro соберёт конфиг. Ключ, не объявленный здесь, невидим для
-  // useRuntimeConfig() — поэтому каждый перечислен поимённо.
+  // Ключ, не объявленный здесь, невидим для useRuntimeConfig() — поэтому
+  // каждый перечислен поимённо.
   runtimeConfig: {
     MONGO_URI: process.env.MONGO_URI,
     MONGO_DB_NAME: process.env.DB_NAME,
@@ -135,7 +124,6 @@ export default defineNuxtConfig({
     },
   },
 
-  // APP settings
   typescript: {
     strict: false,
     typeCheck: true,
@@ -158,8 +146,8 @@ export default defineNuxtConfig({
   },
 
   alias: {
-    "#sg": getCurrentDirectory("./server"), // server global
-    "#rc": getCurrentDirectory("./app"), // client root
+    "#sg": getCurrentDirectory("./server"),
+    "#rc": getCurrentDirectory("./app"),
   },
 
   vue: {

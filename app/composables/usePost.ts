@@ -2,8 +2,6 @@ import { initialClientStatePost } from "#shared/constants/initial-states";
 import deepClone from "rfdc/default";
 import "dayjs/locale/cs";
 
-export const POST_MODULE_NAME = "post";
-
 export const usePost = <E>() => {
   const { $api } = useNuxtApp();
 
@@ -14,8 +12,6 @@ export const usePost = <E>() => {
   const title = computed(() => state.value.currentPost.title);
   const metaTags = computed(() => state.value.currentPost.metaTag);
   const content = computed(() => state.value.currentPost.content);
-  // Секции статьи из конструктора. Пусто — пост написан до него и
-  // рисуется из `content` как раньше.
   const sections = computed(() => state.value.currentPost.sections ?? []);
   const isActive = computed(() => state.value.currentPost.isActive);
   const slug = computed(() => state.value.currentPost.slug);

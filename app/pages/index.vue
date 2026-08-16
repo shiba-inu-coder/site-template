@@ -8,8 +8,6 @@ const { setPost, GET_POST_BY_SLUG } = usePost();
 const route = useRoute();
 const slug = route.name as string;
 
-// Как и на остальных страницах: токен входит в ключ, иначе SSR отдал бы
-// черновику payload обычного посетителя — то есть 404.
 const preview = (route.query.preview as string) || "";
 
 const { data, status } = await useAsyncData(

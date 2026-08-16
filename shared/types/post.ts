@@ -63,14 +63,6 @@ export interface PostTableContent {
   data: PostTableContentItem[];
 }
 
-/**
- * Секция статьи — H2 со всеми детьми. Пишется конструктором AppsPro; поля
- * повторяют `initialStateArticleSection()` оттуда, а `layout` читает
- * `shared/utils/section-style.ts`.
- *
- * `body` — HTML секции БЕЗ своего `<h2>`: заголовок живёт в `title`, иначе
- * он был бы то в теле, то в поле, в зависимости от того, кто секцию записал.
- */
 export interface PostSectionBg {
   token: string;
   hex: string;

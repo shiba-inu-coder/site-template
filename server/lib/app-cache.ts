@@ -1,7 +1,4 @@
 const cacheStorage = useStorage("fsApp");
-// function escapeKey(key: string | string[]) {
-//   return String(key).replace(/\W/g, "");
-// }
 
 type FormatKey = { group: "posts" | "settings"; fileName: string };
 
@@ -21,8 +18,8 @@ export const AppNitroCache = () => {
       return await fn();
     },
     {
-      maxAge: 60 * 60 * 24 * 365, // 1 year
-      staleMaxAge: 60 * 60 * 24 * 366, // 1 year + 1 day
+      maxAge: 60 * 60 * 24 * 365,
+      staleMaxAge: 60 * 60 * 24 * 366,
       name: "posts",
       base: "fsApp",
       getKey: (slug: string) => slug,
@@ -33,8 +30,8 @@ export const AppNitroCache = () => {
       return await fn();
     },
     {
-      maxAge: 60 * 60 * 24 * 365, // 1 year
-      staleMaxAge: 60 * 60 * 24 * 366, // 1 year + 1 day
+      maxAge: 60 * 60 * 24 * 365,
+      staleMaxAge: 60 * 60 * 24 * 366,
       name: "settings",
       base: "fsApp",
       getKey: (slug: string) => slug,

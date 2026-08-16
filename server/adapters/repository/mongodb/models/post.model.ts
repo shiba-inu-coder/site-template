@@ -73,9 +73,6 @@ const ModelSchema = new Schema<IPostDocument, IPostModel>(
       trim: true,
       default: "",
     },
-    // Источник правды для статьи из конструктора. `content` при этом остаётся
-    // заполненным: панель собирает из тех же секций плоский HTML, и пост
-    // остаётся читаемым сайтом, который на секционный рендер ещё не переехал.
     sections: {
       type: [SectionSchema],
       default: () => [],
@@ -240,10 +237,8 @@ ModelSchema.statics.getBreadcrumbs = async function (
     const isLast = i === contentSegments.length - 1;
 
     if (isLast) {
-      // Последний элемент — сам пост, title из breadcrumbTitle
       breadcrumbs.push({ title: breadcrumbTitle, slug: cumulativePath });
     } else {
-      // Промежуточный — ищем в БД, если нет — форматируем сегмент
       const post = await this.findOne(
         { slug: cumulativePath.replace(/^\//, ""), isDeleted: false },
         { breadcrumbTitle: 1 },

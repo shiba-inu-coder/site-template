@@ -1,11 +1,9 @@
 enum HttpStatusCode {
-  // Informational 1xx
   CONTINUE = 100,
   SWITCHING_PROTOCOLS = 101,
   PROCESSING = 102,
   EARLY_HINTS = 103,
 
-  // Success 2xx
   OK = 200,
   CREATED = 201,
   ACCEPTED = 202,
@@ -17,7 +15,6 @@ enum HttpStatusCode {
   ALREADY_REPORTED = 208,
   IM_USED = 226,
 
-  // Redirection 3xx
   MULTIPLE_CHOICES = 300,
   MOVED_PERMANENTLY = 301,
   FOUND = 302,
@@ -27,7 +24,6 @@ enum HttpStatusCode {
   TEMPORARY_REDIRECT = 307,
   PERMANENT_REDIRECT = 308,
 
-  // Client Error 4xx
   BAD_REQUEST = 400,
   UNAUTHORIZED = 401,
   PAYMENT_REQUIRED = 402,
@@ -46,7 +42,7 @@ enum HttpStatusCode {
   UNSUPPORTED_MEDIA_TYPE = 415,
   REQUESTED_RANGE_NOT_SATISFIABLE = 416,
   EXPECTATION_FAILED = 417,
-  TEAPOT = 418, // IETF April Fools' joke
+  TEAPOT = 418,
   MISDIRECTED_REQUEST = 421,
   UNPROCESSABLE_ENTITY = 422,
   LOCKED = 423,
@@ -58,7 +54,6 @@ enum HttpStatusCode {
   REQUEST_HEADER_FIELDS_TOO_LARGE = 431,
   UNAVAILABLE_FOR_LEGAL_REASONS = 451,
 
-  // Server Error 5xx
   INTERNAL_SERVER_ERROR = 500,
   NOT_IMPLEMENTED = 501,
   BAD_GATEWAY = 502,
@@ -93,8 +88,6 @@ export class AppError {
     return AppErrorCreator.New(statusCode, msg);
   }
 
-  // Handle errors specifically for the client-side,
-  // providing a consistent structure for error responses.
   static ClientError(error: any) {
     return createError({
       statusCode: error.statusCode,

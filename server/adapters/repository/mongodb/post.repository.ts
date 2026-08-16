@@ -234,7 +234,7 @@ export class PostRepository implements IPostRepository {
         ])
         .orFail();
 
-      // @ts-expect-error ajsfhkjasfkjasfhkjasdghkjsdghkjsdgh
+      // @ts-expect-error
       const breadcrumbs = await PostModel.getBreadcrumbs(
         res.slug,
         res.breadcrumbTitle,
