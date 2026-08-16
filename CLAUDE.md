@@ -59,6 +59,13 @@ types/constants/utils). Aliases: `#sg` → `server/`, `#rc` → `app/`.
 
 ### Conventions & gotchas
 
+- **A comment is the exception, not the default.** Write one only where the reader would
+  otherwise get it wrong: a trap, a non-obvious order, the reason the obvious version is
+  wrong. Architecture visible in the code needs no prose, and conventions live in this file,
+  not in comments. A restatement of a function's name, a prop's type or of the line below it,
+  a `// --- X ---` banner, a heading sentence in front of a real "why" — get deleted rather
+  than reworded. Delete the code, delete its comment. In doubt, no comment. The `:root` block
+  in `tailwind.css` is the one place comments are load-bearing — see below.
 - `components: false` — no component auto-import; import components explicitly.
 - Auto-imports from `shared/` are load-bearing: `EntityModel`, `PostCategory`, `buildURL`,
   `I*` types are used WITHOUT imports. Never "clean up" `shared/types/index.ts`.
