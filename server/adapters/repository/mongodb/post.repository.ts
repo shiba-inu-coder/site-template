@@ -234,7 +234,9 @@ export class PostRepository implements IPostRepository {
         ])
         .orFail();
 
-      // @ts-expect-error
+      // @ts-expect-error IPostModel объявлен как голый Model<IPost>, а
+      // getBreadcrumbs живёт только в ModelSchema.statics — в типе модели его
+      // нет, поэтому вызов виден компилятору как обращение к несуществующему.
       const breadcrumbs = await PostModel.getBreadcrumbs(
         res.slug,
         res.breadcrumbTitle,

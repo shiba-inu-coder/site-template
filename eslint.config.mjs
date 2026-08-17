@@ -1,7 +1,10 @@
 import withNuxt from "./.nuxt/eslint.config.mjs";
+import localRules from "./eslint-rules/no-banner-comments.mjs";
 
 export default withNuxt({
+  plugins: { local: localRules },
   rules: {
+    "local/no-banner-comments": "error",
     "@typescript-eslint/no-explicit-any": "off",
     "@typescript-eslint/no-unsafe-function-type": "off",
     "vue/no-multiple-template-root": "off",
