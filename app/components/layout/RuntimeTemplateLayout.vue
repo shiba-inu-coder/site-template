@@ -91,12 +91,23 @@ const { template = "" } = defineProps<{
 const CompiledTemplate = computed(() => {
   if (!template) return null;
 
-  const render = compile(`<div>${template}</div>`);
+  // В прод-сборке onError не задан по умолчанию, и компилятор бросает —
+  // незакрытый тег из панели клал бы всю статью в 500 вместо того, чтобы не
+  // отрисовать один блок. Свой onError гасит throw для того, что парсер умеет
+  // восстановить сам; try/catch — страховка на случай, если не умеет.
+  try {
+    const render = compile(`<div>${template}</div>`, {
+      onError: (error) => {
+        console.error("[RuntimeTemplateLayout] template compile error", error);
+      },
+    });
 
-  return {
-    render,
-    components,
-  };
+    return { render, components };
+  } catch (error) {
+    console.error("[RuntimeTemplateLayout] template compile failed", error);
+
+    return null;
+  }
 });
 </script>
 

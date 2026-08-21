@@ -1,7 +1,8 @@
 <template>
   <PostProsConsBase
-    :pros-list="prosList"
-    :cons-list="consList"
+    v-if="entry"
+    :pros-list="entry.prosList"
+    :cons-list="entry.consList"
   />
 </template>
 <script lang="ts" setup>
@@ -13,12 +14,10 @@ const { uniqId } = defineProps<{
 
 const { getShortcode } = usePost();
 
-const {
-  data: {
-    data: { prosList, consList },
-  },
-} = getShortcode({
-  uniqId,
-  shortcode: "prosConsPosts",
-});
+// Устаревший маркер переживает свой конфиг: getShortcode тогда отдаёт
+// undefined, а деструктуризация тут же роняла бы всю статью — v-if в шаблоне
+// просто не рисует блок вместо этого.
+const entry = computed(
+  () => getShortcode({ uniqId, shortcode: "prosConsPosts" })?.data.data,
+);
 </script>

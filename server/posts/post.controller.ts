@@ -51,7 +51,7 @@ export class PostController {
     const { slug, preview } = getQuery(e);
     const isPreview = await isPreviewAllowed(e, preview, slug as string);
     try {
-      const res = await this.postUsecase.getBySlug(slug as string);
+      const res = await this.postUsecase.getBySlug(slug as string, isPreview);
 
       // Удалённая страница не открывается никогда: предпросмотр — это «ещё не
       // опубликовано», а не «уже выброшено». Неопубликованную пускаем по

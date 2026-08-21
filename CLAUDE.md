@@ -1,10 +1,8 @@
 # CLAUDE.md
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
-
 ## Project
 
-German-language casino affiliate site (mafia-casinode.de) — a standalone Nuxt 4 SSR app.
+Сasino affiliate site — a standalone Nuxt 4 SSR app.
 Content (posts, casinos, bookmakers, settings) lives in a shared MongoDB managed by a
 separate admin service; this app only READS the DB. The codebase is a template meant to be
 reused for other affiliate sites. SEO is a first-class concern (sitemap, schema.org,
@@ -42,8 +40,12 @@ types/constants/utils). Aliases: `#sg` → `server/`, `#rc` → `app/`.
   feed, `/go/` ref-link resolution, mock comments.
 - `server/routes/api/v1/system/cache/purge.post.ts` — cache purge endpoint for the admin
   service, protected by `x-cache-purge-secret` header (env `CACHE_PURGE_SECRET`, fail-closed).
-- `server/middleware/` — `url_normalize.ts` (lowercase + trailing slash 301), `robots.ts`
-  and `sitemap.ts` (served from DB settings), `post-redirect.ts` (301 redirects from DB).
+- `server/middleware/` — Nitro loads these alphabetically, and `post-redirect.ts` compares
+  `event.path` as-is, so it has to run AFTER normalization or a redirect configured with a
+  trailing slash never matches a request without one. `10.` / `20.` prefixes pin that order:
+  `10.url-normalize.ts` (lowercase + trailing slash 301), then `20.post-redirect.ts` (301
+  redirects from DB). `robots.ts` and `sitemap.ts` (served from DB settings) don't depend on
+  the order and keep plain names.
 - `server/lib/app-cache.ts` — Nitro cached functions (groups `posts`/`settings`) on fs
   storage `fsApp` (`./app-cache` in prod), TTL 1 year. Invalidation happens ONLY via the
   purge endpoint — content edits in admin without a purge stay stale.
@@ -59,13 +61,7 @@ types/constants/utils). Aliases: `#sg` → `server/`, `#rc` → `app/`.
 
 ### Conventions & gotchas
 
-- **A comment is the exception, not the default.** Write one only where the reader would
-  otherwise get it wrong: a trap, a non-obvious order, the reason the obvious version is
-  wrong. Architecture visible in the code needs no prose, and conventions live in this file,
-  not in comments. A restatement of a function's name, a prop's type or of the line below it,
-  a `// --- X ---` banner, a heading sentence in front of a real "why" — get deleted rather
-  than reworded. Delete the code, delete its comment. In doubt, no comment. The `:root` block
-  in `tailwind.css` is the one place comments are load-bearing — see below.
+- The `:root` block in `tailwind.css` is the one place comments are load-bearing — see below.
 - `components: false` — no component auto-import; import components explicitly.
 - Auto-imports from `shared/` are load-bearing: `EntityModel`, `PostCategory`, `buildURL`,
   `I*` types are used WITHOUT imports. Never "clean up" `shared/types/index.ts`.

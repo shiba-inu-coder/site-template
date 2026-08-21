@@ -16,15 +16,27 @@ const components = {
 const DataTableRuntime = computed(() => {
   if (!template) return null;
 
-  const render = compile(`<span>${template}</span>`);
+  // Та же ловушка, что в RuntimeTemplateLayout: без onError компилятор в
+  // проде бросает на битой разметке, а на таблицу зовётся по разу на ячейку.
+  try {
+    const render = compile(`<span>${template}</span>`, {
+      onError: (error) => {
+        console.error(
+          "[PostDataTableRuntime] template compile error",
+          error,
+        );
+      },
+    });
 
-  return {
-    render,
-    components,
-  };
+    return { render, components };
+  } catch (error) {
+    console.error("[PostDataTableRuntime] template compile failed", error);
+
+    return null;
+  }
 });
 </script>
 
 <template>
-  <DataTableRuntime />
+  <DataTableRuntime v-if="DataTableRuntime" />
 </template>

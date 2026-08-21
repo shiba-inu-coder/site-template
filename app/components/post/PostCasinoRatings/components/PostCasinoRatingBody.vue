@@ -164,7 +164,7 @@ const gameTypes = computed(
 .casino-rating__text {
   margin-bottom: calc(var(--spacing) * 1);
   display: block;
-  font-size: var(--text-primary-3);
+  font-size: var(--text-step-3);
   line-height: 1.5;
   font-weight: 400;
   padding-left: calc(var(--spacing) * 8);

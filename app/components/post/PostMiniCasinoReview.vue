@@ -1,5 +1,6 @@
 <template>
   <div
+    v-if="data"
     class="bg-accent-300/10 rounded-primary px-3 py-4 border-2 border-primary-300 no-format"
   >
     <div v-html="safeHTMLWrap(data.title)"></div>
@@ -81,15 +82,17 @@ const { uniqId } = defineProps<{
 
 const { getShortcode } = usePost();
 
-const { data } = getShortcode({
-  uniqId,
-  shortcode: "miniCasinoReviews",
-});
+// Устаревший маркер переживает свой конфиг: getShortcode тогда отдаёт
+// undefined, а деструктуризация тут же роняла бы всю статью — v-if в шаблоне
+// просто не рисует карточку вместо этого.
+const data = computed(
+  () => getShortcode({ uniqId, shortcode: "miniCasinoReviews" })?.data,
+);
 
 const gameTypes = computed(() =>
-  data.entity.gameTypes.map((el) => el.title).join(", "),
+  data.value?.entity.gameTypes.map((el) => el.title).join(", ") ?? "",
 );
 const paymentMethods = computed(() =>
-  data.entity.paymentMethods.map((el) => el.title).join(", "),
+  data.value?.entity.paymentMethods.map((el) => el.title).join(", ") ?? "",
 );
 </script>
