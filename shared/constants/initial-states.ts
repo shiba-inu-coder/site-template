@@ -3,11 +3,8 @@ import deepClone from "rfdc/default";
 const baseInital: Omit<IPost, "_id" | "breadcrumbs"> = {
   title: "",
   slug: "",
-  entity: undefined,
-  entityModel: undefined,
   content: "",
   sections: [],
-  entityBonus: undefined,
   intro: "",
   introImg: {
     img: {

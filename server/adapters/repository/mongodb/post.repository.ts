@@ -33,8 +33,6 @@ export class PostRepository implements IPostRepository {
           title: 1,
           slug: 1,
           isActive: 1,
-          entity: 1,
-          entityModel: 1,
           updatedAt: 1,
           isDeleted: 1,
         },
@@ -68,32 +66,6 @@ export class PostRepository implements IPostRepository {
           {
             path: "banner.entity",
             select: "title logo _id slug",
-          },
-          {
-            path: "entity",
-            select: "-refLink -createdAt -updatedAt -updatedAt  -_id",
-            populate: [
-              {
-                path: "bonuses",
-                select: "title text",
-              },
-              {
-                path: "gameTypes",
-                select: "title order",
-              },
-              {
-                path: "softwareProviders",
-                select: "title logo",
-              },
-              {
-                path: "paymentMethods",
-                select: "title logo",
-              },
-            ],
-          },
-          {
-            path: "entityBonus",
-            select: "title text",
           },
           {
             path: "shortcodesConfig.casinoRatings.data.data",
@@ -246,15 +218,6 @@ export class PostRepository implements IPostRepository {
         ...post,
         breadcrumbs,
       };
-    } catch (error: any) {
-      throw AppError.handleMongoError(error);
-    }
-  }
-
-  async getByEntityId(entity: string): Promise<IPost> {
-    try {
-      const res = await PostModel.findOne({ entity }).orFail();
-      return res;
     } catch (error: any) {
       throw AppError.handleMongoError(error);
     }

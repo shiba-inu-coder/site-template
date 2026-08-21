@@ -3,8 +3,6 @@ import uniqueValidator from "mongoose-unique-validator";
 
 import { PostSlugRegex } from "#shared/constants/base";
 
-import { BonusModel } from "./bonus.model";
-
 import { MetaTagSchema } from "./schemas/MetaTag";
 import { CasinoRatingsSchema } from "./schemas/CasinoRatings";
 import { CasinoBonusesSchema } from "./schemas/CasinoBonuses";
@@ -28,27 +26,6 @@ const ModelSchema = new Schema<IPostDocument, IPostModel>(
       type: String,
       default: "",
       trim: true,
-    },
-    entity: {
-      type: Schema.Types.ObjectId,
-      required: false,
-      refPath: "entityModel",
-    },
-    entityModel: {
-      type: String,
-      required: false,
-      trim: true,
-      enum: [
-        EntityModel.Casino,
-        EntityModel.PaymentMethod,
-        EntityModel.SoftwareProvider,
-        EntityModel.GameType,
-      ],
-    },
-    entityBonus: {
-      type: Schema.Types.ObjectId,
-      ref: BonusModel.modelName,
-      required: false,
     },
     banner: {
       type: BannerSchema,

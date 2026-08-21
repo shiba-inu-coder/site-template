@@ -1,16 +1,7 @@
 import type { ObjectId } from "mongoose";
 
 export type IPostReponseGetAll = AdvancedSearchResponse<
-  Pick<
-    IPost,
-    | "title"
-    | "slug"
-    | "isActive"
-    | "entity"
-    | "entityModel"
-    | "updatedAt"
-    | "isDeleted"
-  >
+  Pick<IPost, "title" | "slug" | "isActive" | "updatedAt" | "isDeleted">
 >;
 
 export type IPostBySlug<Entity = ObjectId> = Exclude<

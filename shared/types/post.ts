@@ -276,9 +276,6 @@ export interface IPost<
   __v?: number;
   _id: ObjectId;
   title: string;
-  entity?: Entity;
-  entityBonus?: EntityBonus;
-  entityModel?: EntityModel;
   banner?: PostBanner;
   slug: string;
   intro: string;
