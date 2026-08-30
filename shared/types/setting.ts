@@ -28,6 +28,9 @@ export interface SettingPreviewGrant {
   expiresAt: Date;
   createdAt: Date;
   createdBy: string;
+  // "panel" — техническая ссылка под кнопкой предпросмотра, "share" — выданная
+  // человеку. У грантов, выписанных до появления поля, его нет.
+  origin?: "panel" | "share";
 }
 
 export interface ISetting<Id = ObjectId> {

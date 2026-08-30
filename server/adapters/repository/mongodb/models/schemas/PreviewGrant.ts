@@ -17,6 +17,7 @@ export const PreviewGrantSchema = new Schema(
     expiresAt: { type: Date, required: true },
     createdAt: { type: Date, default: () => new Date() },
     createdBy: { type: String, default: "", trim: true },
+    origin: { type: String, enum: ["panel", "share"], default: "share" },
   },
   { _id: false },
 );

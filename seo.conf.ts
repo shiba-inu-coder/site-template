@@ -99,5 +99,10 @@ export const seoConfig = {
       login: "Anmelden",
       register: "Registrieren",
     },
+
+    error: {
+      notFound: "Seite nicht gefunden – zurück zur Startseite",
+      backHome: "Zurück zur Startseite",
+    },
   },
 };

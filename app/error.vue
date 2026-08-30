@@ -14,7 +14,7 @@
         <p class="mt-6 text-step-3 font-medium text-pretty text-surface-text">
           {{
             error.statusCode === 404
-              ? "Stránka nenalezena – vraťme se na hlavní stránku"
+              ? seoConfig.translates.error.notFound
               : error.message
           }}
         </p>
@@ -24,7 +24,7 @@
             trailing-slash="append"
             prefetch-on="interaction"
             class="rounded-primary bg-active-200 px-3.5 py-2.5 text-step-7 font-semibold text-surface-text shadow-xs hover:bg-active-300 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-active-300"
-            >Zpět na hlavní stránku</nuxt-link
+            >{{ seoConfig.translates.error.backHome }}</nuxt-link
           >
         </div>
       </div>
@@ -34,6 +34,7 @@
 
 <script lang="ts" setup>
 import HeaderLayout from "#rc/components/layout/HeaderLayout.vue";
+import { seoConfig } from "@@/seo.conf";
 
 defineProps<{
   error: any;
