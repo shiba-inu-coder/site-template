@@ -19,6 +19,7 @@
     "@nuxtjs/sitemap": "7.4.7",
     "@tailwindcss/vite": "4.2.1",
     "dayjs": "^1.11.20",
+    "isomorphic-dompurify": "^3.19.0",
     "mongoose": "8.8.4",
     "mongoose-unique-validator": "6.1.0",
     "nuxt": "4.4.6",

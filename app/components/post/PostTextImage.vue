@@ -23,7 +23,7 @@
 
     <div
       v-if="data.text"
-      v-html="data.text"
+      v-html="safeHTMLWrap(data.text)"
     ></div>
 
     <div
@@ -41,6 +41,7 @@
 <script setup lang="ts">
 import { computed } from "vue";
 import PostButtonRef from "#rc/components/post/PostButtonRef.vue";
+import { safeHTMLWrap } from "#shared/utils/safeHTMLWrap";
 
 const { uniqId } = defineProps<{ uniqId: string }>();
 const { getShortcode } = usePost();

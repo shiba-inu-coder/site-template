@@ -43,7 +43,7 @@
 
     <div
       class="my-5"
-      v-html="data.text"
+      v-html="safeHTMLWrap(data.text)"
     ></div>
 
     <PostProsConsBase

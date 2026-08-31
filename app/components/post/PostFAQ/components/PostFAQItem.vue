@@ -39,7 +39,7 @@
     > -->
     <div
       class="mt-2"
-      v-html="html"
+      v-html="safeHTMLWrap(html)"
     ></div>
     <!-- </div> -->
     <!-- </Transition> -->
@@ -47,6 +47,8 @@
 </template>
 
 <script setup lang="ts">
+import { safeHTMLWrap } from "#shared/utils/safeHTMLWrap";
+
 const { faqItem } = defineProps<{
   faqItem: { label: string; value: string };
 }>();

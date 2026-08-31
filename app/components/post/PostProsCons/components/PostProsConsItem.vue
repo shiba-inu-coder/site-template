@@ -29,13 +29,15 @@
       ></svg-icon>
       <span
         class="ml-7"
-        v-html="item"
+        v-html="safeHTMLWrap(item)"
       >
       </span>
     </li>
   </ul>
 </template>
 <script setup lang="ts">
+import { safeHTMLWrap } from "#shared/utils/safeHTMLWrap";
+
 const { list, type } = defineProps<{
   list: string[];
   title: string;

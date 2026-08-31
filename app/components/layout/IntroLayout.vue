@@ -38,7 +38,7 @@
             <h1>{{ title }}</h1>
             <div
               class="text-surface-text"
-              v-html="intro"
+              v-html="safeHTMLWrap(intro)"
             ></div>
             <PostButtonRef
               v-if="isAllow"
@@ -74,6 +74,7 @@ import BreadcrumbsLayout from "#rc/components/layout/BreadcrumbsLayout.vue";
 import PostButtonRef from "#rc/components/post/PostButtonRef.vue";
 import { seoConfig } from "@@/seo.conf";
 import { getCloudinaryBaseUrl } from "#rc/utils/get-cloudinary-base-url";
+import { safeHTMLWrap } from "#shared/utils/safeHTMLWrap";
 const { title, postDated, intro, breadcrumbs, introImg } = usePost();
 
 const isAllow = computed(() => breadcrumbs.value.length === 0);
