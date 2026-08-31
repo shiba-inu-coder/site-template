@@ -10,6 +10,7 @@ export default defineEventHandler(async (event: H3Event) => {
     const settings = await SettingModel.find();
     if (settings.length) {
       const item = settings[0].toJSON() as ISetting;
+      res.setHeader("Content-Type", "text/plain");
       res.end(item.robotsTXT);
     } else {
       res.setHeader("Content-Type", "text/plain");

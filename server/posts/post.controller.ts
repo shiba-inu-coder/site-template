@@ -4,6 +4,7 @@ import { AppError } from "#sg/lib/app-error";
 import { AppLogger } from "#sg/lib/app-logger";
 import { SettingModel } from "#sg/adapters/repository/mongodb/models/setting.model";
 import { isPreviewGrantLive } from "#shared/utils/preview-link";
+import { PostSlugRegex } from "#shared/constants/base";
 
 /**
  * Два разных ключа, и это намеренно.
@@ -80,11 +81,19 @@ export class PostController {
 
   getBySlug = defineEventHandler(async (e) => {
     const log = AppLogger("handler.post.slug");
-    const { slug, preview } = getQuery(e);
-    const previewVerdict = await isPreviewAllowed(e, preview, slug as string);
+    const { slug: rawSlug, preview } = getQuery(e);
+
+    // `?slug=a&slug=b` возвращает массив из getQuery — без проверки формата
+    // он ушёл бы в findOne как есть, и Mongoose трактует массив как $in.
+    if (typeof rawSlug !== "string" || !PostSlugRegex.test(rawSlug)) {
+      throw AppError.NotFound();
+    }
+
+    const slug = rawSlug;
+    const previewVerdict = await isPreviewAllowed(e, preview, slug);
     const isPreview = previewVerdict.allowed;
     try {
-      const res = await this.postUsecase.getBySlug(slug as string, isPreview);
+      const res = await this.postUsecase.getBySlug(slug, isPreview);
 
       // Удалённая страница не открывается никогда: предпросмотр — это «ещё не
       // опубликовано», а не «уже выброшено». Неопубликованную пускаем по
@@ -93,7 +102,7 @@ export class PostController {
       // isActive, а он у черновика как был false, так и остался.
       if (res.isDeleted || (!res.isActive && !isPreview)) {
         log.error("post is archived or not active", {
-          slug: slug as string,
+          slug,
           isActive: res.isActive,
           isDeleted: res.isDeleted,
           previewReason: previewVerdict.reason,
@@ -107,12 +116,12 @@ export class PostController {
         setHeader(e, "Cache-Control", "no-store");
         setHeader(e, "X-Robots-Tag", "noindex, nofollow");
       }
-      log.info("post found successfully", { slug: slug as string });
+      log.info("post found successfully", { slug });
       return res;
     } catch (error: any) {
       log.error("post failed find by slug", {
         error: error.message,
-        slug: slug as string,
+        slug,
       });
       throw AppError.ClientError(error);
     }
