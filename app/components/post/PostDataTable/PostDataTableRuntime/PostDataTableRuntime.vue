@@ -3,6 +3,7 @@ import PostDataTableImg from "./components/PostDataTableImg.vue";
 import PostDataTableRefLink from "./components/PostDataTableRefLink.vue";
 import PostDataTableRefLinkBtn from "./components/PostDataTableRefLinkBtn.vue";
 import { compile } from "vue";
+import { sanitizeRuntimeTemplate } from "#shared/utils/sanitize-runtime-template";
 const { template = "" } = defineProps<{
   template?: string;
 }>();
@@ -19,7 +20,7 @@ const DataTableRuntime = computed(() => {
   // Та же ловушка, что в RuntimeTemplateLayout: без onError компилятор в
   // проде бросает на битой разметке, а на таблицу зовётся по разу на ячейку.
   try {
-    const render = compile(`<span>${template}</span>`, {
+    const render = compile(`<span>${sanitizeRuntimeTemplate(template)}</span>`, {
       onError: (error) => {
         console.error(
           "[PostDataTableRuntime] template compile error",
