@@ -1,5 +1,6 @@
 import { AppError } from "#sg/lib/app-error";
 import { AppLogger } from "#sg/lib/app-logger";
+import { isSafeExternalRedirect } from "#shared/utils/safe-redirect";
 
 export class SeoController {
   constructor(private seoUsecase: ISeoUsecasePublic) {}
@@ -17,6 +18,14 @@ export class SeoController {
 
       try {
         const refLink = await this.seoUsecase.getRefLink(slug);
+
+        if (!isSafeExternalRedirect(refLink)) {
+          log.error("Unsafe ref link, redirecting home instead", {
+            slug,
+            refLink,
+          });
+          return sendRedirect(e, "/", 302);
+        }
 
         log.info("Resolved ref link successfully", { slug });
         // 302, не 301: партнёрская ссылка меняется, а 301 браузер

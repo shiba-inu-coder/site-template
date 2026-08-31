@@ -3,7 +3,10 @@
     <div
       class="flex max-w-[850px] w-full contact-form flex-col border-2 border-primary-100 p-4 rounded-primary bg-primary-200 sm:p-6 lg:p-8"
     >
-      <form class="w-full space-y-4">
+      <form
+        class="w-full space-y-4"
+        @submit.prevent
+      >
         <!-- Grid -->
         <div>
           <label

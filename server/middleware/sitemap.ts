@@ -1,6 +1,8 @@
 import type { H3Event } from "h3";
 import { defineEventHandler } from "h3";
 import { SettingRepository } from "#sg/adapters/repository/mongodb/setting.repository";
+import { escapeXml, resolvesToPublicHost } from "#sg/lib/safe-external-fetch";
+
 export default defineEventHandler(async (event: H3Event) => {
   const { req } = event.node;
 
@@ -13,9 +15,10 @@ export default defineEventHandler(async (event: H3Event) => {
 
     const externalSitemapUrl = settings.externalSitemapUrl || "";
 
-    if (externalSitemapUrl) {
+    if (externalSitemapUrl && (await resolvesToPublicHost(externalSitemapUrl))) {
       const xml = await $fetch<string>(externalSitemapUrl, {
         responseType: "text",
+        timeout: 5000,
       });
 
       const matches = xml.match(/<lastmod>(.*?)<\/lastmod>/g) ?? [];
@@ -28,8 +31,8 @@ export default defineEventHandler(async (event: H3Event) => {
       return `<?xml version="1.0" encoding="UTF-8"?>
             <sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
               <sitemap>
-                <loc>${externalSitemapUrl}</loc>
-                <lastmod>${lastmod}</lastmod>
+                <loc>${escapeXml(externalSitemapUrl)}</loc>
+                <lastmod>${escapeXml(lastmod)}</lastmod>
               </sitemap>
             </sitemapindex>
           `;

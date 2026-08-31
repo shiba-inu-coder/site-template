@@ -1,18 +1,14 @@
-import { SettingModel } from "#sg/adapters/repository/mongodb/models/setting.model";
+import { SettingComposition } from "#sg/settings";
+import { isSafeRelativeRedirect } from "#shared/utils/safe-redirect";
 
 export default defineEventHandler(async (event) => {
-  const settings = await SettingModel.find();
+  const data = await SettingComposition.GetPublicSettings();
 
-  const data = settings?.length
-    ? (settings[0].toJSON() as ISetting)
-    : undefined;
+  const redirectRoute = data?.redirectsRoutes.find(
+    (route) => route.oldRoute === event.path,
+  );
 
-  if (data) {
-    const redirectRoute = data.redirectsRoutes.find(
-      (route) => route.oldRoute === event.path,
-    );
-    if (redirectRoute) {
-      await sendRedirect(event, redirectRoute.newRoute, 301);
-    }
+  if (redirectRoute && isSafeRelativeRedirect(redirectRoute.newRoute)) {
+    await sendRedirect(event, redirectRoute.newRoute, 301);
   }
 });
