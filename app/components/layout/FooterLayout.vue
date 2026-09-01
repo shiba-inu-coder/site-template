@@ -37,8 +37,7 @@
         <div
           class="col-span-5 md:col-span-4 leading-5 text-step-9 font-normal text-surface-text"
         >
-          <p v-html="seoConfig.layout.footer.disclaimer"></p>
-          <p v-html="seoConfig.layout.footer.notice"></p>
+          <div v-html="seoConfig.layout.footer.body"></div>
         </div>
       </div>
     </div>
