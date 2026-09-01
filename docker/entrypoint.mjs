@@ -15,6 +15,7 @@ import {
   applyRuntimeEnv,
   missingRequiredKeys,
   readVaultSecrets,
+  toCacheableSecrets,
   toRuntimeEnv,
 } from "./vault-env.mjs";
 
@@ -41,7 +42,9 @@ const saveCache = (secrets) => {
 
   try {
     mkdirSync(dirname(CACHE_FILE), { recursive: true });
-    // 0600: том общий на все сайты ноды, и содержимое — живой пароль к Mongo.
+    // 0600: том общий на все сайты ноды. MONGO_URI сюда уже не долетает
+    // (см. toCacheableSecrets), но CACHE_PURGE_SECRET и PREVIEW_TOKEN — тоже
+    // живые секреты.
     writeFileSync(CACHE_FILE, JSON.stringify(secrets), { mode: 0o600 });
   } catch (error) {
     console.error(`[entrypoint] Кеш конфига не сохранён: ${error.message}`);
@@ -94,7 +97,7 @@ const load = async () => {
   const fresh = await loadFromVault(readToken());
 
   if (fresh) {
-    saveCache(fresh);
+    saveCache(toCacheableSecrets(fresh));
     return fresh;
   }
 

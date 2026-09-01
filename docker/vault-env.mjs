@@ -70,6 +70,21 @@ export const applyRuntimeEnv = (env, target = process.env) => {
 export const missingRequiredKeys = (secrets = {}) =>
   REQUIRED_KEYS.filter((key) => !secrets[key]);
 
+// Том с кешем общий на все сайты ноды, а UID контейнеров одинаковый — сайт с
+// инъекцией в контенте мог бы прочитать чужой файл кеша через тот же общий
+// UID. MONGO_URI — пароль к боевой базе, и он же в REQUIRED_KEYS: без него
+// кеш всегда "неполный" и не используется вовсе, а без Vault сайт и так не
+// поднимется без базы — кешировать пароль ради недостижимого сценария смысла
+// не имеет.
+const CACHE_EXCLUDED_KEYS = ["MONGO_URI"];
+
+export const toCacheableSecrets = (secrets = {}) =>
+  Object.fromEntries(
+    Object.entries(secrets).filter(
+      ([key]) => !CACHE_EXCLUDED_KEYS.includes(key),
+    ),
+  );
+
 export const readVaultSecrets = async ({
   addr,
   token,
