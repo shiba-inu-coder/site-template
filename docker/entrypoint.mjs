@@ -43,8 +43,7 @@ const saveCache = (secrets) => {
   try {
     mkdirSync(dirname(CACHE_FILE), { recursive: true });
     // 0600: том общий на все сайты ноды. MONGO_URI сюда уже не долетает
-    // (см. toCacheableSecrets), но CACHE_PURGE_SECRET и PREVIEW_TOKEN — тоже
-    // живые секреты.
+    // (см. toCacheableSecrets), но CACHE_PURGE_SECRET — тоже живой секрет.
     writeFileSync(CACHE_FILE, JSON.stringify(secrets), { mode: 0o600 });
   } catch (error) {
     console.error(`[entrypoint] Кеш конфига не сохранён: ${error.message}`);

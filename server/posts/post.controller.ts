@@ -7,26 +7,19 @@ import { isPreviewGrantLive, PREVIEW_COOKIE_NAME } from "#shared/utils/preview-l
 import { PostSlugRegex, isDev } from "#shared/constants/base";
 
 /**
- * Два разных ключа, и это намеренно.
+ * Ключ ровно один — запись в настройках сайта со сроком и подписью, кому она
+ * выдана: и «поделиться», и кнопки предпросмотра в панели выписывают её.
+ * Проверяется по базе, а не по конфигу, ровно ради «погасить»: конфиг
+ * контейнер читает один раз при старте, и отозванная ссылка работала бы до
+ * перезапуска сервиса.
  *
- * Именная ссылка — запись в настройках сайта со сроком и подписью, кому она
- * выдана. Это основной путь: и «поделиться», и кнопка предпросмотра в панели
- * выписывают её. Проверяется по базе, а не по конфигу, ровно ради «погасить»:
- * конфиг контейнер читает один раз при старте, и отозванная ссылка работала бы
- * до перезапуска сервиса.
- *
- * PREVIEW_TOKEN — один на сайт, лежит в записи Vault рядом с
- * CACHE_PURGE_SECRET. Остался аварийным ключом на случай, когда до настроек не
- * достучаться; панель его больше не раздаёт.
- *
- * Закрыто наглухо: без ключей параметр в адресе не значит ничего.
+ * Закрыто наглухо: без гранта параметр в адресе не значит ничего.
  */
 type PreviewVerdict = {
   allowed: boolean;
   reason:
     | "ok"
     | "no-token-param"
-    | "config-token-mismatch"
     | "grant-not-found"
     | "grant-expired"
     | "grant-slug-mismatch";
@@ -52,14 +45,6 @@ const isPreviewAllowed = async (
     return { allowed: false, reason: "no-token-param" };
   }
 
-  // Аварийный ключ проверяется первым: он в памяти, а грант — это запрос к
-  // базе, и на нём же экономить нечего.
-  const token = useRuntimeConfig(e).PREVIEW_TOKEN;
-
-  if (token && preview === token) {
-    return { allowed: true, reason: "ok" };
-  }
-
   // Настройки читаются мимо кеша: погашенная ссылка обязана умереть сразу, а
   // не через час. Запрос лишний только на черновиках — их открывают редко.
   const settings = await SettingModel.findOne({}, "previewGrants").lean();
@@ -68,10 +53,7 @@ const isPreviewAllowed = async (
   );
 
   if (!grant) {
-    return {
-      allowed: false,
-      reason: token ? "config-token-mismatch" : "grant-not-found",
-    };
+    return { allowed: false, reason: "grant-not-found" };
   }
 
   if (grant.scope !== "site" && grant.slug !== slug) {
