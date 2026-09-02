@@ -31,6 +31,9 @@ export interface SettingPreviewGrant {
   // "panel" — техническая ссылка под кнопкой предпросмотра, "share" — выданная
   // человеку. У грантов, выписанных до появления поля, его нет.
   origin?: "panel" | "share";
+  // "site" — весь стейджинг, slug не проверяется. У грантов, выписанных до
+  // появления поля, его нет — они считаются именными ("page").
+  scope?: "page" | "site";
 }
 
 export interface ISetting<Id = ObjectId> {

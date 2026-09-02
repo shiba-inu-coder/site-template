@@ -3,8 +3,8 @@ import type { H3Event } from "h3";
 import { AppError } from "#sg/lib/app-error";
 import { AppLogger } from "#sg/lib/app-logger";
 import { SettingModel } from "#sg/adapters/repository/mongodb/models/setting.model";
-import { isPreviewGrantLive } from "#shared/utils/preview-link";
-import { PostSlugRegex } from "#shared/constants/base";
+import { isPreviewGrantLive, PREVIEW_COOKIE_NAME } from "#shared/utils/preview-link";
+import { PostSlugRegex, isDev } from "#shared/constants/base";
 
 /**
  * Два разных ключа, и это намеренно.
@@ -38,10 +38,17 @@ type PreviewVerdict = {
  */
 const isPreviewAllowed = async (
   e: H3Event,
-  preview: unknown,
+  previewQuery: unknown,
   slug: string,
 ): Promise<PreviewVerdict> => {
-  if (typeof preview !== "string" || !preview) {
+  // Токен «весь стейджинг» ставит себе куку при первом заходе по ссылке —
+  // дальше по сайту можно ходить без ?preview= в каждом адресе. Query всегда
+  // в приоритете: свежая ссылка не должна упираться в чужую старую куку.
+  const queryToken =
+    typeof previewQuery === "string" && previewQuery ? previewQuery : "";
+  const preview = queryToken || getCookie(e, PREVIEW_COOKIE_NAME) || "";
+
+  if (!preview) {
     return { allowed: false, reason: "no-token-param" };
   }
 
@@ -67,13 +74,27 @@ const isPreviewAllowed = async (
     };
   }
 
-  if (grant.slug !== slug) {
+  if (grant.scope !== "site" && grant.slug !== slug) {
     return { allowed: false, reason: "grant-slug-mismatch" };
   }
 
-  return isPreviewGrantLive(grant, { slug })
-    ? { allowed: true, reason: "ok" }
-    : { allowed: false, reason: "grant-expired" };
+  if (!isPreviewGrantLive(grant, { slug })) {
+    return { allowed: false, reason: "grant-expired" };
+  }
+
+  // Кука ставится только когда токен реально пришёл в query — иначе она сама
+  // себя продлевала бы на каждый запрос без повторной проверки источника.
+  if (grant.scope === "site" && queryToken) {
+    setCookie(e, PREVIEW_COOKIE_NAME, grant.id, {
+      httpOnly: true,
+      secure: !isDev,
+      sameSite: "lax",
+      path: "/",
+      expires: new Date(grant.expiresAt),
+    });
+  }
+
+  return { allowed: true, reason: "ok" };
 };
 
 export class PostController {

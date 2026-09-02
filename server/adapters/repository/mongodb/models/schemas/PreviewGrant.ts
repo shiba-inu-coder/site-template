@@ -14,6 +14,9 @@ export const PreviewGrantSchema = new Schema(
     id: { type: String, required: true, trim: true },
     name: { type: String, default: "", trim: true },
     slug: { type: String, required: true, trim: true },
+    // "page" — именная ссылка на одну статью. "site" — весь стейджинг-сайт,
+    // slug у такого гранта пуст и ничего не значит.
+    scope: { type: String, enum: ["page", "site"], default: "page" },
     expiresAt: { type: Date, required: true },
     createdAt: { type: Date, default: () => new Date() },
     createdBy: { type: String, default: "", trim: true },

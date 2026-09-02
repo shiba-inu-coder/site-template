@@ -1,5 +1,9 @@
 import type { SettingPreviewGrant } from "#shared/types";
 
+// Кука, в которую оседает токен «смотреть весь стейджинг» после первого
+// захода по ссылке — дальше не нужно вставлять ?preview= в каждый адрес.
+export const PREVIEW_COOKIE_NAME = "staging_preview";
+
 /**
  * Живая ли именная ссылка на черновик.
  *
@@ -8,8 +12,9 @@ import type { SettingPreviewGrant } from "#shared/types";
  * худший из возможных багов: ссылка, которая в панели числится погашенной, а
  * на сайте продолжает открывать черновик. Правка здесь означает правку там.
  *
- * Привязка к странице обязательна: ссылка, выданная на один черновик, не
- * должна открывать все остальные неопубликованные страницы сайта.
+ * Привязка к странице обязательна для именных — ссылка, выданная на один
+ * черновик, не должна открывать все остальные неопубликованные страницы
+ * сайта. Исключение — `scope: "site"`: такой грант живой на любой странице.
  */
 export const isPreviewGrantLive = (
   grant: SettingPreviewGrant | null | undefined,
@@ -19,7 +24,7 @@ export const isPreviewGrantLive = (
     return false;
   }
 
-  if (slug !== undefined && grant.slug !== slug) {
+  if (grant.scope !== "site" && slug !== undefined && grant.slug !== slug) {
     return false;
   }
 
