@@ -1,30 +1,24 @@
 import type { SettingPreviewGrant } from "#shared/types";
 
-// Кука, в которую оседает токен «смотреть весь стейджинг» после первого
-// захода по ссылке — дальше не нужно вставлять ?preview= в каждый адрес.
+// Кука, в которую оседает токен после первого захода по ссылке — дальше не
+// нужно вставлять ?preview= в каждый адрес.
 export const PREVIEW_COOKIE_NAME = "staging_preview";
 
 /**
- * Живая ли именная ссылка на черновик.
+ * Живой ли пропуск на стейджинг-сайт.
  *
  * Зеркало `shared/utils/preview-link.js` из AppsPro: панель по этой же функции
- * решает, показывать ли ссылку в списке выданных. Разойдутся — получится
- * худший из возможных багов: ссылка, которая в панели числится погашенной, а
- * на сайте продолжает открывать черновик. Правка здесь означает правку там.
+ * решает, что выписала. Разойдутся — получится худший из возможных багов:
+ * пропуск, который в панели числится мёртвым, а сайт его продолжает пускать.
+ * Правка здесь означает правку там.
  *
- * Привязка к странице обязательна для именных — ссылка, выданная на один
- * черновик, не должна открывать все остальные неопубликованные страницы
- * сайта. Исключение — `scope: "site"`: такой грант живой на любой странице.
+ * Страницу пропуск не различает: он на весь сайт.
  */
 export const isPreviewGrantLive = (
   grant: SettingPreviewGrant | null | undefined,
-  { slug, now = Date.now() }: { slug?: string; now?: number } = {},
+  { now = Date.now() }: { now?: number } = {},
 ): boolean => {
   if (!grant?.id || !grant.expiresAt) {
-    return false;
-  }
-
-  if (grant.scope !== "site" && slug !== undefined && grant.slug !== slug) {
     return false;
   }
 
@@ -33,7 +27,7 @@ export const isPreviewGrantLive = (
 
 export const findPreviewGrant = (
   grants: SettingPreviewGrant[] | null | undefined,
-  { token, slug, now = Date.now() }: { token?: string; slug?: string; now?: number },
+  { token, now = Date.now() }: { token?: string; now?: number },
 ): SettingPreviewGrant | null => {
   if (!token) {
     return null;
@@ -41,7 +35,7 @@ export const findPreviewGrant = (
 
   return (
     (grants || []).find(
-      (grant) => grant.id === token && isPreviewGrantLive(grant, { slug, now }),
+      (grant) => grant.id === token && isPreviewGrantLive(grant, { now }),
     ) || null
   );
 };

@@ -19,21 +19,13 @@ type GroupItem<Id = ObjectId> = {
 
 type HeaderLink<Id = ObjectId> = LinkItem<Id> | GroupItem<Id>;
 
-// Именная ссылка на черновик, выданная из панели. Наружу не отдаётся ни в
+// Пропуск на стейджинг-сайт, выданный из панели. Наружу не отдаётся ни в
 // одном ответе: `id` — это и есть секрет.
 export interface SettingPreviewGrant {
   id: string;
-  name: string;
-  slug: string;
   expiresAt: Date;
   createdAt: Date;
   createdBy: string;
-  // "panel" — техническая ссылка под кнопкой предпросмотра, "share" — выданная
-  // человеку. У грантов, выписанных до появления поля, его нет.
-  origin?: "panel" | "share";
-  // "site" — весь стейджинг, slug не проверяется. У грантов, выписанных до
-  // появления поля, его нет — они считаются именными ("page").
-  scope?: "page" | "site";
 }
 
 export interface ISetting<Id = ObjectId> {

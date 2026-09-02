@@ -7,22 +7,18 @@ import { isPreviewGrantLive, PREVIEW_COOKIE_NAME } from "#shared/utils/preview-l
 import { PostSlugRegex, isDev } from "#shared/constants/base";
 
 /**
- * Ключ ровно один — запись в настройках сайта со сроком и подписью, кому она
- * выдана: и «поделиться», и кнопки предпросмотра в панели выписывают её.
- * Проверяется по базе, а не по конфигу, ровно ради «погасить»: конфиг
- * контейнер читает один раз при старте, и отозванная ссылка работала бы до
- * перезапуска сервиса.
+ * Пропуск ровно один — запись в настройках сайта со сроком и подписью, кем
+ * выдана; её выписывает кнопка «Смотреть на стейджинге» в панели. Проверяется
+ * по базе, а не по конфигу, ровно ради «погасить»: конфиг контейнер читает
+ * один раз при старте, и отозванный пропуск работал бы до перезапуска сервиса.
  *
- * Закрыто наглухо: без гранта параметр в адресе не значит ничего.
+ * Страницу пропуск не различает: он на весь сайт.
+ *
+ * Закрыто наглухо: без пропуска параметр в адресе не значит ничего.
  */
 type PreviewVerdict = {
   allowed: boolean;
-  reason:
-    | "ok"
-    | "no-token-param"
-    | "grant-not-found"
-    | "grant-expired"
-    | "grant-slug-mismatch";
+  reason: "ok" | "no-token-param" | "grant-not-found" | "grant-expired";
 };
 
 /**
@@ -32,11 +28,10 @@ type PreviewVerdict = {
 const isPreviewAllowed = async (
   e: H3Event,
   previewQuery: unknown,
-  slug: string,
 ): Promise<PreviewVerdict> => {
-  // Токен «весь стейджинг» ставит себе куку при первом заходе по ссылке —
-  // дальше по сайту можно ходить без ?preview= в каждом адресе. Query всегда
-  // в приоритете: свежая ссылка не должна упираться в чужую старую куку.
+  // Токен ставит себе куку при первом заходе по ссылке — дальше по сайту можно
+  // ходить без ?preview= в каждом адресе. Query всегда в приоритете: свежая
+  // ссылка не должна упираться в чужую старую куку.
   const queryToken =
     typeof previewQuery === "string" && previewQuery ? previewQuery : "";
   const preview = queryToken || getCookie(e, PREVIEW_COOKIE_NAME) || "";
@@ -45,7 +40,7 @@ const isPreviewAllowed = async (
     return { allowed: false, reason: "no-token-param" };
   }
 
-  // Настройки читаются мимо кеша: погашенная ссылка обязана умереть сразу, а
+  // Настройки читаются мимо кеша: погашенный пропуск обязан умереть сразу, а
   // не через час. Запрос лишний только на черновиках — их открывают редко.
   const settings = await SettingModel.findOne({}, "previewGrants").lean();
   const grant = (settings?.previewGrants || []).find(
@@ -56,17 +51,13 @@ const isPreviewAllowed = async (
     return { allowed: false, reason: "grant-not-found" };
   }
 
-  if (grant.scope !== "site" && grant.slug !== slug) {
-    return { allowed: false, reason: "grant-slug-mismatch" };
-  }
-
-  if (!isPreviewGrantLive(grant, { slug })) {
+  if (!isPreviewGrantLive(grant)) {
     return { allowed: false, reason: "grant-expired" };
   }
 
   // Кука ставится только когда токен реально пришёл в query — иначе она сама
   // себя продлевала бы на каждый запрос без повторной проверки источника.
-  if (grant.scope === "site" && queryToken) {
+  if (queryToken) {
     setCookie(e, PREVIEW_COOKIE_NAME, grant.id, {
       httpOnly: true,
       secure: !isDev,
@@ -93,7 +84,7 @@ export class PostController {
     }
 
     const slug = rawSlug;
-    const previewVerdict = await isPreviewAllowed(e, preview, slug);
+    const previewVerdict = await isPreviewAllowed(e, preview);
     const isPreview = previewVerdict.allowed;
     try {
       const res = await this.postUsecase.getBySlug(slug, isPreview);

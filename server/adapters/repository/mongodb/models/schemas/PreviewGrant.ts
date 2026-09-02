@@ -1,26 +1,20 @@
 import { Schema } from "mongoose";
 
 /**
- * Именная ссылка на черновик, выданная из панели.
+ * Пропуск на стейджинг-сайт, выданный из панели.
  *
  * Живёт в настройках, а не в конфиге контейнера: конфиг читается один раз при
- * старте, и погашенная ссылка работала бы до перезапуска сервиса. Здесь же
+ * старте, и погашенный пропуск работал бы до перезапуска сервиса. Здесь же
  * список сверяется на каждом открытии черновика, и «погасить» действует сразу.
  *
- * `id` — он же секрет в адресе, `slug` привязывает ссылку к одной странице.
+ * `id` — он же секрет в адресе. Страницу пропуск не различает: он на весь сайт.
  */
 export const PreviewGrantSchema = new Schema(
   {
     id: { type: String, required: true, trim: true },
-    name: { type: String, default: "", trim: true },
-    slug: { type: String, required: true, trim: true },
-    // "page" — именная ссылка на одну статью. "site" — весь стейджинг-сайт,
-    // slug у такого гранта пуст и ничего не значит.
-    scope: { type: String, enum: ["page", "site"], default: "page" },
     expiresAt: { type: Date, required: true },
     createdAt: { type: Date, default: () => new Date() },
     createdBy: { type: String, default: "", trim: true },
-    origin: { type: String, enum: ["panel", "share"], default: "share" },
   },
   { _id: false },
 );
