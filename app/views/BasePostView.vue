@@ -6,12 +6,12 @@
     <slot>
       <IntroLayout></IntroLayout>
       <PostSections
-        v-if="sections?.length"
-        :sections="sections"
+        v-if="restSections.length"
+        :sections="restSections"
         :slug="slug"
       />
       <div
-        v-else
+        v-else-if="!sections?.length"
         class="px-2.5 md:px-4 xl:px-0 w-full max-w-7xl mx-auto relative"
       >
         <RuntimeTemplateLayout
@@ -36,6 +36,8 @@ import { logoSize } from "#rc/utils/logo-size";
 
 const { createdAt, updatedAt, content, sections, slug, metaTags, title } =
   usePost();
+
+const restSections = computed(() => sections.value.slice(1));
 
 const SITE_URL = computed(() => useRuntimeConfig().public.SITE_URL);
 const CLOUDINARY_BASE_URL = computed(() =>

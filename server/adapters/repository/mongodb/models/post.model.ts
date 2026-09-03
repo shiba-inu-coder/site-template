@@ -54,39 +54,6 @@ const ModelSchema = new Schema<IPostDocument, IPostModel>(
       type: [SectionSchema],
       default: () => [],
     },
-    intro: {
-      type: String,
-      trim: true,
-      default: "",
-    },
-    introImg: {
-      img: {
-        path: {
-          type: String,
-          trim: true,
-          default: "",
-        },
-        alt: {
-          type: String,
-          trim: true,
-          default: "",
-        },
-      },
-      width: {
-        type: String,
-        trim: true,
-        default: "auto",
-      },
-      height: {
-        type: String,
-        trim: true,
-        default: "auto",
-      },
-      isFullScreen: {
-        type: Boolean,
-        default: false,
-      },
-    },
     isActive: {
       type: Boolean,
       default: false,

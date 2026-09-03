@@ -278,16 +278,6 @@ export interface IPost<
   title: string;
   banner?: PostBanner;
   slug: string;
-  intro: string;
-  introImg: {
-    img: {
-      path: string;
-      alt: string;
-    };
-    width: string;
-    height: string;
-    isFullScreen: boolean;
-  };
   content: string;
   sections: PostSection[];
   isActive: boolean;

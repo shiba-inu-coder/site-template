@@ -5,16 +5,6 @@ const baseInital: Omit<IPost, "_id" | "breadcrumbs"> = {
   slug: "",
   content: "",
   sections: [],
-  intro: "",
-  introImg: {
-    img: {
-      path: "",
-      alt: "",
-    },
-    width: "auto",
-    height: "auto",
-    isFullScreen: false,
-  },
   breadcrumbTitle: "",
   isActive: false,
   datePosted: "",

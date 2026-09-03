@@ -20,11 +20,9 @@ export const usePost = <E>() => {
     ),
   );
   const banner = computed(() => state.value.currentPost.banner);
-  const introImg = computed(() => state.value.currentPost.introImg);
   const createdAt = computed(() => state.value.currentPost.createdAt);
   const updatedAt = computed(() => state.value.currentPost.updatedAt);
   const faq = computed(() => state.value.currentPost.shortcodesConfig.faq);
-  const intro = computed(() => state.value.currentPost.intro);
   const breadcrumbs = computed(() => state.value.currentPost.breadcrumbs);
   const postDated = computed(
     () =>
@@ -125,12 +123,10 @@ export const usePost = <E>() => {
 
   return {
     GET_POST_BY_SLUG,
-    introImg,
     setPost,
     postDated,
     isActive,
     sections,
-    intro,
     breadcrumbs,
     getShortcode,
     faq,

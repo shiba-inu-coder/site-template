@@ -8,7 +8,7 @@ import { Schema } from "mongoose";
  * `layout` объявлен отдельной схемой с `_id: false`, а не объектным литералом:
  * литерал регистрируется путями вида `layout.width`, и запись, отфильтрованная
  * по путям верхнего уровня, потеряла бы его целиком. Той же ловушкой в AppsPro
- * объясняются `metaTag` и `introImg`.
+ * объясняется `metaTag`.
  */
 const SectionBgSchema = new Schema(
   {
