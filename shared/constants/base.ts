@@ -1,11 +1,15 @@
 export const isDev = process.env.NODE_ENV === "development";
 
-// @nuxt/image бакает baseURL провайдера в сборку — переменной без значения
-// сайт молча уехал бы на чужое Cloudinary-облако вместо явного падения.
-if (!process.env.CLOUDINARY_CLOUD_NAME) {
-  throw new Error("CLOUDINARY_CLOUD_NAME is not set");
-}
-
-export const CLOUDINARY_CLOUD_NAME = process.env.CLOUDINARY_CLOUD_NAME;
+// @nuxt/image бакает baseURL провайдера в сборку, а не читает его в рантайме —
+// поэтому имя облака обязано быть известно на `nuxt build`. Известно оно всегда:
+// облако у флота одно, и переменной окружения в сборке нет ни у кого — ни
+// Dockerfile, ни app_build_push.yml build-аргументов не передают намеренно,
+// образ одинаков для любого окружения. Отсюда константа, а не `||`-фолбэк за
+// спиной: тот выглядел подстраховкой, но был единственным источником значения,
+// и когда его убрали, сборка любого нового сайта из шаблона встала на
+// «CLOUDINARY_CLOUD_NAME is not set». Переменная всё ещё побеждает, если её
+// задать вручную, — но её отсутствие это норма, а не повод падать.
+export const CLOUDINARY_CLOUD_NAME =
+  process.env.CLOUDINARY_CLOUD_NAME || "duhutcvan";
 export const PostSlugRegex =
   /^[a-z0-9]+(?:-[a-z0-9]+)*(\/[a-z0-9]+(?:-[a-z0-9]+)*)*$/;
