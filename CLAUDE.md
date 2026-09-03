@@ -65,7 +65,8 @@ types/constants/utils). Aliases: `#sg` → `server/`, `#rc` → `app/`.
 - `components: false` — no component auto-import; import components explicitly.
 - Auto-imports from `shared/` are load-bearing: `EntityModel`, `PostCategory`, `buildURL`,
   `I*` types are used WITHOUT imports. Never "clean up" `shared/types/index.ts`.
-- All UI strings/branding (German) come from `seo.conf.ts` — do not hardcode.
+- All UI strings/branding come from `seo.conf.ts` — do not hardcode. The template's
+  defaults are neutral English; the real language arrives with the brand manifest.
 - Trailing slashes everywhere (`site.trailingSlash`, NuxtLink `trailingSlash: "append"`,
   url_normalize 301) — keep all three in sync.
 - Images are Cloudinary public IDs rendered via `<NuxtImg provider="cloudinary">`. Raw URLs

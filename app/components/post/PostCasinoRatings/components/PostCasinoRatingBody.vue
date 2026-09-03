@@ -4,7 +4,7 @@
     <div class="grid md:grid-cols-3 gap-3">
       <div class="">
         <PostCasinoRatingTitle
-          title="Minimální vklad"
+          :title="t.minDeposit"
           icon="client/deposit"
         ></PostCasinoRatingTitle>
         <div class="casino-rating__text">
@@ -13,7 +13,7 @@
       </div>
       <div>
         <PostCasinoRatingTitle
-          title="Rychlost výplaty"
+          :title="t.payoutSpeed"
           icon="client/speed"
         ></PostCasinoRatingTitle>
         <div class="casino-rating__text">
@@ -22,7 +22,7 @@
       </div>
       <div>
         <PostCasinoRatingTitle
-          title="Maximální výplata"
+          :title="t.maxPayout"
           icon="client/money"
         ></PostCasinoRatingTitle>
         <div class="casino-rating__text">
@@ -31,30 +31,30 @@
       </div>
       <div>
         <PostCasinoRatingTitle
-          title="Počet her"
+          :title="t.gamesCount"
           icon="client/number-games"
         ></PostCasinoRatingTitle>
         <span class="casino-rating__text">{{ casino.numberCasinosGame }}</span>
       </div>
       <div>
         <PostCasinoRatingTitle
-          title="Licence"
+          :title="t.licence"
           icon="client/licence"
         ></PostCasinoRatingTitle>
         <span class="casino-rating__text">{{ casino.licence }}</span>
       </div>
       <div>
         <PostCasinoRatingTitle
-          title="Sportovní sázení"
+          :title="t.sportsBetting"
           icon="client/betting"
         ></PostCasinoRatingTitle>
         <div class="casino-rating__text">
-          {{ casino.sportsBetting ? "Ano" : "Ne" }}
+          {{ casino.sportsBetting ? t.yes : t.no }}
         </div>
       </div>
       <div>
         <PostCasinoRatingTitle
-          title="Mobilní aplikace"
+          :title="t.mobileApp"
           icon="client/mobile"
         ></PostCasinoRatingTitle>
 
@@ -77,14 +77,14 @@
           v-else
           class="casino-rating__text"
         >
-          Ne
+          {{ t.no }}
         </div>
       </div>
     </div>
     <div class="grid md:grid-cols-2 gap-3">
       <div>
         <PostCasinoRatingTitle
-          title="Platební metody"
+          :title="t.paymentMethods"
           icon="client/card"
         ></PostCasinoRatingTitle>
         <div class="pl-4">
@@ -93,7 +93,7 @@
       </div>
       <div>
         <PostCasinoRatingTitle
-          title="poskytovatelé softwaru"
+          :title="t.softwareProviders"
           icon="client/dice"
         ></PostCasinoRatingTitle>
         <div class="pl-4">
@@ -106,7 +106,7 @@
     <div class="grid md:grid-cols-2 gap-3">
       <div>
         <PostCasinoRatingTitle
-          title="Nejlepší funkce"
+          :title="t.bestFeatures"
           icon="client/list"
         ></PostCasinoRatingTitle>
         <ul class="casino-rating__text my-0">
@@ -120,7 +120,7 @@
       </div>
       <div>
         <PostCasinoRatingTitle
-          title="Typy her"
+          :title="t.gameTypes"
           icon="client/dice"
         ></PostCasinoRatingTitle>
         <div class="casino-rating__text">
@@ -130,7 +130,7 @@
     </div>
 
     <PostCasinoRatingTitle
-      title="Zákaznická podpora"
+      :title="t.customerSupport"
       icon="client/support"
     ></PostCasinoRatingTitle>
     <ul class="casino-rating__text my-0">
@@ -147,6 +147,9 @@
 <script lang="ts" setup>
 import PostCasinoListLogos from "./PostCasinoListLogos.vue";
 import PostCasinoRatingTitle from "./PostCasinoRatingTitle.vue";
+import { seoConfig } from "@@/seo.conf";
+
+const t = seoConfig.translates.entity;
 
 const { casino } = defineProps<{
   casino: PostCasinoRatingEntity;

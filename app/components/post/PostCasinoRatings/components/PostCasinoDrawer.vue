@@ -40,7 +40,7 @@
         class="flex justify-center items-center p-primary-1 border-y-2 border-primary-300"
       >
         <nuxt-link
-          class="font-semibold px-12 py-1 rounded-primary inline-flex justify-center transition-all focus:outline-none focus:ring-2 text-center border border-transparent bg-active-200 text-surface-text hover:bg-active-300 focus:bg-active-300 text-step-6"
+          class="font-semibold px-12 py-1 rounded-primary inline-flex justify-center transition-all focus:outline-none focus:ring-2 text-center border border-transparent bg-active-200 text-surface-on-brand hover:bg-active-300 focus:bg-active-300 text-step-6"
           >{{ seoConfig.translates.playNow }}</nuxt-link
         >
       </div>

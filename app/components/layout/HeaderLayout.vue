@@ -18,20 +18,22 @@
           target="_blank"
           rel="nofollow noopener"
           data-id="ref_link"
-          class="hidden md:block font-bold bg-active-200 text-primary-300 transition ease-in-out duration-500 hover:bg-active-300 hover:text-surface-text px-7 py-3 rounded-primary"
+          class="hidden md:block font-bold bg-active-200 text-surface-on-brand transition ease-in-out duration-500 hover:bg-active-300 px-7 py-3 rounded-primary"
         >
           {{ seoConfig.translates.auth.register }}
         </a>
       </div>
       <div class="flex items-center gap-3.5">
         <nuxt-link
+          v-if="seoConfig.logo.src"
           to="/"
           data-id="ref_link"
           class="mr-5"
         >
           <NuxtImg
             provider="cloudinary"
-            v-bind="logoSize(36)"
+            v-bind="logoSize(36, 200)"
+            class="h-auto w-auto max-h-9 max-w-[200px] object-contain"
             :alt="seoConfig.logo.alt"
             :src="seoConfig.logo.src"
           />

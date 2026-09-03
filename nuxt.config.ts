@@ -14,9 +14,16 @@ function getCurrentDirectory(p: string) {
 export default defineNuxtConfig({
   app: {
     head: {
-      htmlAttrs: { lang: seoConfig.site.lang },
+      // Тема живёт здесь, а не в app.vue: страницу ошибки рисует error.vue
+      // вместо app.vue, и заданная там тема на 404 не доезжала — светлый сайт
+      // отдавал тёмный нейтральный слой.
+      htmlAttrs: {
+        lang: seoConfig.site.lang,
+        "data-theme": seoConfig.site.theme,
+      },
       meta: [
         { charset: "utf-8" },
+        { name: "color-scheme", content: seoConfig.site.theme },
         {
           name: "viewport",
           content: "width=device-width, initial-scale=1.0",

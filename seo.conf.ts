@@ -1,17 +1,20 @@
 export const seoConfig = {
   site: {
-    name: "Mafia Casino",
-    lang: "de",
-    // "dark" | "light"
-    theme: "dark",
+    name: "",
+    lang: "en",
+    // "dark" | "light". Переворачивает только нейтральный слой (--color-surface-*):
+    // шкала primary — это уже цвета бренда, светлые у светлого бренда.
+    theme: "light",
     // Слаг бренда для реф-ссылок: имя казино в нижнем регистре, пробелы → дефис.
-    brandSlug: "mafia-casino",
+    brandSlug: "",
   },
   logo: {
-    src: "mafia-casinode-de/mafia-casino-logo",
-    alt: "Mafia Casino",
-    width: 152,
-    height: 35,
+    src: "",
+    alt: "",
+    // Собственные размеры файла. Отрисовка идёт по высоте, ширина считается
+    // отсюда — см. app/utils/logo-size.ts.
+    width: 0,
+    height: 0,
   },
   img: {
     modifiers: {
@@ -24,84 +27,75 @@ export const seoConfig = {
     },
 
     footer: {
-      title: `mafia-casinode-de.de © ${new Date().getFullYear()} Alle Rechte vorbehalten.`,
-      body: `<p>mafia-casinode-de.de dient ausschließlich Informationszwecken im Zusammenhang mit Online-Casinos und Glücksspielen. Die Website veranstaltet oder betreibt keine Glücksspiele, fungiert nicht als Casino-Betreiber und steht in keiner direkten Verbindung zu Unternehmen, die Glücksspieldienstleistungen anbieten. Sämtliche auf der Website veröffentlichten Inhalte, einschließlich Bewertungen, Ranglisten und Bonusbeschreibungen, dienen ausschließlich der Information und stellen weder eine Rechts-, Finanz- noch Anlageberatung dar. Bevor Nutzer die Dienste eines Glücksspielanbieters in Anspruch nehmen, sollten sie die aktuellen Angebotsbedingungen eigenständig prüfen und sicherstellen, dass die Teilnahme an Glücksspielen nach den in Deutschland geltenden gesetzlichen Bestimmungen zulässig ist.</p>
-<p><b>Hinweis</b><br/> Auf mafia-casinode-de.de können Affiliate-Links zu externen Websites enthalten sein. Wenn Nutzer über diese Links bestimmte Aktionen ausführen, beispielsweise ein Konto registrieren, eine Einzahlung tätigen oder ein Angebot eines Partners nutzen, kann mafia-casinode-de.de eine Provisionsvergütung erhalten. Die Website übernimmt keine Verantwortung für Inhalte, Werbeaktionen, Geschäftsbedingungen oder Datenschutzrichtlinien externer Websites. Es gelten ausschließlich die Bedingungen des jeweiligen Anbieters.</p>`,
-      links: [
-        {
-          name: "Datenschutzerklärung",
-          link: "/datenschutzerklaerung/",
-        },
-
-        {
-          name: "Ueber uns",
-          link: "/ueber-uns/",
-        },
-
-        {
-          name: "Kontakt",
-          link: "/kontakt/",
-        },
-
-        {
-          name: "Verantwortungsvolles Spielen",
-          link: "/verantwortungsvolles-spielen/",
-        },
-      ],
-      legalLogos: [
-        {
-          alt: "18+",
-          src: "casino-f1-cz/responsible-gaming/18plus.svg",
-        },
-        {
-          alt: "Gordon Moody",
-          src: "casino-f1-cz/responsible-gaming/gordon-moody",
-        },
-      ],
+      title: "",
+      body: "",
+      links: [],
+      legalLogos: [],
     },
   },
   translates: {
-    showMore: "Mehr anzeigen",
-    showLess: "Weniger anzeigen",
-    lastUpdated: "Zuletzt aktualisiert",
-    btnMoreInfo: "Mehr erfahren",
-    playNow: "Jetzt spielen",
+    showMore: "Show more",
+    showLess: "Show less",
+    lastUpdated: "Last updated",
+    btnMoreInfo: "Learn more",
+    playNow: "Play now",
 
     gdprBanner: {
-      btnAgree: "Ich stimme zu",
-      btnMoreInfo: "Mehr erfahren",
-      text: "Diese Website verwendet Cookies. Durch die weitere Nutzung der Website stimmen Sie der Verwendung von Cookies zu.",
+      btnAgree: "I agree",
+      btnMoreInfo: "Learn more",
+      text: "This website uses cookies. By continuing to use the website, you agree to the use of cookies.",
     },
 
     bonusBanner: {
-      btn: "Bonus sichern",
+      btn: "Claim bonus",
     },
 
-    tableContent: "Inhaltsverzeichnis anzeigen",
+    tableContent: "Show table of contents",
 
     shortcodes: {
       prosAndCons: {
-        pros: "Vorteile",
-        cons: "Nachteile",
+        pros: "Pros",
+        cons: "Cons",
       },
     },
 
     contacts: {
-      nameLabel: "Vor- und Nachname *",
-      emailLabel: "E-Mail *",
-      messageLabel: "Nachricht *",
-      invalidEmail: "Die E-Mail-Adresse ist ungültig",
-      submit: "Senden",
+      nameLabel: "Full name *",
+      emailLabel: "E-mail *",
+      messageLabel: "Message *",
+      invalidEmail: "The e-mail address is invalid",
+      submit: "Send",
     },
 
     auth: {
-      login: "Anmelden",
-      register: "Registrieren",
+      login: "Log in",
+      register: "Register",
     },
 
     error: {
-      notFound: "Seite nicht gefunden – zurück zur Startseite",
-      backHome: "Zurück zur Startseite",
+      notFound: "Page not found — back to the homepage",
+      backHome: "Back to the homepage",
+    },
+
+    entity: {
+      readReview: "Read review",
+      licence: "Licence",
+      foundedYear: "Founded",
+      bonus: "Bonus",
+      bonuses: "Bonuses",
+      minDeposit: "Minimum deposit",
+      payoutSpeed: "Payout speed",
+      maxPayout: "Maximum payout",
+      gamesCount: "Number of games",
+      sportsBetting: "Sports betting",
+      mobileApp: "Mobile app",
+      paymentMethods: "Payment methods",
+      softwareProviders: "Software providers",
+      bestFeatures: "Best features",
+      customerSupport: "Customer support",
+      gameTypes: "Game types",
+      yes: "Yes",
+      no: "No",
     },
   },
 };

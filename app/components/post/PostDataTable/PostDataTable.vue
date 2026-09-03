@@ -53,7 +53,7 @@
       <button
         v-show="isShowMoreBtn"
         type="button"
-        class="bg-primary-100 border-2 border-active-200 text-active-200 hover:border-active-300 hover:text-surface-text font-medium hover:bg-active-300 transition ease-in-out duration-500 px-3.5 rounded-primary py-2.5"
+        class="bg-primary-100 border-2 border-active-200 text-active-200 hover:border-active-300 hover:text-surface-on-brand font-medium hover:bg-active-300 transition ease-in-out duration-500 px-3.5 rounded-primary py-2.5"
         @click="setCount(state.data.rows.length)"
       >
         {{ seoConfig.translates.showMore }}
@@ -61,7 +61,7 @@
       <button
         v-show="!isShowMoreBtn"
         type="button"
-        class="bg-primary-100 border-2 border-active-200 text-active-200 hover:border-active-300 hover:text-surface-text font-medium hover:bg-active-300 transition ease-in-out duration-500 px-3.5 rounded-primary py-2.5"
+        class="bg-primary-100 border-2 border-active-200 text-active-200 hover:border-active-300 hover:text-surface-on-brand font-medium hover:bg-active-300 transition ease-in-out duration-500 px-3.5 rounded-primary py-2.5"
         @click="setCount(defaultCountRows)"
       >
         {{ seoConfig.translates.showLess }}

@@ -9,7 +9,7 @@ export class SeoController {
     handler: async (e) => {
       const log = AppLogger("handler.seo.getRefLinkRedirect");
       // Роут catch-all, поэтому в slug приходит хвост пути целиком:
-      // "mafia-casino/" → "mafia-casino".
+      // "example-casino/" → "example-casino".
       const { slug: rawSlug } = getRouterParams(e) as { slug: string };
       const slug = rawSlug.replace(/^\/+|\/+$/g, "");
 

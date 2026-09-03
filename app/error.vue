@@ -23,7 +23,7 @@
             to="/"
             trailing-slash="append"
             prefetch-on="interaction"
-            class="rounded-primary bg-active-200 px-3.5 py-2.5 text-step-7 font-semibold text-surface-text shadow-xs hover:bg-active-300 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-active-300"
+            class="rounded-primary bg-active-200 px-3.5 py-2.5 text-step-7 font-semibold text-surface-on-brand shadow-xs hover:bg-active-300 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-active-300"
             >{{ seoConfig.translates.error.backHome }}</nuxt-link
           >
         </div>

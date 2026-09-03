@@ -45,11 +45,18 @@ and native controls stay dark on a light page.
 
 What flips is only the **neutral layer**:
 
-| Token                | Role                                                 |
-| -------------------- | ---------------------------------------------------- |
-| `text-surface-text`  | body text — never write `text-white` again           |
-| `text-surface-muted` | secondary text                                       |
-| `bg-surface-raised`  | a tile that must contrast with the page (logo chips) |
+| Token                   | Role                                                 |
+| ----------------------- | ---------------------------------------------------- |
+| `text-surface-text`     | body text — never write `text-white` again           |
+| `text-surface-muted`    | secondary text                                       |
+| `bg-surface-raised`     | a tile that must contrast with the page (logo chips) |
+| `text-surface-on-brand` | text lying on `bg-active-*` / `bg-accent-*`          |
+
+`surface-on-brand` is the one that is easy to get wrong. A CTA button's label sits on a
+**brand** colour, not on the page, so it is contrasted against `active`, not against the
+ground — writing `bg-active-200 text-surface-text` there gives dark-on-dark the moment the
+site is light. Its value is the inverse of `surface-text`, and it flips with the theme for
+the same reason.
 
 `active` and `accent` do **not** flip: a brand's CTA colour works on either ground. `primary`
 does not flip either, because it is already the brand's own surface ramp — a light brand's
@@ -156,14 +163,32 @@ weight is a supported way to ask for that weight.
 
 Brand logos are square badges and long wordmarks alike, so nothing renders them at a fixed
 width. `seoConfig.logo` carries the file's own `width`/`height`, and
-`app/utils/logo-size.ts` turns a target height into the matching pair:
+`app/utils/logo-size.ts` turns a target height — and a width ceiling — into the pair that
+fits both:
 
 ```ts
-<NuxtImg provider="cloudinary" v-bind="logoSize(36)" … />
+<NuxtImg
+  provider="cloudinary"
+  v-bind="logoSize(36, 200)"
+  class="h-auto w-auto max-h-9 max-w-[200px] object-contain"
+  …
+/>
 ```
 
-The same helper feeds the schema.org `ImageObject` in `BasePostView.vue`, which used to
-declare a hardcoded 152×35 that matched no actual file.
+**Both limits are load-bearing, and so is the CSS next to them.** A wordmark that clears the
+height still tears the header apart sideways, so `maxWidth` scales the height back down
+instead. And the numbers in the manifest are a claim, not a measurement — when they disagree
+with the actual file the computed pair is wrong, which is exactly how a logo once rendered
+twice the height of the header. `max-h`/`max-w` + `object-contain` are the floor under that:
+the attributes still hold the aspect ratio against CLS, the classes cap what can be drawn.
+
+The same helper feeds the schema.org `ImageObject` in `BasePostView.vue` — the Cloudinary
+`h_` in that URL is taken from the helper's result, not written by hand, or a width-capped
+logo would declare sizes the fetched image does not have.
+
+An empty `logo.src` is a normal state: that is the template before a brand is applied. The
+header, the footer and the schema.org `publisher` all skip the image entirely rather than
+render a broken one.
 
 ## Components
 
@@ -191,8 +216,14 @@ registered by nuxt-svg-sprite-icon.
 ## Strings
 
 **Every user-facing string comes from `seo.conf.ts`.** The site's language is set per brand;
-nothing is hardcoded in a template. See the debt list below — the repo does not yet honour
-this everywhere.
+nothing is hardcoded in a template. The template's own defaults are English placeholders — a
+site gets its real texts when the brand manifest is applied.
+
+`translates.entity` holds the labels of a casino card (licence, min deposit, payout speed,
+the plain `yes`/`no` of a boolean row). They are shared by the rating widgets, the bonus
+cards and both mini-reviews, so a new label belongs in that block **and** in
+`appspro/shared/constants/brand-info-schema.js` — a key the manifest does not carry never
+reaches a real site.
 
 ## Shortcodes
 
@@ -250,14 +281,10 @@ Real, found, deliberately not fixed yet:
   about fifteen lines. Every fix has to be applied two or three times or the copies drift.
 - **Dead files.** `common/PaginationDots.vue`, `PostProsCons/PostProsConsEntity.vue` and
   `PostCasinoReviewCard/PostCasinoReviewCard.vue` are imported by nothing.
-  `FooterLayout.vue` carries ~85 lines of commented-out markup; `PostFAQItem.vue` is a
-  commented-out accordion with its state still declared.
+  `PostFAQItem.vue` is a commented-out accordion with its state still declared.
 - **`settings.headerLinks`** is fetched from Mongo through the repository and the composable
   and read by nobody — the header renders `seoConfig.layout.header.links`. Left alone because
   the model is shared with the admin service.
-- **Czech strings on a German site**, hardcoded in templates: `error.vue`,
-  `PostCasinoRatingCard.vue`, both mini-review components. `usePost.ts` imports
-  `dayjs/locale/cs`.
 - **Missing shortcode guards** in nine components (see above).
 - **`pages/index.vue` and `pages/[...slug].vue`** are the same forty lines twice.
 - **Lint escape hatches.** `@typescript-eslint/no-unused-vars`, `vue/no-v-html` and

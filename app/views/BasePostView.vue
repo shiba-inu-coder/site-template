@@ -48,6 +48,23 @@ const webpage = computed(() => `${SITE_URL.value}#webpage`);
 const baseId = computed(() => `${articleUrl.value}#`);
 const article = computed(() => `${baseId.value}article`);
 
+// Высота в трансформации Cloudinary берётся из того же расчёта, что и атрибуты:
+// у широкого лого logoSize сажает высоту ниже запрошенной, и захардкоженный
+// h_45 разошёлся бы с объявленными размерами картинки.
+const publisherLogo = computed(() => {
+  if (!seoConfig.logo.src) {
+    return null;
+  }
+
+  const size = logoSize(45, 200);
+
+  return {
+    "@type": "ImageObject",
+    url: `${CLOUDINARY_BASE_URL.value}f_auto,q_auto,r_15,h_${size.height}/${seoConfig.logo.src}`,
+    ...size,
+  };
+});
+
 useSchemaOrg([
   {
     "@type": "WebSite",
@@ -98,11 +115,7 @@ useSchemaOrg([
       "@type": "Organization",
       name: DOMAIN_NAME.value,
       url: `${SITE_URL.value}/`,
-      logo: {
-        "@type": "ImageObject",
-        url: `${CLOUDINARY_BASE_URL.value}f_auto,q_auto,r_15,h_45/${seoConfig.logo.src}`,
-        ...logoSize(45),
-      },
+      ...(publisherLogo.value ? { logo: publisherLogo.value } : {}),
     },
   },
 ]);

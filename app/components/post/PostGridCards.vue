@@ -70,7 +70,7 @@
             target="_blank"
             rel="nofollow noopener"
             data-id="ref_link"
-            class="w-5/6 block bg-active-200 hover:bg-active-300 transition duration-500 ease-in-out px-4 py-2.5 text-center rounded-primary text-surface-text font-medium text-step-5 mt-3 mb-5"
+            class="w-5/6 block bg-active-200 hover:bg-active-300 transition duration-500 ease-in-out px-4 py-2.5 text-center rounded-primary text-surface-on-brand font-medium text-step-5 mt-3 mb-5"
           >
             {{ item.buttonText }}
           </a>

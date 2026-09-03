@@ -4,7 +4,7 @@
     <div class="grid md:grid-cols-3 gap-3">
       <div class="">
         <PostBookmakerRatingTitle
-          title="Minimální vklad"
+          :title="t.minDeposit"
           icon="client/deposit"
         ></PostBookmakerRatingTitle>
         <div class="bookmaker-rating__text">
@@ -13,7 +13,7 @@
       </div>
       <div>
         <PostBookmakerRatingTitle
-          title="Rychlost výplaty"
+          :title="t.payoutSpeed"
           icon="client/speed"
         ></PostBookmakerRatingTitle>
         <div class="bookmaker-rating__text">
@@ -22,14 +22,14 @@
       </div>
       <div>
         <PostBookmakerRatingTitle
-          title="Licence"
+          :title="t.licence"
           icon="client/licence"
         ></PostBookmakerRatingTitle>
         <span class="bookmaker-rating__text">{{ bookmaker.licence }}</span>
       </div>
       <div>
         <PostBookmakerRatingTitle
-          title="Mobilní aplikace"
+          :title="t.mobileApp"
           icon="client/mobile"
         ></PostBookmakerRatingTitle>
 
@@ -52,14 +52,14 @@
           v-else
           class="bookmaker-rating__text"
         >
-          Ne
+          {{ t.no }}
         </div>
       </div>
     </div>
     <div class="grid md:grid-cols-2 gap-3">
       <div>
         <PostBookmakerRatingTitle
-          title="Platební metody"
+          :title="t.paymentMethods"
           icon="client/card"
         ></PostBookmakerRatingTitle>
         <div class="pl-4">
@@ -68,7 +68,7 @@
       </div>
       <div>
         <PostBookmakerRatingTitle
-          title="Nejlepší funkce"
+          :title="t.bestFeatures"
           icon="client/list"
         ></PostBookmakerRatingTitle>
         <ul class="bookmaker-rating__text my-0">
@@ -84,7 +84,7 @@
 
     <div>
       <PostBookmakerRatingTitle
-        title="Sporty"
+        :title="t.sportsBetting"
         icon="client/dice"
       ></PostBookmakerRatingTitle>
       <div class="bookmaker-rating__text">
@@ -97,6 +97,9 @@
 <script lang="ts" setup>
 import PostBookmakerListLogos from "./PostBookmakerListLogos.vue";
 import PostBookmakerRatingTitle from "./PostBookmakerRatingTitle.vue";
+import { seoConfig } from "@@/seo.conf";
+
+const t = seoConfig.translates.entity;
 
 const { bookmaker } = defineProps<{
   bookmaker: PostBookmakerRatingEntity;

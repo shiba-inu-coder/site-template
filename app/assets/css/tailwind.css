@@ -23,6 +23,7 @@
   --color-surface-text: var(--color-surface-text);
   --color-surface-muted: var(--color-surface-muted);
   --color-surface-raised: var(--color-surface-raised);
+  --color-surface-on-brand: var(--color-surface-on-brand);
 }
 
 @theme {
@@ -75,24 +76,27 @@
   /* Theme Colors */
 
   /* Primary */
-  --color-primary-100: #4b5563;
-  --color-primary-200: #374151;
-  --color-primary-300: #1f2937;
+  --color-primary-100: #ffffff;
+  --color-primary-200: #f1f5f9;
+  --color-primary-300: #e2e8f0;
 
   /* Accent */
-  --color-accent-100: #ff7a8a;
-  --color-accent-200: #e94f64;
-  --color-accent-300: #c5304a;
+  --color-accent-100: #64748b;
+  --color-accent-200: #475569;
+  --color-accent-300: #334155;
 
   /* Active */
-  --color-active-100: #ffe7a3;
-  --color-active-200: #eab85a;
-  --color-active-300: #b7791f;
+  --color-active-100: #94a3b8;
+  --color-active-200: #334155;
+  --color-active-300: #1e293b;
 
   /* Нейтральный слой тёмной темы. Бренд-патчер его не трогает. */
   --color-surface-text: #ffffff;
   --color-surface-muted: #cbd5e1;
   --color-surface-raised: #ffffff;
+  /* Текст поверх active/accent — не то же, что текст страницы: подложка там
+     бренд, а не нейтраль, и по контрасту она противоположна фону. */
+  --color-surface-on-brand: #0f172a;
 }
 
 /* Светлая тема. Переворачивается только нейтраль: шкала primary — это уже
@@ -101,6 +105,7 @@
   --color-surface-text: #0f172a;
   --color-surface-muted: #475569;
   --color-surface-raised: #f1f5f9;
+  --color-surface-on-brand: #ffffff;
 }
 
 @layer base {

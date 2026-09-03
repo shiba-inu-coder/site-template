@@ -7,25 +7,29 @@
 
     <ul>
       <li>
-        <span class="font-semibold text-step-6">Licence</span>:
+        <span class="font-semibold text-step-6">{{ t.licence }}</span
+        >:
         {{ data.entity.licence }}
       </li>
       <li>
-        <span class="font-semibold text-step-6">Hry</span>:
+        <span class="font-semibold text-step-6">{{ t.gamesCount }}</span
+        >:
         {{ data.entity.numberCasinosGame }}
         {{ gameTypes }}
       </li>
       <li>
-        <span class="font-semibold text-step-6">Platebni Metody</span>:
+        <span class="font-semibold text-step-6">{{ t.paymentMethods }}</span
+        >:
         {{ paymentMethods }}
       </li>
       <li>
-        <span class="font-semibold text-step-6">Rok Založení</span>:
+        <span class="font-semibold text-step-6">{{ t.foundedYear }}</span
+        >:
         {{ data.entity.yearEstablished }}
       </li>
       <li>
         <span class="font-semibold text-step-6">{{
-          data.bonuses.length > 1 ? "Bonusy" : "Bonus"
+          data.bonuses.length > 1 ? t.bonuses : t.bonus
         }}</span
         >:
         <div class="grid gap-5 grid-cols-1 md:grid-cols-2 mt-2">
@@ -75,6 +79,9 @@
 <script lang="ts" setup>
 import PostProsConsBase from "#rc/components/post/PostProsCons/components/PostProsConsBase.vue";
 import { safeHTMLWrap } from "#shared/utils/safeHTMLWrap";
+import { seoConfig } from "@@/seo.conf";
+
+const t = seoConfig.translates.entity;
 
 const { uniqId } = defineProps<{
   uniqId: string;
@@ -89,10 +96,11 @@ const data = computed(
   () => getShortcode({ uniqId, shortcode: "miniCasinoReviews" })?.data,
 );
 
-const gameTypes = computed(() =>
-  data.value?.entity.gameTypes.map((el) => el.title).join(", ") ?? "",
+const gameTypes = computed(
+  () => data.value?.entity.gameTypes.map((el) => el.title).join(", ") ?? "",
 );
-const paymentMethods = computed(() =>
-  data.value?.entity.paymentMethods.map((el) => el.title).join(", ") ?? "",
+const paymentMethods = computed(
+  () =>
+    data.value?.entity.paymentMethods.map((el) => el.title).join(", ") ?? "",
 );
 </script>
