@@ -58,7 +58,7 @@
             :padding="false"
             component-name="BookmakersRatingShortcode"
             context="Bookmaker Rating card in Post"
-            >Hrát nyní
+            >{{ seoConfig.translates.playNow }}
           </PostButtonRef>
         </span>
         <ul class="flex flex-col not-format px-3 mt-2">

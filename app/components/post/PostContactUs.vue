@@ -67,7 +67,7 @@
           <button
             :disabled="isDisabled"
             type="submit"
-            class="rounded-primary px-3 py-2.5 justify-center font-medium inline-flex items-center gap-x-2 whitespace-pre-wrap focus:outline-none focus:ring-2 text-center border border-transparent bg-active-200 text-surface-text hover:bg-active-300 disabled:opacity-50 disabled:pointer-events-none"
+            class="rounded-primary px-3 py-2.5 justify-center font-medium inline-flex items-center gap-x-2 whitespace-pre-wrap focus:outline-none focus:ring-2 text-center border border-transparent bg-active-200 text-surface-on-brand hover:bg-active-300 disabled:opacity-50 disabled:pointer-events-none"
           >
             {{ seoConfig.translates.contacts.submit }}
           </button>

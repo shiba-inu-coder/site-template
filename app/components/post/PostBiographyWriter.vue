@@ -15,7 +15,7 @@
       <div class="grow space-y-1">
         <span class="block text-step-7 font-medium">{{ writer.fullName }}</span>
         <span
-          class="text-step-8 text-surface-text font-medium bg-accent-200 rounded-primary py-1 px-2"
+          class="text-step-8 text-surface-on-brand font-medium bg-accent-200 rounded-primary py-1 px-2"
           >{{ writer.position }}</span
         >
       </div>

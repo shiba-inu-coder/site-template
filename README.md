@@ -1,4 +1,4 @@
-# mafia-casinode.de — public site
+# site-template — public site
 
 Standalone Nuxt 4 (SSR) public casino affiliate site. Content is read from a shared MongoDB
 managed by a separate admin service. This app is read-only towards the DB and is meant to be

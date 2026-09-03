@@ -56,14 +56,14 @@
             :padding="false"
             component-name="CasinosRatingShortcode"
             context="Casino Rating card in Post"
-            >Hrát nyní
+            >{{ seoConfig.translates.playNow }}
           </PostButtonRef>
           <nuxt-link
             v-if="casino?.reviewPost?.slug"
             :to="`/${casino?.reviewPost?.slug}/`"
-            class="font-semibold rounded-primary inline-flex justify-center items-center whitespace-pre-wrap focus:outline-none focus:ring-2 text-center border text-active-200 bg-primary-200 border-active-200 hover:bg-active-200 transition duration-500 ease-in-out hover:text-surface-text focus:bg-active-300 text-step-5 py-2.5 px-2 w-full"
+            class="font-semibold rounded-primary inline-flex justify-center items-center whitespace-pre-wrap focus:outline-none focus:ring-2 text-center border text-active-200 bg-primary-200 border-active-200 hover:bg-active-200 transition duration-500 ease-in-out hover:text-surface-on-brand focus:bg-active-300 text-step-5 py-2.5 px-2 w-full"
           >
-            Přečíst recenzi
+            {{ seoConfig.translates.entity.readReview }}
           </nuxt-link>
         </span>
         <!-- Button More Info  -->

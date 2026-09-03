@@ -1,6 +1,5 @@
 import { initialClientStatePost } from "#shared/constants/initial-states";
 import deepClone from "rfdc/default";
-import "dayjs/locale/cs";
 
 export const usePost = <E>() => {
   const { $api } = useNuxtApp();

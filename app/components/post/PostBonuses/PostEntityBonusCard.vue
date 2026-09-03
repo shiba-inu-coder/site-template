@@ -33,7 +33,7 @@
           v-if="bonus.minDeposit.length"
           class="flex justify-between text-md"
         >
-          <span>Minimální vklad</span>
+          <span>{{ seoConfig.translates.entity.minDeposit }}</span>
           <span class="block">{{ bonus.minDeposit }}</span>
         </div>
       </div>
@@ -50,7 +50,7 @@
             :padding="false"
             component-name="CasinosRatingShortcode"
             context="Casino Rating card in Post"
-            >Hrát nyní
+            >{{ seoConfig.translates.playNow }}
           </PostButtonRef>
         </span>
       </div>
