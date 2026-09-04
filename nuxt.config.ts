@@ -33,7 +33,6 @@ export default defineNuxtConfig({
           content: "address=no, telephone=no, email=no, url=no, date=no",
         },
       ],
-      link: [{ rel: "icon", href: "/favicon.ico" }],
     },
   },
 

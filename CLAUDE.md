@@ -73,6 +73,10 @@ types/constants/utils). Aliases: `#sg` → `server/`, `#rc` → `app/`.
   (schema.org logo, CSS background) are built with `getCloudinaryBaseUrl(CLOUDINARY_CLOUD_NAME)` —
   never hardcode the cloud name. `logo.src` carries no file extension: Cloudinary `f_auto`
   serves whatever format was uploaded (svg/webp/png/jpg).
+- The favicon arrives as a file (`public/favicon.ico`) from the AppsPro brand-apply job, not as
+  a link in the config. The brandless template has no icon and declares no `<link rel="icon">` —
+  browsers still hit `/favicon.ico` themselves and get a 404, which is fine. Do not add the link
+  back.
 - No auth/JWT anywhere: inactive (`isActive: false`) and deleted posts are 404 for everyone.
 - env vars: see `.env.example` (MONGO_URI, DB_NAME, SITE_URL, DOMAIN_NAME, CACHE_PURGE_SECRET).
   `.env` is for local dev only — in the container the same values come from Vault. The one
