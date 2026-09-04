@@ -23,7 +23,7 @@ export const seoConfig = {
   },
   layout: {
     header: {
-      links: [],
+      items: [],
     },
 
     footer: {

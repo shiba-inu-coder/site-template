@@ -283,8 +283,8 @@ Real, found, deliberately not fixed yet:
   `PostCasinoReviewCard/PostCasinoReviewCard.vue` are imported by nothing.
   `PostFAQItem.vue` is a commented-out accordion with its state still declared.
 - **`settings.headerLinks`** is fetched from Mongo through the repository and the composable
-  and read by nobody — the header renders `seoConfig.layout.header.links`. Left alone because
-  the model is shared with the admin service.
+  and read by nobody — the header renders `seoConfig.layout.header.items` instead. Left alone
+  because the model is shared with the admin service.
 - **Missing shortcode guards** in nine components (see above).
 - **`pages/index.vue` and `pages/[...slug].vue`** are the same forty lines twice.
 - **Lint escape hatches.** `@typescript-eslint/no-unused-vars`, `vue/no-v-html` and

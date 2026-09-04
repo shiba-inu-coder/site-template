@@ -2,66 +2,44 @@
   <nav
     class="bg-primary-300 p-primary-1 fixed left-0 right-0 top-0 z-50 px-3 md:px-8"
   >
-    <div class="flex justify-between items-center w-full">
-      <div class="flex items-center space-x-3">
-        <a
-          :href="refLink"
-          target="_blank"
-          rel="nofollow noopener"
-          data-id="ref_link"
-          class="font-bold bg-primary-200 transition ease-in-out duration-500 hover:bg-primary-100 px-7 py-3 rounded-primary"
-        >
-          {{ seoConfig.translates.auth.login }}
-        </a>
-        <a
-          :href="refLink"
-          target="_blank"
-          rel="nofollow noopener"
-          data-id="ref_link"
-          class="hidden md:block font-bold bg-active-200 text-surface-on-brand transition ease-in-out duration-500 hover:bg-active-300 px-7 py-3 rounded-primary"
-        >
-          {{ seoConfig.translates.auth.register }}
-        </a>
+    <div class="flex justify-between items-center w-full gap-3">
+      <div class="flex items-center gap-3">
+        <HeaderNavItem
+          v-for="(item, i) in leftItems"
+          :key="i"
+          :item="item"
+        />
+      </div>
+      <div class="flex items-center gap-3">
+        <HeaderNavItem
+          v-for="(item, i) in centerItems"
+          :key="i"
+          :item="item"
+        />
       </div>
       <div class="flex items-center gap-3.5">
-        <nuxt-link
-          v-if="seoConfig.logo.src"
-          to="/"
-          data-id="ref_link"
-          class="mr-5"
-        >
-          <NuxtImg
-            provider="cloudinary"
-            v-bind="logoSize(36, 200)"
-            class="h-auto w-auto max-h-9 max-w-[200px] object-contain"
-            :alt="seoConfig.logo.alt"
-            :src="seoConfig.logo.src"
-          />
-        </nuxt-link>
-        <a
-          v-for="(headerLink, i) in seoConfig.layout.header.links"
+        <HeaderNavItem
+          v-for="(item, i) in rightItems"
           :key="i"
-          :href="refLink"
-          target="_blank"
-          rel="nofollow noopener"
-          data-id="ref_link"
-          class="transition hidden lg:block ease-in-out duration-500 hover:text-active-200 font-semibold"
-        >
-          {{ headerLink }}
-        </a>
+          :item="item"
+        />
       </div>
     </div>
   </nav>
 </template>
 
 <script setup lang="ts">
-import { useFakeRefLink } from "#rc/composables/useFakeRefLink";
-import { logoSize } from "#rc/utils/logo-size";
 import { seoConfig } from "@@/seo.conf";
+import HeaderNavItem from "./HeaderNavItem.vue";
 
-const emit = defineEmits<{
-  (e: "toggle"): void;
-}>();
+// Три группы по `position` — `justify-between` разносит их по краям и центру
+// шапки. Порядок внутри группы — порядок в массиве, как его собрала панель.
+const byPosition = (position: string) =>
+  (seoConfig.layout.header.items || []).filter(
+    (item) => item.position === position,
+  );
 
-const refLink = useFakeRefLink(seoConfig.site.brandSlug);
+const leftItems = byPosition("left");
+const centerItems = byPosition("center");
+const rightItems = byPosition("right");
 </script>
