@@ -76,15 +76,7 @@ import { computed } from "vue";
 import { useFakeRefLink } from "#rc/composables/useFakeRefLink";
 import { logoSize } from "#rc/utils/logo-size";
 import { seoConfig } from "@@/seo.conf";
-
-interface HeaderItem {
-  kind: "ref" | "page" | "logo";
-  label: string;
-  link?: string;
-  style: "primary" | "active" | "link";
-  position: "left" | "center" | "right";
-  children?: HeaderItem[];
-}
+import type { HeaderItem } from "#shared/types";
 
 interface Props {
   item: HeaderItem;

@@ -30,14 +30,15 @@
 
 <script setup lang="ts">
 import { seoConfig } from "@@/seo.conf";
+import type { HeaderItem } from "#shared/types";
 import HeaderNavItem from "./HeaderNavItem.vue";
+
+const headerItems = (seoConfig.layout.header.items || []) as HeaderItem[];
 
 // Три группы по `position` — `justify-between` разносит их по краям и центру
 // шапки. Порядок внутри группы — порядок в массиве, как его собрала панель.
-const byPosition = (position: string) =>
-  (seoConfig.layout.header.items || []).filter(
-    (item) => item.position === position,
-  );
+const byPosition = (position: HeaderItem["position"]) =>
+  headerItems.filter((item) => item.position === position);
 
 const leftItems = byPosition("left");
 const centerItems = byPosition("center");
