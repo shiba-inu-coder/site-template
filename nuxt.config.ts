@@ -46,7 +46,6 @@ export default defineNuxtConfig({
     "nuxt-svg-sprite-icon",
   ],
 
-  // @ts-expect-error nuxt fonst TS config type is wrong
   fonts: {
     families: [
       {

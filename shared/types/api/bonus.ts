@@ -20,9 +20,7 @@ export interface IBonusUsecase {
     entityId: string,
   ): BonusReponseGetAll;
   getAllActiveByEntityId(entityId: string): Promise<IBonus[]>;
-  create(data: InputBonus): Promise<IBonus>;
   getById(id: string): Promise<IBonus>;
-
   create(input: InputBonus): Promise<IBonus>;
   update(id: string, data: InputBonus): Promise<IBonus>;
   delete(id: string): Promise<boolean>;
