@@ -28,12 +28,55 @@ const SectionImageSchema = new Schema(
   { _id: false },
 );
 
+const SectionPaddingSchema = new Schema(
+  {
+    top: { type: Number, default: 40 },
+    right: { type: Number, default: 0 },
+    bottom: { type: Number, default: 40 },
+    left: { type: Number, default: 0 },
+  },
+  { _id: false },
+);
+
+const SectionMarginSchema = new Schema(
+  {
+    top: { type: Number, default: 0 },
+    bottom: { type: Number, default: 0 },
+  },
+  { _id: false },
+);
+
+// Старые пресеты (одно вертикальное значение) — запись до перехода панели
+// на px, зеркало LEGACY_PADDING_VERTICAL_PX в section-style.ts.
+const LEGACY_PADDING_VERTICAL_PX: Record<string, number> = {
+  none: 0,
+  sm: 16,
+  md: 40,
+  lg: 72,
+};
+
+const legacyPaddingToPx = (preset: string) => {
+  const vertical = LEGACY_PADDING_VERTICAL_PX[preset] ?? LEGACY_PADDING_VERTICAL_PX.md;
+
+  return { top: vertical, right: 0, bottom: vertical, left: 0 };
+};
+
 const SectionLayoutSchema = new Schema(
   {
     width: { type: String, default: "container", trim: true },
     bg: { type: SectionBgSchema, default: () => ({}) },
     image: { type: SectionImageSchema, default: () => ({}) },
-    padding: { type: String, default: "md", trim: true },
+    // Запись до этой правки хранит пресет строкой (`none/sm/md/lg`) — set
+    // ловит её при гидратации документа и переводит в px, как и normalizeSectionLayout
+    // на клиенте.
+    padding: {
+      type: SectionPaddingSchema,
+      default: () => ({}),
+      set: (value: unknown) =>
+        typeof value === "string" ? legacyPaddingToPx(value) : value,
+    },
+    margin: { type: SectionMarginSchema, default: () => ({}) },
+    radius: { type: Number, default: 0 },
   },
   { _id: false },
 );

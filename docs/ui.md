@@ -252,22 +252,33 @@ also assembles the sections into flat HTML — so a site that has not been rebui
 rendering the same article from `content` and notices nothing.
 
 Because there is no outer container, `layout.width` means what it says: a `container` section
-carries the container classes itself, a `full` one is edge-to-edge and puts the container
-around its _inside_ instead. No `100vw`, no negative margin, no sideways scroll — those exist
-only in the panel's fallback HTML, where the markup lives inside the shared container and has
-to fight its way out.
+gets a wrapping `<div>` with the container classes around the whole `<section>` (background
+included), a `full` one leaves that wrapper off and puts the same container classes on the
+`<section>`'s _inside_ instead, so the background goes edge-to-edge while the text stays in the
+column. No `100vw`, no negative margin, no sideways scroll — those exist only in the panel's
+fallback HTML, where the markup lives inside the shared container and has to fight its way out.
+The container classes themselves carry no horizontal padding any more — a section's own
+`padding.left`/`right` (px, operator-set) is what insets it, and inline `style="padding:…"`
+would silently win over a `px-*` class sitting on the same element regardless of source order.
 
 Section bodies go through the same `RuntimeTemplateLayout`, so shortcodes work untouched:
 `shortcodesConfig` sits on the post as a whole and `uniqId` addresses a block across the
 entire article, not within one section.
 
 **`shared/utils/section-style.ts` is a mirror of `appspro/shared/utils/article-sections.js`.**
-Colours and padding are emitted as an inline `style`, never as classes: the values come out of
-Mongo, and `@config` means a class assembled at runtime is never compiled. A brand token
-becomes `color-mix(in srgb, var(--color-primary-200) 40%, transparent)` rather than a resolved
-colour, so repainting the brand repaints articles that were written long before. If that
-formula changes on one side and not the other, the same article renders differently depending
-on which of the two paths drew it.
+Colours, padding, margin and radius are emitted as an inline `style`, never as classes: the
+values come out of Mongo, and `@config` means a class assembled at runtime is never compiled.
+`layout.padding` is an object (`{top,right,bottom,left}`, px) rather than the four presets it
+used to be — a record written before that change still stores a preset string
+(`none`/`sm`/`md`/`lg`), and `normalizeSectionLayout` converts it to px on the way in so old and
+new records render the same way. The outer margin (`margin.top`/`bottom`, gap from the
+neighbouring sections) is written as `margin-top`/`margin-bottom` specifically, never the
+`margin` shorthand — the panel's own fallback HTML relies on `margin-left` for its "full width"
+escape trick, and the shorthand would zero that out if it ever landed on the same element. A
+brand token becomes `color-mix(in srgb, var(--color-primary-200) 40%, transparent)` rather than
+a resolved colour, so repainting the brand repaints articles that were written long before. If
+that formula changes on one side and not the other, the same article renders differently
+depending on which of the two paths drew it.
 
 ## Known debt
 

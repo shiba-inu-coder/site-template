@@ -75,12 +75,38 @@ export interface PostSectionImage {
   overlay: number;
 }
 
+export interface PostSectionPadding {
+  top: number;
+  right: number;
+  bottom: number;
+  left: number;
+}
+
+export interface PostSectionMargin {
+  top: number;
+  bottom: number;
+}
+
+// Пресет, которым панель хранила отступ до перехода на px — запись старой
+// эпохи в site-template ещё может прийти в этой форме. `PostSectionLayout`
+// сам остаётся нормализованной (px) формой — принять и то, и другое умеет
+// только normalizeSectionLayout в section-style.ts, через RawPostSectionLayout.
+export type LegacyPostSectionPadding = "none" | "sm" | "md" | "lg";
+
 export interface PostSectionLayout {
   width: "container" | "full";
   bg: PostSectionBg;
   image: PostSectionImage;
-  padding: "none" | "sm" | "md" | "lg";
+  padding: PostSectionPadding;
+  margin: PostSectionMargin;
+  radius: number;
 }
+
+// Вход normalizeSectionLayout: запись любой эпохи — padding может быть ещё
+// строковым пресетом, margin/radius могут отсутствовать вовсе.
+export type RawPostSectionLayout = Partial<Omit<PostSectionLayout, "padding">> & {
+  padding?: PostSectionPadding | LegacyPostSectionPadding;
+};
 
 export interface PostSectionChild {
   tag: "h3" | "h4";
