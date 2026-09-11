@@ -112,6 +112,14 @@ export const readVaultSecrets = async ({
     throw new Error("Vault запечатан — распечатай его на мониторинг-ноде");
   }
 
+  // 403 значит отозванный или истёкший токен, а не проблему Vault: так легла
+  // панель и оба стейджинг-слота 09.09, когда токен от 08.08 никто не продлил.
+  if (res.status === 403) {
+    throw new Error(
+      "Токен Vault отозван или истёк — перевыпусти: bash scripts/vault-rotate-token.sh на ноде",
+    );
+  }
+
   if (!res.ok) {
     throw new Error(`Vault ответил ${res.status} на ${path}`);
   }
