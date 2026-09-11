@@ -11,12 +11,13 @@
         <!-- id на заголовке, а не только на секции: оглавление ищет якорь
              через getElementById и скроллит к самому заголовку. Тот же id
              ставит запасной HTML-путь в панели. -->
-        <h2
+        <component
+          :is="index === 0 ? 'h1' : 'h2'"
           v-if="section.title"
           :id="section.uid || undefined"
         >
           {{ section.title }}
-        </h2>
+        </component>
         <RuntimeTemplateLayout
           :slug="slug"
           :template="section.body"
