@@ -4,14 +4,40 @@
     class="mt-18"
   >
     <slot>
-      <IntroLayout></IntroLayout>
-      <PostSections
-        v-if="restSections.length"
-        :sections="restSections"
-        :slug="slug"
-      />
+      <template v-if="sections?.length">
+        <div class="px-2.5 md:px-4 xl:px-0 w-full max-w-7xl mx-auto">
+          <span
+            v-if="postDated"
+            class="text-step-8 text-accent-200 font-medium block"
+          >
+            {{ seoConfig.translates.lastUpdated }}:
+            <NuxtTime
+              :datetime="postDated"
+              month="long"
+              day="2-digit"
+              :locale="seoConfig.site.lang"
+              year="numeric"
+            />
+          </span>
+          <BreadcrumbsLayout
+            v-if="breadcrumbs.length"
+            :breadcrumbs="breadcrumbs"
+          ></BreadcrumbsLayout>
+          <PostButtonRef
+            v-if="isAllow"
+            :size="'big'"
+            :slug="seoConfig.site.brandSlug"
+            position="left"
+            >{{ seoConfig.translates.playNow }}</PostButtonRef
+          >
+        </div>
+        <PostSections
+          :sections="sections"
+          :slug="slug"
+        />
+      </template>
       <div
-        v-else-if="!sections?.length"
+        v-else
         class="px-2.5 md:px-4 xl:px-0 w-full max-w-7xl mx-auto relative"
       >
         <RuntimeTemplateLayout
@@ -26,18 +52,28 @@
 </template>
 <script setup lang="ts">
 import BonusLayout from "#rc/components/layout/BonusLayout.vue";
+import BreadcrumbsLayout from "#rc/components/layout/BreadcrumbsLayout.vue";
 import RuntimeTemplateLayout from "#rc/components/layout/RuntimeTemplateLayout.vue";
 import PostSections from "#rc/components/post/PostSections.vue";
-import IntroLayout from "#rc/components/layout/IntroLayout.vue";
+import PostButtonRef from "#rc/components/post/PostButtonRef.vue";
 import ButtonFastUpLayout from "#rc/components/layout/ButtonFastUpLayout.vue";
 import { seoConfig } from "@@/seo.conf";
 import { getCloudinaryBaseUrl } from "#rc/utils/get-cloudinary-base-url";
 import { logoSize } from "#rc/utils/logo-size";
 
-const { createdAt, updatedAt, content, sections, slug, metaTags, title } =
-  usePost();
+const {
+  createdAt,
+  updatedAt,
+  content,
+  sections,
+  slug,
+  metaTags,
+  title,
+  postDated,
+  breadcrumbs,
+} = usePost();
 
-const restSections = computed(() => sections.value.slice(1));
+const isAllow = computed(() => breadcrumbs.value.length === 0);
 
 const SITE_URL = computed(() => useRuntimeConfig().public.SITE_URL);
 const CLOUDINARY_BASE_URL = computed(() =>
