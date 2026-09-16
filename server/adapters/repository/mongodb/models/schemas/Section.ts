@@ -56,7 +56,8 @@ const LEGACY_PADDING_VERTICAL_PX: Record<string, number> = {
 };
 
 const legacyPaddingToPx = (preset: string) => {
-  const vertical = LEGACY_PADDING_VERTICAL_PX[preset] ?? LEGACY_PADDING_VERTICAL_PX.md;
+  const vertical =
+    LEGACY_PADDING_VERTICAL_PX[preset] ?? LEGACY_PADDING_VERTICAL_PX.md;
 
   return { top: vertical, right: 0, bottom: vertical, left: 0 };
 };

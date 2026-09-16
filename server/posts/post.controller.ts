@@ -3,7 +3,10 @@ import type { H3Event } from "h3";
 import { AppError } from "#sg/lib/app-error";
 import { AppLogger } from "#sg/lib/app-logger";
 import { SettingModel } from "#sg/adapters/repository/mongodb/models/setting.model";
-import { isPreviewGrantLive, PREVIEW_COOKIE_NAME } from "#shared/utils/preview-link";
+import {
+  isPreviewGrantLive,
+  PREVIEW_COOKIE_NAME,
+} from "#shared/utils/preview-link";
 import { PostSlugRegex, isDev } from "#shared/constants/base";
 
 /**
