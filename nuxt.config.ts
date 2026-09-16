@@ -1,5 +1,4 @@
 import { CLOUDINARY_CLOUD_NAME, isDev } from "./shared/constants/base";
-import { seoConfig } from "./seo.conf";
 import tailwindcss from "@tailwindcss/vite";
 import { getCloudinaryBaseUrl } from "./app/utils/get-cloudinary-base-url";
 import { fileURLToPath } from "url";
@@ -14,16 +13,11 @@ function getCurrentDirectory(p: string) {
 export default defineNuxtConfig({
   app: {
     head: {
-      // Тема живёт здесь, а не в app.vue: страницу ошибки рисует error.vue
-      // вместо app.vue, и заданная там тема на 404 не доезжала — светлый сайт
-      // отдавал тёмный нейтральный слой.
-      htmlAttrs: {
-        lang: seoConfig.site.lang,
-        "data-theme": seoConfig.site.theme,
-      },
+      // Язык, тема и `color-scheme` живут в `app/plugins/ui-theme.ts`: их
+      // значение приходит из базы в рантайме, а сюда попало бы только то, что
+      // знала о сайте машина сборки.
       meta: [
         { charset: "utf-8" },
-        { name: "color-scheme", content: seoConfig.site.theme },
         {
           name: "viewport",
           content: "width=device-width, initial-scale=1.0",
@@ -125,6 +119,7 @@ export default defineNuxtConfig({
       CLOUDINARY_CLOUD_NAME,
       SITE_URL: process.env.SITE_URL,
       DOMAIN_NAME: process.env.DOMAIN_NAME,
+      PANEL_ORIGINS: process.env.PANEL_ORIGINS,
     },
   },
 

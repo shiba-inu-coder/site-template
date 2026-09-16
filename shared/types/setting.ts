@@ -38,10 +38,15 @@ export interface ISetting<Id = ObjectId> {
   uiTheme: UiTheme;
 }
 
+// `uiTheme` необязателен ровно здесь: сайт, который тему в панели ещё не
+// заводил, читает цвета из собранного образа, и в ответе поля либо нет, либо
+// оно пустой объект (см. `isUiThemeConfigured`).
 export type ISettingPublic = Pick<
   ISetting<Pick<IPost, "title" | "slug">>,
-  "redirectsRoutes" | "headerLinks" | "uiTheme"
->;
+  "redirectsRoutes" | "headerLinks"
+> & {
+  uiTheme?: UiTheme | null;
+};
 
 export interface ISettingDocument extends ISetting, Document {}
 

@@ -246,6 +246,21 @@ const resolveRef = (ref: UiSchemeRef, theme: UiTheme): string => {
   return ref;
 };
 
+const RAMP_SHADES = [300, 200, 100] as const;
+
+// `Setting.uiTheme` объявлен в монге с `default: () => ({})`, так что объект
+// темы приходит всегда — и «темы нет» отличается от «тема есть» только тем,
+// заполнены ли режим и все девять цветов. Неполную применять нельзя:
+// `resolveRef` вернёт вместо цвета саму ссылку, браузер выбросит объявление, и
+// элемент останется без цвета вовсе — это хуже, чем бренд, собранный в образ.
+export const isUiThemeConfigured = (
+  theme: UiTheme | null | undefined,
+): theme is UiTheme =>
+  Boolean(theme?.mode && theme.colors) &&
+  BRAND_FAMILIES.every((family) =>
+    RAMP_SHADES.every((shade) => Boolean(theme.colors[family]?.[shade])),
+  );
+
 // `scheme` может не покрывать все токены (старая запись до добавления нового
 // токена) — недостающие достраиваются дефолтом, а не роняют резолв.
 export const resolveScheme = (theme: UiTheme): Record<UiToken, string> => {
@@ -268,24 +283,44 @@ export const themeToCssVars = (theme: UiTheme): string => {
     (token) => `  --color-ui-${token}: ${resolved[token]};`,
   );
 
-  lines.push(`  --radius-primary: ${theme.geometry.radius};`);
-  lines.push(`  --font-primary: ${theme.type.body.family};`);
-  lines.push(`  --font-heading: ${theme.type.display.family};`);
+  // Ось, которой в записи нет, не переопределяется пустотой: значение из
+  // `:root` собранного образа остаётся жить.
+  if (theme.geometry?.radius) {
+    lines.push(`  --radius-primary: ${theme.geometry.radius};`);
+  }
+  if (theme.type?.body?.family) {
+    lines.push(`  --font-primary: ${theme.type.body.family};`);
+  }
+  if (theme.type?.display?.family) {
+    lines.push(`  --font-heading: ${theme.type.display.family};`);
+  }
 
   return `:root {\n${lines.join("\n")}\n}`;
 };
 
-// Сборка href без @nuxt/fonts — для превью/панели, где сборка сайта не
-// поднята. `weights` по умолчанию покрывает то, что реально используют шрифты
-// шаблона (текст + полужирный + подзаголовки).
-export const googleFontsHref = (
-  fontFamily: string,
-  weights: number[] = [400, 500, 700],
-): string => {
-  const family = fontFamily.trim().replace(/\s+/g, "+");
-  const weightAxis = [...weights].sort((a, b) => a - b).join(";");
+// Что реально используют шрифты шаблона: текст + полужирный + подзаголовки.
+export const GOOGLE_FONT_WEIGHTS = [400, 500, 700];
 
-  return `https://fonts.googleapis.com/css2?family=${family}:wght@${weightAxis}&display=swap`;
+// Сборка href без @nuxt/fonts — тот модуль сканирует CSS на сборке и о
+// семействе, приехавшем из базы, не знает. Пара семейств уходит одной
+// ссылкой: два запроса к fonts.googleapis.com вместо одного ничего не дают.
+export const googleFontsHref = (
+  fontFamily: string | string[],
+  weights: number[] = GOOGLE_FONT_WEIGHTS,
+): string => {
+  const families = [
+    ...new Set(
+      (Array.isArray(fontFamily) ? fontFamily : [fontFamily])
+        .map((name) => name.trim())
+        .filter(Boolean),
+    ),
+  ];
+  const weightAxis = [...new Set(weights)].sort((a, b) => a - b).join(";");
+  const query = families
+    .map((name) => `family=${name.replace(/\s+/g, "+")}:wght@${weightAxis}`)
+    .join("&");
+
+  return `https://fonts.googleapis.com/css2?${query}&display=swap`;
 };
 
 // Дефолт шаблона до 6a/5b: тот же primary/active/accent, что сейчас в

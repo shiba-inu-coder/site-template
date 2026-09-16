@@ -1,39 +1,39 @@
-import { DEFAULT_UI_THEME_DARK } from "#shared/utils/ui-theme";
+import type { UiTheme } from "#shared/utils/ui-theme";
 
 const SETTINGS_MODULE_NAME = "settings";
 
-export const useSettings = () => {
-  const { $api } = useNuxtApp();
+const emptySettings = (): ISettingPublic => ({
+  redirectsRoutes: [],
+  headerLinks: [],
+  uiTheme: null,
+});
 
-  const state = useState<ISettingPublic>(SETTINGS_MODULE_NAME, () =>
-    shallowRef({
-      redirectsRoutes: [],
-      headerLinks: [],
-      uiTheme: DEFAULT_UI_THEME_DARK,
-    }),
+// Загрузку держит `app/plugins/ui-theme.ts`: он ходит в паблик-роут до
+// рендера, иначе тема доезжала бы уже после первой отрисовки.
+export const useSettings = () => {
+  const settings = useState<ISettingPublic>(
+    SETTINGS_MODULE_NAME,
+    emptySettings,
   );
 
-  const redirectsRoutes = computed(() => state.value.redirectsRoutes);
-  const headerLinks = computed(() => state.value.headerLinks);
+  const redirectsRoutes = computed(() => settings.value.redirectsRoutes);
+  const headerLinks = computed(() => settings.value.headerLinks);
+  const uiTheme = computed(() => settings.value.uiTheme);
 
-  const setSettings = (data: ISettingPublic) => {
-    const { redirectsRoutes, headerLinks, uiTheme } = data;
-
-    state.value.redirectsRoutes = redirectsRoutes;
-    state.value.headerLinks = headerLinks;
-    state.value.uiTheme = uiTheme;
+  const setSettings = (data: Partial<ISettingPublic> | null | undefined) => {
+    settings.value = { ...emptySettings(), ...(data || {}) };
   };
 
-  const GET_SETTINGS = () => {
-    return useAsyncData<ISettingPublic>(async (_nuxtApp) => {
-      return await $api()<ISettingPublic>(`/api/v1/public/settings/settings`);
-    });
+  const setUiTheme = (theme: UiTheme | null) => {
+    settings.value = { ...settings.value, uiTheme: theme };
   };
 
   return {
-    GET_SETTINGS,
-    headerLinks,
-    setSettings,
+    settings,
     redirectsRoutes,
+    headerLinks,
+    uiTheme,
+    setSettings,
+    setUiTheme,
   };
 };

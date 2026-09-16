@@ -14,10 +14,4 @@ const FooterLayout = defineLazyHydrationComponent(
   "visible",
   () => import("#rc/components/layout/FooterLayout.vue"),
 );
-
-const { GET_SETTINGS, setSettings } = useSettings();
-
-GET_SETTINGS().then(({ data }) => {
-  setSettings(data.value);
-});
 </script>
