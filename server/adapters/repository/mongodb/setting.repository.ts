@@ -26,6 +26,7 @@ export class SettingRepository implements ISettingRepository {
       return {
         redirectsRoutes: data.redirectsRoutes,
         headerLinks: data.headerLinks,
+        uiTheme: data.uiTheme,
       };
     } catch (e: any) {
       throw AppError.handleMongoError(e);

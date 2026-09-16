@@ -35,11 +35,12 @@ export interface ISetting<Id = ObjectId> {
 
   headerLinks: HeaderLink<Id>[];
   previewGrants: SettingPreviewGrant[];
+  uiTheme: UiTheme;
 }
 
 export type ISettingPublic = Pick<
   ISetting<Pick<IPost, "title" | "slug">>,
-  "redirectsRoutes" | "headerLinks"
+  "redirectsRoutes" | "headerLinks" | "uiTheme"
 >;
 
 export interface ISettingDocument extends ISetting, Document {}

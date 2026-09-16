@@ -7,6 +7,7 @@ import {
 import { RedirectsRoutesSchema } from "./schemas/RedirectsRoutes";
 import { HeaderLinkSchema } from "./schemas/HeaderLink";
 import { PreviewGrantSchema } from "./schemas/PreviewGrant";
+import { UiThemeSchema } from "./schemas/UiTheme";
 
 const ModelSchema = new Schema<ISettingDocument, ISettingModel>(
   {
@@ -28,6 +29,10 @@ const ModelSchema = new Schema<ISettingDocument, ISettingModel>(
     previewGrants: {
       type: [PreviewGrantSchema],
       default: () => [],
+    },
+    uiTheme: {
+      type: UiThemeSchema,
+      default: () => ({}),
     },
   },
   {
