@@ -32,6 +32,11 @@ export const usePost = <E>() => {
   const verdictBox = computed(
     () => state.value.currentPost.shortcodesConfig.verdictBox ?? {},
   );
+  // Списком, а не по uniqId: сайдбару и липкому CTA нужен первый бонус
+  // страницы, а его идентификатора они не знают.
+  const bonusBoxes = computed(
+    () => state.value.currentPost.shortcodesConfig.bonusBoxes ?? [],
+  );
   const breadcrumbs = computed(() => state.value.currentPost.breadcrumbs);
   const postDated = computed(
     () =>
@@ -147,6 +152,7 @@ export const usePost = <E>() => {
     faq,
     ratingStrip,
     verdictBox,
+    bonusBoxes,
     title,
     updatedAt,
     createdAt,

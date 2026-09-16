@@ -1,68 +1,184 @@
 <template>
-  <footer>
-    <div class="px-5 border-t border-ui-panel-bg">
-      <div class="grid grid-cols-1 py-6">
-        <div
-          class="flex items-center justify-center space-x-5 col-span-5 md:col-span-1 mb-6"
+  <footer class="site-footer">
+    <div
+      v-if="variant === 'columns' || variant === 'disclaimer'"
+      class="grid gap-6 px-5 py-8 md:grid-cols-[1.4fr_1fr_1fr] md:px-8"
+    >
+      <div>
+        <p
+          v-if="siteConfig.layout.footer.title"
+          class="mb-2 font-semibold text-ui-heading"
         >
-          <a
-            v-for="(gamblingIcon, i) in seoConfig.layout.footer.legalLogos"
-            :key="i"
-            :href="gamblingIcon.src"
-          >
-            <NuxtImg
-              loading="lazy"
-              width="auto"
-              provider="cloudinary"
-              height="50"
-              :src="gamblingIcon.src"
-              :alt="gamblingIcon.alt"
-            />
-          </a>
-        </div>
-        <div
-          class="col-span-5 md:col-span-4 leading-5 text-step-9 font-normal text-ui-text"
+          {{ siteConfig.layout.footer.title }}
+        </p>
+        <nuxt-link
+          v-if="siteConfig.logo.src"
+          to="/"
+          class="logo inline-block"
         >
-          <div v-html="seoConfig.layout.footer.body"></div>
-        </div>
+          <NuxtImg
+            provider="cloudinary"
+            loading="lazy"
+            v-bind="logoSize(siteConfig.logo, 32, 180)"
+            class="h-auto max-h-8 w-auto max-w-[180px] object-contain"
+            :alt="siteConfig.logo.alt"
+            :src="siteConfig.logo.src"
+          />
+        </nuxt-link>
+      </div>
+      <div
+        v-if="links.length"
+        class="grid content-start gap-1.5 text-step-8"
+      >
+        <nuxt-link
+          v-for="{ link, name } in links"
+          :key="link"
+          :to="link"
+          class="app-link"
+        >
+          {{ name }}
+        </nuxt-link>
+      </div>
+      <div
+        v-if="legalLogos.length"
+        class="flex flex-wrap items-center gap-4"
+      >
+        <a
+          v-for="(gamblingIcon, i) in legalLogos"
+          :key="i"
+          :href="gamblingIcon.src"
+        >
+          <NuxtImg
+            loading="lazy"
+            width="auto"
+            provider="cloudinary"
+            height="50"
+            :src="gamblingIcon.src"
+            :alt="gamblingIcon.alt"
+          />
+        </a>
       </div>
     </div>
+
     <div
-      class="flex-col-reverse bg-ui-footer-bg md:flex-row items-center flex flex-wrap justify-around py-3 text-step-8 gap-4"
+      v-if="variant === 'centered'"
+      class="grid justify-items-center gap-4 px-5 py-8 text-center"
     >
       <nuxt-link
-        v-for="{ link, name } in seoConfig.layout.footer.links"
-        :key="link"
-        :to="link"
-        class="app-link"
-      >
-        {{ name }}
-      </nuxt-link>
-    </div>
-    <div
-      class="bg-ui-footer-bg-alt flex-wrap flex-col gap-5 md:px-0 pb-6 pt-6 flex justify-center items-center mt-5"
-    >
-      <p class="text-ui-text text-step-9 uppercase text-center">
-        {{ seoConfig.layout.footer.title }}
-      </p>
-      <nuxt-link
-        v-if="seoConfig.logo.src"
+        v-if="siteConfig.logo.src"
         to="/"
+        class="logo"
       >
         <NuxtImg
           provider="cloudinary"
           loading="lazy"
-          v-bind="logoSize(32, 180)"
-          class="h-auto w-auto max-h-8 max-w-[180px] object-contain"
-          :alt="seoConfig.logo.alt"
-          :src="seoConfig.logo.src"
+          v-bind="logoSize(siteConfig.logo, 32, 180)"
+          class="h-auto max-h-8 w-auto max-w-[180px] object-contain"
+          :alt="siteConfig.logo.alt"
+          :src="siteConfig.logo.src"
         />
       </nuxt-link>
+      <div class="flex flex-wrap justify-center gap-4 text-step-8">
+        <nuxt-link
+          v-for="{ link, name } in links"
+          :key="link"
+          :to="link"
+          class="app-link"
+        >
+          {{ name }}
+        </nuxt-link>
+      </div>
+      <div
+        v-if="legalLogos.length"
+        class="flex flex-wrap items-center justify-center gap-4"
+      >
+        <a
+          v-for="(gamblingIcon, i) in legalLogos"
+          :key="i"
+          :href="gamblingIcon.src"
+        >
+          <NuxtImg
+            loading="lazy"
+            width="auto"
+            provider="cloudinary"
+            height="50"
+            :src="gamblingIcon.src"
+            :alt="gamblingIcon.alt"
+          />
+        </a>
+      </div>
+      <p
+        v-if="siteConfig.layout.footer.title"
+        class="text-step-9 uppercase text-ui-text"
+      >
+        {{ siteConfig.layout.footer.title }}
+      </p>
+    </div>
+
+    <div
+      v-if="variant === 'disclaimer'"
+      class="border-t border-ui-panel-border px-5 py-4 text-step-9 text-ui-muted md:px-8"
+    >
+      <div
+        v-if="legalLogos.length"
+        class="mb-2 flex flex-wrap items-center gap-2"
+      >
+        <span
+          v-for="(gamblingIcon, i) in legalLogos"
+          :key="i"
+          class="rounded-primary border border-ui-panel-border px-2 py-1 text-ui-text"
+        >
+          {{ gamblingIcon.alt }}
+        </span>
+      </div>
+      <div v-html="siteConfig.layout.footer.body"></div>
+    </div>
+
+    <div
+      v-else-if="variant !== 'minimal'"
+      class="border-t border-ui-panel-bg px-5 py-6 text-step-9 leading-5 font-normal text-ui-text md:px-8"
+    >
+      <div v-html="siteConfig.layout.footer.body"></div>
+    </div>
+
+    <div
+      class="flex flex-wrap items-center justify-center gap-4 bg-ui-footer-bg px-5 py-3 text-step-8 md:px-8"
+    >
+      <template v-if="variant === 'minimal'">
+        <nuxt-link
+          v-for="{ link, name } in links"
+          :key="link"
+          :to="link"
+          class="app-link"
+        >
+          {{ name }}
+        </nuxt-link>
+      </template>
+      <p
+        v-if="variant !== 'centered' && siteConfig.layout.footer.title"
+        class="text-step-9 uppercase text-ui-text"
+      >
+        {{ siteConfig.layout.footer.title }}
+      </p>
     </div>
   </footer>
 </template>
 
 <script setup lang="ts">
 import { logoSize } from "#rc/utils/logo-size";
-import { seoConfig } from "@@/seo.conf";
+import { pickVariant } from "#shared/utils/block-variant";
+
+const siteConfig = useSiteConfig();
+const { variantFor } = useUiTheme();
+
+const VARIANTS = ["columns", "minimal", "centered", "disclaimer"] as const;
+
+const variant = computed(() =>
+  pickVariant(VARIANTS, "columns", variantFor("footer")),
+);
+
+const links = computed(() => siteConfig.value.layout.footer.links || []);
+const legalLogos = computed(
+  () => siteConfig.value.layout.footer.legalLogos || [],
+);
 </script>

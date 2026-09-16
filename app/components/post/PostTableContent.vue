@@ -1,6 +1,7 @@
 <template>
   <nav
     v-if="tableContent.length"
+    class="toc-block"
     :class="ROOT_CLASSES[variant]"
   >
     <span
@@ -8,7 +9,7 @@
       class="block mb-2 text-step-9 uppercase tracking-wide"
       :class="TITLE_CLASSES[variant]"
     >
-      {{ seoConfig.translates.tableContent }}
+      {{ siteConfig.translates.tableContent }}
     </span>
     <ol
       class="not-format"
@@ -45,8 +46,9 @@
 </template>
 
 <script setup lang="ts">
-import { seoConfig } from "@@/seo.conf";
 import { pickVariant } from "#shared/utils/block-variant";
+
+const siteConfig = useSiteConfig();
 
 const { tableContent, tableContentEntry } = usePost();
 const { variantFor } = useUiTheme();

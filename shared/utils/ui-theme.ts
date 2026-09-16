@@ -333,8 +333,8 @@ const TEMPLATE_DEFAULT_COLORS: UiColors = {
 };
 
 const TEMPLATE_DEFAULT_TYPE: UiTypeAxis = {
-  display: { family: "Lato" },
-  body: { family: "Lato" },
+  display: { family: "Inter" },
+  body: { family: "Inter" },
 };
 
 const TEMPLATE_DEFAULT_GEOMETRY: UiGeometry = {

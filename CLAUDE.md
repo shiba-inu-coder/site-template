@@ -65,18 +65,20 @@ types/constants/utils). Aliases: `#sg` → `server/`, `#rc` → `app/`.
 - `components: false` — no component auto-import; import components explicitly.
 - Auto-imports from `shared/` are load-bearing: `EntityModel`, `PostCategory`, `buildURL`,
   `I*` types are used WITHOUT imports. Never "clean up" `shared/types/index.ts`.
-- All UI strings/branding come from `seo.conf.ts` — do not hardcode. The template's
-  defaults are neutral English; the real language arrives with the brand manifest.
+- All UI strings/branding come from `useSiteConfig()` — never from `seo.conf.ts` directly
+  and never hardcoded. That composable merges the site's own `settings.brand/layout/strings`
+  over `seo.conf.ts`, which is only the template's neutral English default. See
+  `docs/ui.md`, "Site config from DB".
 - Trailing slashes everywhere (`site.trailingSlash`, NuxtLink `trailingSlash: "append"`,
   url_normalize 301) — keep all three in sync.
 - Images are Cloudinary public IDs rendered via `<NuxtImg provider="cloudinary">`. Raw URLs
   (schema.org logo, CSS background) are built with `getCloudinaryBaseUrl(CLOUDINARY_CLOUD_NAME)` —
   never hardcode the cloud name. `logo.src` carries no file extension: Cloudinary `f_auto`
   serves whatever format was uploaded (svg/webp/png/jpg).
-- The favicon arrives as a file (`public/favicon.ico`) from the AppsPro brand-apply job, not as
-  a link in the config. The brandless template has no icon and declares no `<link rel="icon">` —
-  browsers still hit `/favicon.ico` themselves and get a 404, which is fine. Do not add the link
-  back.
+- The favicon is a Cloudinary public id in `settings.brand.favicon.src`, and
+  `app/plugins/ui-theme.ts` turns it into `<link rel="icon">` — only when it is set. The
+  brandless template declares no icon and has no `public/favicon.ico`: browsers still hit
+  `/favicon.ico` themselves and get a 404, which is fine. Do not commit one.
 - No auth/JWT anywhere: inactive (`isActive: false`) and deleted posts are 404 for everyone.
 - env vars: see `.env.example` (MONGO_URI, DB_NAME, SITE_URL, DOMAIN_NAME, CACHE_PURGE_SECRET).
   `.env` is for local dev only — in the container the same values come from Vault. The one

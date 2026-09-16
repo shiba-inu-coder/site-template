@@ -1,5 +1,4 @@
 import deepClone from "rfdc/default";
-import { DEFAULT_UI_THEME_DARK } from "../utils/ui-theme";
 
 const baseInital: Omit<IPost, "_id" | "breadcrumbs"> = {
   title: "",
@@ -84,15 +83,6 @@ export const initialStatePaymentMethod: Omit<
     alt: "",
   },
 };
-export const initialStateSetting: ISetting = {
-  robotsTXT: undefined,
-  externalSitemapUrl: "",
-  redirectsRoutes: [],
-  headerLinks: [],
-  previewGrants: [],
-  uiTheme: DEFAULT_UI_THEME_DARK,
-};
-
 export const initialStateSoftwareProvider: Omit<
   ISoftwareProvider,
   "_id" | "updatedAt" | "createdAt"

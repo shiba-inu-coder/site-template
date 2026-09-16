@@ -13,7 +13,7 @@
           height="90"
           :alt="entityLogo.alt"
           :src="entityLogo.path"
-          :modifiers="seoConfig.img.modifiers"
+          :modifiers="siteConfig.img.modifiers"
         ></NuxtImg>
         <PostCasinoRatingBonus
           :bonus-text="bonus.text"
@@ -33,7 +33,7 @@
           v-if="bonus.minDeposit.length"
           class="flex justify-between text-md"
         >
-          <span>{{ seoConfig.translates.entity.minDeposit }}</span>
+          <span>{{ siteConfig.translates.entity.minDeposit }}</span>
           <span class="block">{{ bonus.minDeposit }}</span>
         </div>
       </div>
@@ -50,7 +50,7 @@
             :padding="false"
             component-name="CasinosRatingShortcode"
             context="Casino Rating card in Post"
-            >{{ seoConfig.translates.playNow }}
+            >{{ siteConfig.translates.playNow }}
           </PostButtonRef>
         </span>
       </div>
@@ -60,7 +60,8 @@
 <script lang="ts" setup>
 import PostButtonRef from "#rc/components/post/PostButtonRef.vue";
 import PostCasinoRatingBonus from "./components/PostCasinoRatingBonus.vue";
-import { seoConfig } from "@@/seo.conf";
+
+const siteConfig = useSiteConfig();
 
 const { entityLogo, entitySlug } = defineProps<{
   entityLogo: {

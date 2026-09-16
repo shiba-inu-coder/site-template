@@ -26,7 +26,7 @@
             height="90"
             :alt="bookmaker.logo.alt"
             :src="bookmaker.logo.path"
-            :modifiers="seoConfig.img.modifiers"
+            :modifiers="siteConfig.img.modifiers"
           ></NuxtImg>
         </div>
         <div class="flex-1 flex shrink-[0] justify-start md:justify-center">
@@ -58,7 +58,7 @@
             :padding="false"
             component-name="BookmakersRatingShortcode"
             context="Bookmaker Rating card in Post"
-            >{{ seoConfig.translates.playNow }}
+            >{{ siteConfig.translates.playNow }}
           </PostButtonRef>
         </span>
         <ul class="flex flex-col not-format px-3 mt-2">
@@ -75,7 +75,7 @@
           class="mt-3 py-2 bg-ui-panel-bg text-step-8 text-ui-muted hover:text-ui-text transition duration-500 ease-in-out flex items-center justify-center gap-x-2 rounded-b-primary"
           @click="toggle(true)"
         >
-          <span>{{ seoConfig.translates.btnMoreInfo }}</span>
+          <span>{{ siteConfig.translates.btnMoreInfo }}</span>
           <svg-icon
             name="chevron-up"
             class="transform rotate-180 pt-0.5"
@@ -91,7 +91,8 @@ import PostBookmakerDrawer from "./components/PostBookmakerDrawer.vue";
 import PostEntityRibbon from "./components/PostEntityRibbon.vue";
 import PostBookmakerRating from "./components/PostBookmakerRating.vue";
 import PostBookmakerRatingBonus from "./components/PostBookmakerRatingBonus.vue";
-import { seoConfig } from "@@/seo.conf";
+
+const siteConfig = useSiteConfig();
 
 const {
   index,

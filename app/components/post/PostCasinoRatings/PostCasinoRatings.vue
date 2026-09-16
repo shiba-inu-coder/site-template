@@ -26,14 +26,15 @@
         class="bg-ui-cta-bg transition duration-500 ease-in-out hover:bg-ui-cta-hover px-4 py-2 rounded-primary text-step-6 font-medium"
         @click="toggleShowAll(true)"
       >
-        {{ seoConfig.translates.showMore }}
+        {{ siteConfig.translates.showMore }}
       </button>
     </div>
   </div>
 </template>
 <script setup lang="ts">
 import PostCasinoRatingCard from "./PostCasinoRatingCard.vue";
-import { seoConfig } from "@@/seo.conf";
+
+const siteConfig = useSiteConfig();
 
 const { uniqId } = defineProps<{
   uniqId: string;

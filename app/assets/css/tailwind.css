@@ -101,9 +101,9 @@
 
   --spacing-primary-1: calc(var(--spacing) * 3.5) calc(var(--spacing) * 2);
 
-  --font-primary: "Lato", sans-serif;
+  --font-primary: "Inter", sans-serif;
   /* Заголовки статьи. Если у бренда шрифт один, сюда приезжает то же семейство. */
-  --font-heading: "Lato", sans-serif;
+  --font-heading: "Inter", sans-serif;
 }
 
 :root {
@@ -443,4 +443,403 @@
 button:not(:disabled),
 [role="button"]:not(:disabled) {
   cursor: pointer;
+}
+
+/* UI axes. Каркас, типографика, геометрия и декор приезжают темой из базы:
+   `useUiTheme().frameAttrs` вешает их `data-*` атрибутами на `#site`, а
+   разводятся они здесь обычным CSS, а не классами Tailwind — `@config`
+   отключает скан исходников, и класс, собранный в рантайме, в сборку не
+   попадёт.
+
+   Два правила этого блока. Первое: значение оси, которого в теме нет,
+   атрибутом не приходит вовсе, поэтому правило пишется ТОЛЬКО на отклонение —
+   сайт без темы обязан выглядеть ровно так, как выглядел. Второе: цепляться не
+   за что, кроме утилитарных классов самих компонентов (`bg-ui-card-bg`,
+   `border-ui-panel-border`), — общего имени вроде `.card` в шаблоне нет, и
+   переставший использоваться класс тихо выключит ось, а не сломает страницу. */
+
+#article .text-step-1,
+#article .text-step-2 {
+  /* Акцидентный шрифт — не только заголовкам: крупная оценка и сумма бонуса
+     читаются как заголовок и набраны им же. */
+  font-family: var(--font-heading);
+}
+
+#site[data-scale="compact"] #article h1 {
+  font-size: 1.6rem;
+}
+
+#site[data-scale="compact"] #article h2 {
+  font-size: 1.4rem;
+}
+
+#site[data-scale="display"] #article h1 {
+  font-size: 2.4rem;
+  line-height: 1.15;
+}
+
+#site[data-scale="display"] #article h2 {
+  font-size: 2rem;
+}
+
+@media (min-width: 48rem) {
+  #site[data-scale="compact"] #article h1 {
+    font-size: 1.9rem;
+  }
+
+  #site[data-scale="compact"] #article h2 {
+    font-size: 1.6rem;
+  }
+
+  #site[data-scale="display"] #article h1 {
+    font-size: 3rem;
+  }
+
+  #site[data-scale="display"] #article h2 {
+    font-size: 2.4rem;
+  }
+}
+
+#site[data-h1="center"] #article h1,
+#site[data-h1="center"] .site-hero-text {
+  text-align: center;
+}
+
+#site[data-h1="center"] .site-hero-text {
+  justify-items: center;
+}
+
+#site[data-density="tight"] .shortcode {
+  margin-block: calc(var(--spacing) * 6);
+}
+
+#site[data-density="tight"] #article p {
+  margin-block: 10px;
+}
+
+#site[data-density="airy"] .shortcode {
+  margin-block: calc(var(--spacing) * 14);
+}
+
+#site[data-density="airy"] #article p {
+  margin-block: 20px;
+}
+
+#site[data-width="narrow"]:not([data-sidebar="toc"]):not(
+    [data-sidebar="toc-offer"]
+  )
+  #article
+  .max-w-7xl {
+  max-width: 52rem;
+}
+
+#site[data-h2="underline"] #article h2::after {
+  content: "";
+  display: block;
+  width: 44px;
+  height: 3px;
+  margin-top: 8px;
+  background: var(--color-ui-marker);
+}
+
+#site[data-h2="left-rule"] #article h2 {
+  padding-left: 12px;
+  border-left: 5px solid var(--color-ui-cta-bg);
+}
+
+#site[data-h2="dot"] #article h2::before {
+  content: "";
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  margin-right: 10px;
+  border-radius: 50%;
+  vertical-align: middle;
+  background: var(--color-ui-marker);
+}
+
+#site[data-h2="gradient"] #article h2,
+#site[data-h2="gradient"] #article h1 {
+  background: linear-gradient(
+    90deg,
+    var(--color-ui-heading),
+    var(--color-ui-marker)
+  );
+  background-clip: text;
+  color: transparent;
+}
+
+#site[data-h2="number"] #article {
+  counter-reset: h2-counter;
+}
+
+#site[data-h2="number"] #article h2 {
+  counter-increment: h2-counter;
+}
+
+#site[data-h2="number"] #article h2::before {
+  content: counter(h2-counter, decimal-leading-zero) " ";
+  margin-right: 8px;
+  font-size: 0.6em;
+  letter-spacing: 0.12em;
+  vertical-align: middle;
+  font-family: var(--font-primary);
+  color: var(--color-ui-marker);
+}
+
+#site[data-h2="line"] #article h2 {
+  padding-bottom: 6px;
+  border-bottom: 2px solid var(--color-ui-marker);
+}
+
+#site[data-bg="dots"] {
+  background-image: radial-gradient(
+    color-mix(in srgb, var(--color-ui-marker) 20%, transparent) 1.2px,
+    transparent 1.2px
+  );
+  background-size: 14px 14px;
+}
+
+#site[data-bg="grid"] {
+  background-image: linear-gradient(
+      color-mix(in srgb, var(--color-ui-panel-border) 70%, transparent) 1px,
+      transparent 1px
+    ),
+    linear-gradient(
+      90deg,
+      color-mix(in srgb, var(--color-ui-panel-border) 70%, transparent) 1px,
+      transparent 1px
+    );
+  background-size: 28px 28px;
+}
+
+#site[data-bg="stripes"] {
+  background-image: repeating-linear-gradient(
+    135deg,
+    transparent 0 26px,
+    color-mix(in srgb, var(--color-ui-cta-bg) 7%, transparent) 26px 28px
+  );
+}
+
+#site[data-bg="radial"] {
+  background-image: radial-gradient(
+    90% 36% at 50% 0%,
+    color-mix(in srgb, var(--color-ui-marker) 16%, transparent),
+    transparent 70%
+  );
+  background-repeat: no-repeat;
+}
+
+#site[data-img="square"] #article img,
+#site[data-img="square"] #article .rounded-primary {
+  border-radius: 0;
+}
+
+#site[data-img="framed"] #article img {
+  border: 2px solid var(--color-ui-marker);
+  box-shadow: 6px 6px 0
+    color-mix(in srgb, var(--color-ui-marker) 35%, transparent);
+}
+
+#site[data-img="tilt"] #article img {
+  transform: rotate(-1.5deg);
+}
+
+#site[data-borders="0"] #article .border-ui-card-border,
+#site[data-borders="0"] #article .border-ui-panel-border,
+#site[data-borders="0"] #article .border-ui-input-border {
+  border-color: transparent;
+}
+
+#site[data-borders="2"] #article .border-ui-card-border,
+#site[data-borders="2"] #article .border-ui-panel-border,
+#site[data-borders="2"] #article .border-ui-input-border {
+  border-width: 2px;
+}
+
+#site[data-shadow="soft"] #article .bg-ui-card-bg,
+#site[data-shadow="soft"] #article .bg-ui-panel-bg {
+  box-shadow: 0 8px 22px rgb(0 0 0 / 0.12);
+}
+
+#site[data-shadow="glow"] #article .bg-ui-card-bg,
+#site[data-shadow="glow"] #article .bg-ui-panel-bg {
+  box-shadow:
+    0 0 0 1px color-mix(in srgb, var(--color-ui-marker) 35%, transparent),
+    0 12px 34px color-mix(in srgb, var(--color-ui-cta-bg) 22%, transparent);
+}
+
+#site[data-btn~="pill"] [data-id="ref_link"],
+#site[data-btn~="pill"] .cta-button {
+  border-radius: 9999px;
+}
+
+#site[data-btn~="skew"] [data-id="ref_link"],
+#site[data-btn~="skew"] .cta-button {
+  transform: skew(-8deg);
+  font-style: italic;
+}
+
+#site[data-btn~="gradient"] [data-id="ref_link"].bg-ui-cta-bg,
+#site[data-btn~="gradient"] .cta-button {
+  background-image: linear-gradient(
+    90deg,
+    var(--color-ui-cta-bg),
+    var(--color-ui-marker)
+  );
+}
+
+#site[data-badge="square"] .bg-ui-badge-bg.rounded-full {
+  border-radius: var(--radius-primary);
+}
+
+/* Хиро. Сама полоса рисуется всегда одинаково, `heroStyle` меняет только
+   подложку; `skew` кладёт ленту псевдоэлементом, а не отдельным блоком в
+   разметке. */
+.site-hero {
+  background: var(--color-ui-panel-bg);
+  border-bottom: 1px solid var(--color-ui-card-border);
+}
+
+#site[data-hero-style="flat"] .site-hero {
+  background: var(--color-ui-page-bg);
+}
+
+#site[data-hero-style="radial"] .site-hero {
+  background: radial-gradient(
+    120% 80% at 50% 0%,
+    color-mix(in srgb, var(--color-ui-marker) 22%, var(--color-ui-page-bg)) 0%,
+    var(--color-ui-page-bg) 70%
+  );
+  border-top: 1px solid var(--color-ui-marker);
+  border-bottom: 1px solid
+    color-mix(in srgb, var(--color-ui-marker) 40%, transparent);
+}
+
+#site[data-hero-style="blobs"] .site-hero::before,
+#site[data-hero-style="blobs"] .site-hero::after {
+  content: "";
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(70px);
+  opacity: 0.6;
+  pointer-events: none;
+}
+
+#site[data-hero-style="blobs"] .site-hero::before {
+  width: 260px;
+  height: 260px;
+  right: -80px;
+  top: -90px;
+  background: var(--color-ui-cta-bg);
+}
+
+#site[data-hero-style="blobs"] .site-hero::after {
+  width: 220px;
+  height: 220px;
+  left: -90px;
+  bottom: -120px;
+  opacity: 0.45;
+  background: var(--color-ui-marker);
+}
+
+#site[data-hero-style="skew"] .site-hero {
+  border-bottom: 0;
+  padding-bottom: 34px;
+}
+
+#site[data-hero-style="skew"] .site-hero::after {
+  content: "";
+  position: absolute;
+  left: -6%;
+  right: -6%;
+  bottom: -10px;
+  height: 26px;
+  background: var(--color-ui-cta-bg);
+  transform: skewY(-2.5deg);
+}
+
+#site[data-hero-style="skew"] .site-hero h1 {
+  padding-left: 12px;
+  border-left: 6px solid var(--color-ui-cta-bg);
+}
+
+#site[data-hero-style="warm"] .site-hero {
+  background: radial-gradient(
+      90% 70% at 85% 0%,
+      color-mix(in srgb, var(--color-ui-cta-bg) 55%, transparent) 0%,
+      transparent 60%
+    ),
+    radial-gradient(
+      70% 60% at 10% 100%,
+      color-mix(in srgb, var(--color-ui-marker) 30%, transparent) 0%,
+      transparent 60%
+    ),
+    var(--color-ui-page-bg);
+}
+
+#site[data-hero-style="pale"] .site-hero {
+  background: linear-gradient(
+    135deg,
+    color-mix(in srgb, var(--color-ui-cta-bg) 12%, var(--color-ui-page-bg)),
+    color-mix(in srgb, var(--color-ui-marker) 10%, var(--color-ui-page-bg))
+  );
+}
+
+/* Единственная ветка, где токены переопределяются локально: подложка хиро
+   становится цветом футера, и нейтраль страницы на ней не читается. */
+#site[data-hero-style="solid"] .site-hero {
+  background: var(--color-ui-footer-bg);
+  border-bottom: 6px solid var(--color-ui-cta-bg);
+  --color-ui-heading: #ffffff;
+  --color-ui-text: #ffffff;
+  --color-ui-muted: rgb(255 255 255 / 0.75);
+  --color-ui-link: #ffffff;
+  --color-ui-panel-bg: rgb(255 255 255 / 0.08);
+  --color-ui-panel-border: rgb(255 255 255 / 0.2);
+  --color-ui-card-border: rgb(255 255 255 / 0.2);
+}
+
+/* Шапка на цветной подложке: белая нейтраль поверх брендового фона. */
+#site[data-header-inverted="true"] .site-header {
+  --color-ui-text: #ffffff;
+  --color-ui-heading: #ffffff;
+  --color-ui-muted: rgb(255 255 255 / 0.72);
+  --color-ui-link: #ffffff;
+  --color-ui-card-border: rgb(255 255 255 / 0.18);
+  --color-ui-panel-border: rgb(255 255 255 / 0.22);
+  --color-ui-input-bg: rgb(255 255 255 / 0.1);
+}
+
+/* Шапка в две строки и шапка по центру выше обычной, а отступ под фиксированной
+   шапкой задан на `#article` числом. */
+#site[data-header="two-row"] #article {
+  margin-top: 6.25rem;
+}
+
+#site[data-header="centered"] #article {
+  margin-top: 7rem;
+}
+
+#site[data-bands="true"] .band {
+  background-color: var(--color-ui-panel-bg);
+  border-top: 1px solid var(--color-ui-panel-border);
+  border-bottom: 1px solid var(--color-ui-panel-border);
+}
+
+@media (min-width: 48rem) {
+  /* Оглавление уехало в колонку — в потоке страницы оно только на телефоне. */
+  #site[data-sidebar="toc"] .toc-block,
+  #site[data-sidebar="toc-offer"] .toc-block {
+    display: none;
+  }
+}
+
+@media (max-width: 47.99rem) {
+  /* Липкая панель перекрывает низ страницы, и последняя строка футера уходила
+     бы под неё. */
+  #site[data-sticky="bar"] .site-footer,
+  #site[data-sticky="button"] .site-footer {
+    padding-bottom: 4.5rem;
+  }
 }

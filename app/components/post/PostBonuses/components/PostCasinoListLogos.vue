@@ -9,7 +9,7 @@
       :alt="item.title"
       format="svg"
       loading="lazy"
-      :modifiers="seoConfig.img.modifiers"
+      :modifiers="siteConfig.img.modifiers"
       :src="item.logo"
     >
     </NuxtImg>
@@ -24,7 +24,7 @@
   </div>
 </template>
 <script setup lang="ts">
-import { seoConfig } from "@@/seo.conf";
+const siteConfig = useSiteConfig();
 
 const { items } = defineProps<{
   items: {

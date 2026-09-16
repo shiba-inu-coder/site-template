@@ -1,4 +1,4 @@
-import { seoConfig } from "@@/seo.conf";
+import { getCloudinaryBaseUrl } from "#rc/utils/get-cloudinary-base-url";
 
 const parseOrigins = (raw: unknown): string[] =>
   String(raw || "")
@@ -15,30 +15,57 @@ export default defineNuxtPlugin({
   enforce: "pre",
   async setup(nuxtApp) {
     const route = useRoute();
-    const panelOrigins = parseOrigins(useRuntimeConfig().public.PANEL_ORIGINS);
+    const runtimeConfig = useRuntimeConfig();
+    const panelOrigins = parseOrigins(runtimeConfig.public.PANEL_ORIGINS);
     const { setSettings } = useSettings();
+    const siteConfig = useSiteConfig();
     const { mode, cssVars, fontsHref, contrast, setTheme } = useUiTheme();
+
+    // Фавикон приезжает public id Cloudinary, а не файлом: `public/favicon.ico`
+    // в шаблоне нет и панель его больше не коммитит. Пока id пуст, ссылки нет
+    // вовсе — браузер сам сходит за `/favicon.ico` и получит 404, что нормально.
+    const faviconHref = computed(() => {
+      const src = siteConfig.value.favicon.src;
+
+      if (!src) {
+        return "";
+      }
+
+      const base = getCloudinaryBaseUrl(
+        runtimeConfig.public.CLOUDINARY_CLOUD_NAME as string,
+      );
+
+      return `${base}f_auto,q_auto/${src}`;
+    });
 
     // Все композаблы вызываются до `await`: после него контекст Nuxt внутри
     // плагина не гарантирован. Голова описана геттером, поэтому ждать данных
     // ей не нужно — она пересоберётся, когда настройки лягут в состояние.
     useHead(() => ({
       htmlAttrs: {
-        lang: seoConfig.site.lang,
+        lang: siteConfig.value.site.lang,
         "data-theme": mode.value,
       },
       meta: [{ name: "color-scheme", content: mode.value }],
-      link: fontsHref.value
-        ? [
-            { rel: "preconnect", href: "https://fonts.googleapis.com" },
-            {
-              rel: "preconnect",
-              href: "https://fonts.gstatic.com",
-              crossorigin: "anonymous",
-            },
-            { rel: "stylesheet", href: fontsHref.value },
-          ]
-        : [],
+      link: [
+        ...(fontsHref.value
+          ? [
+              {
+                rel: "preconnect" as const,
+                href: "https://fonts.googleapis.com",
+              },
+              {
+                rel: "preconnect" as const,
+                href: "https://fonts.gstatic.com",
+                crossorigin: "anonymous" as const,
+              },
+              { rel: "stylesheet" as const, href: fontsHref.value },
+            ]
+          : []),
+        ...(faviconHref.value
+          ? [{ rel: "icon" as const, href: faviconHref.value }]
+          : []),
+      ],
       style: cssVars.value
         ? [
             {

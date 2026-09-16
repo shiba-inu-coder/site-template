@@ -1,23 +1,9 @@
-import type { Document, Model, ObjectId } from "mongoose";
+import type { Document, Model } from "mongoose";
 
 export interface SettingRedirectRoute {
   oldRoute: string;
   newRoute: string;
 }
-
-type LinkItem<Id = ObjectId> = {
-  type: "link";
-  post: Id;
-  title: string;
-};
-
-type GroupItem<Id = ObjectId> = {
-  type: "group";
-  title: string;
-  children: LinkItem<Id>[];
-};
-
-type HeaderLink<Id = ObjectId> = LinkItem<Id> | GroupItem<Id>;
 
 // Пропуск на стейджинг-сайт, выданный из панели. Наружу не отдаётся ни в
 // одном ответе: `id` — это и есть секрет.
@@ -28,23 +14,25 @@ export interface SettingPreviewGrant {
   createdBy: string;
 }
 
-export interface ISetting<Id = ObjectId> {
+export interface ISetting {
   robotsTXT: string;
   externalSitemapUrl: string;
   redirectsRoutes: SettingRedirectRoute[];
 
-  headerLinks: HeaderLink<Id>[];
+  brand: SiteBrand;
+  layout: SiteLayout;
+  strings: SiteStrings;
+
   previewGrants: SettingPreviewGrant[];
   uiTheme: UiTheme;
 }
 
-// `uiTheme` необязателен ровно здесь: сайт, который тему в панели ещё не
-// заводил, читает цвета из собранного образа, и в ответе поля либо нет, либо
-// оно пустой объект (см. `isUiThemeConfigured`).
-export type ISettingPublic = Pick<
-  ISetting<Pick<IPost, "title" | "slug">>,
-  "redirectsRoutes" | "headerLinks"
-> & {
+// Всё, что приходит сайту в рантайме, необязательно: сайт, которому панель
+// ещё не писала ни бренда, ни темы, рисует нейтральный шаблон из образа.
+export type ISettingPublic = Pick<ISetting, "redirectsRoutes"> & {
+  brand?: DeepPartial<SiteBrand> | null;
+  layout?: DeepPartial<SiteLayout> | null;
+  strings?: DeepPartial<SiteStrings> | null;
   uiTheme?: UiTheme | null;
 };
 

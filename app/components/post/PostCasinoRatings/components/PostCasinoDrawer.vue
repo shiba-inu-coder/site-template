@@ -22,7 +22,7 @@
             height="40"
             :alt="casino.logo.alt"
             loading="lazy"
-            :modifiers="seoConfig.img.modifiers"
+            :modifiers="siteConfig.img.modifiers"
             :src="casino.logo.path"
           ></NuxtImg>
           <span class="font-semibold text-step-4">{{ casino.title }}</span>
@@ -41,7 +41,7 @@
       >
         <nuxt-link
           class="font-semibold px-12 py-1 rounded-primary inline-flex justify-center transition-all focus:outline-none focus:ring-2 text-center border border-transparent bg-ui-cta-bg text-ui-cta-text hover:bg-ui-cta-hover focus:bg-ui-cta-hover text-step-6"
-          >{{ seoConfig.translates.playNow }}</nuxt-link
+          >{{ siteConfig.translates.playNow }}</nuxt-link
         >
       </div>
     </div>
@@ -49,7 +49,8 @@
 </template>
 <script lang="ts" setup>
 import PostCasinoRatingBody from "./PostCasinoRatingBody.vue";
-import { seoConfig } from "@@/seo.conf";
+const siteConfig = useSiteConfig();
+
 const model = defineModel({ type: Boolean });
 
 const emit = defineEmits<{

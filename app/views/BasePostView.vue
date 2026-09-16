@@ -5,17 +5,21 @@
   >
     <slot>
       <template v-if="sections?.length">
-        <div class="px-2.5 md:px-4 xl:px-0 w-full max-w-7xl mx-auto">
+        <HeroLayout v-if="heroEnabled"></HeroLayout>
+        <div
+          v-else
+          class="px-2.5 md:px-4 xl:px-0 w-full max-w-7xl mx-auto"
+        >
           <span
             v-if="postDated"
             class="text-step-8 text-ui-heading font-medium block"
           >
-            {{ seoConfig.translates.lastUpdated }}:
+            {{ siteConfig.translates.lastUpdated }}:
             <NuxtTime
               :datetime="postDated"
               month="long"
               day="2-digit"
-              :locale="seoConfig.site.lang"
+              :locale="siteConfig.site.lang"
               year="numeric"
             />
           </span>
@@ -26,15 +30,26 @@
           <PostButtonRef
             v-if="isAllow"
             :size="'big'"
-            :slug="seoConfig.site.brandSlug"
             position="left"
-            >{{ seoConfig.translates.playNow }}</PostButtonRef
+            >{{ siteConfig.translates.playNow }}</PostButtonRef
           >
         </div>
-        <PostSections
-          :sections="sections"
-          :slug="slug"
-        />
+        <div
+          :class="
+            hasSidebar
+              ? 'md:grid md:grid-cols-[minmax(0,1fr)_300px] md:gap-8 md:max-w-7xl md:mx-auto md:px-4'
+              : ''
+          "
+        >
+          <PostSections
+            :sections="sections"
+            :slug="slug"
+          />
+          <AsideLayout
+            v-if="hasSidebar"
+            :show-offer="frame.sidebar === 'toc-offer'"
+          ></AsideLayout>
+        </div>
       </template>
       <div
         v-else
@@ -45,21 +60,26 @@
           :template="content"
         />
       </div>
-      <BonusLayout></BonusLayout>
+      <StickyCtaLayout
+        v-if="stickyVariant !== 'none'"
+        :variant="stickyVariant"
+      ></StickyCtaLayout>
       <ButtonFastUpLayout></ButtonFastUpLayout>
     </slot>
   </div>
 </template>
 <script setup lang="ts">
-import BonusLayout from "#rc/components/layout/BonusLayout.vue";
+import AsideLayout from "#rc/components/layout/AsideLayout.vue";
 import BreadcrumbsLayout from "#rc/components/layout/BreadcrumbsLayout.vue";
+import HeroLayout from "#rc/components/layout/HeroLayout.vue";
 import RuntimeTemplateLayout from "#rc/components/layout/RuntimeTemplateLayout.vue";
+import StickyCtaLayout from "#rc/components/layout/StickyCtaLayout.vue";
 import PostSections from "#rc/components/post/PostSections.vue";
 import PostButtonRef from "#rc/components/post/PostButtonRef.vue";
 import ButtonFastUpLayout from "#rc/components/layout/ButtonFastUpLayout.vue";
-import { seoConfig } from "@@/seo.conf";
 import { getCloudinaryBaseUrl } from "#rc/utils/get-cloudinary-base-url";
 import { logoSize } from "#rc/utils/logo-size";
+import { pickVariant } from "#shared/utils/block-variant";
 
 const {
   createdAt,
@@ -73,7 +93,17 @@ const {
   breadcrumbs,
 } = usePost();
 
+const siteConfig = useSiteConfig();
+const { frame } = useUiTheme();
+const { enabled: heroEnabled } = useHeroContent();
+
 const isAllow = computed(() => breadcrumbs.value.length === 0);
+
+const hasSidebar = computed(() => (frame.value.sidebar || "none") !== "none");
+
+const stickyVariant = computed(() =>
+  pickVariant(["none", "bar", "button"] as const, "none", frame.value.sticky),
+);
 
 const SITE_URL = computed(() => useRuntimeConfig().public.SITE_URL);
 const CLOUDINARY_BASE_URL = computed(() =>
@@ -90,15 +120,17 @@ const article = computed(() => `${baseId.value}article`);
 // у широкого лого logoSize сажает высоту ниже запрошенной, и захардкоженный
 // h_45 разошёлся бы с объявленными размерами картинки.
 const publisherLogo = computed(() => {
-  if (!seoConfig.logo.src) {
+  const logo = siteConfig.value.logo;
+
+  if (!logo.src) {
     return null;
   }
 
-  const size = logoSize(45, 200);
+  const size = logoSize(logo, 45, 200);
 
   return {
     "@type": "ImageObject",
-    url: `${CLOUDINARY_BASE_URL.value}f_auto,q_auto,r_15,h_${size.height}/${seoConfig.logo.src}`,
+    url: `${CLOUDINARY_BASE_URL.value}f_auto,q_auto,r_15,h_${size.height}/${logo.src}`,
     ...size,
   };
 });
@@ -109,13 +141,13 @@ useSchemaOrg([
     "@id": websiteId.value,
     url: `${SITE_URL.value}/`,
     name: DOMAIN_NAME.value,
-    inLanguage: seoConfig.site.lang,
+    inLanguage: siteConfig.value.site.lang,
   },
   {
     "@id": webpage.value,
     "@type": "WebPage",
     description: metaTags.value.description,
-    name: seoConfig.site.name,
+    name: siteConfig.value.site.name,
     url: articleUrl.value,
     isPartOf: {
       "@id": websiteId.value,
@@ -140,7 +172,7 @@ useSchemaOrg([
     description: metaTags.value.description,
     datePublished: createdAt.value,
     dateModified: updatedAt.value,
-    inLanguage: seoConfig.site.lang,
+    inLanguage: siteConfig.value.site.lang,
 
     mainEntityOfPage: {
       "@type": "WebPage",

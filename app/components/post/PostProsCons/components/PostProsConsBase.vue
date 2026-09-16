@@ -28,7 +28,7 @@
           class="size-4"
         ></svg-icon>
         {{ prosList.length }}
-        {{ seoConfig.translates.shortcodes.prosAndCons.pros }}
+        {{ siteConfig.translates.shortcodes.prosAndCons.pros }}
       </span>
       <span
         class="inline-flex items-center gap-x-1.5 px-3 py-1 rounded-full border text-step-8 font-semibold border-status-negative text-status-negative"
@@ -38,7 +38,7 @@
           class="size-4"
         ></svg-icon>
         {{ consList.length }}
-        {{ seoConfig.translates.shortcodes.prosAndCons.cons }}
+        {{ siteConfig.translates.shortcodes.prosAndCons.cons }}
       </span>
     </div>
     <PostProsConsItem
@@ -61,12 +61,12 @@
       <div
         class="px-4 py-2.5 font-bold text-step-8 uppercase tracking-wide bg-ui-table-head-bg text-ui-table-head-text"
       >
-        {{ seoConfig.translates.shortcodes.prosAndCons.pros }}
+        {{ siteConfig.translates.shortcodes.prosAndCons.pros }}
       </div>
       <div
         class="px-4 py-2.5 font-bold text-step-8 uppercase tracking-wide bg-ui-table-head-bg text-ui-table-head-text"
       >
-        {{ seoConfig.translates.shortcodes.prosAndCons.cons }}
+        {{ siteConfig.translates.shortcodes.prosAndCons.cons }}
       </div>
     </div>
     <div class="grid grid-cols-2 bg-ui-table-row">
@@ -92,20 +92,21 @@
   >
     <PostProsConsItem
       type="pros"
-      :title="seoConfig.translates.shortcodes.prosAndCons.pros"
+      :title="siteConfig.translates.shortcodes.prosAndCons.pros"
       :list="prosList"
     ></PostProsConsItem>
     <PostProsConsItem
       type="cons"
-      :title="seoConfig.translates.shortcodes.prosAndCons.cons"
+      :title="siteConfig.translates.shortcodes.prosAndCons.cons"
       :list="consList"
     ></PostProsConsItem>
   </div>
 </template>
 <script setup lang="ts">
 import PostProsConsItem from "./PostProsConsItem.vue";
-import { seoConfig } from "@@/seo.conf";
 import { pickVariant } from "#shared/utils/block-variant";
+
+const siteConfig = useSiteConfig();
 
 const { variant: ownVariant = "" } = defineProps<{
   prosList: string[];
