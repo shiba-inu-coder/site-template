@@ -38,10 +38,12 @@ exactly that reason. Family first, shade second.
 
 ## Light and dark
 
-The site is light or dark **per brand**, chosen by the operator in the panel and carried in
-`seoConfig.site.theme`. `app.vue` puts it on `<html data-theme>` and emits the matching
-`<meta name="color-scheme">` — the meta is not decoration, without it scrollbars, autofill
-and native controls stay dark on a light page.
+The site is light or dark **per brand**, chosen by the operator in the panel. It arrives
+either from the database (`settings.uiTheme.mode`) or, when the site has no theme record
+yet, from `seoConfig.site.theme` baked into the image; `app/plugins/ui-theme.ts` puts the
+winner on `<html data-theme>` and emits the matching `<meta name="color-scheme">` — the meta
+is not decoration, without it scrollbars, autofill and native controls stay dark on a light
+page. See "Runtime theme" below.
 
 What flips is only the **neutral layer**:
 
@@ -180,15 +182,79 @@ anything else (a `#hex`) passes through unchanged. `themeToCssVars(theme)` wraps
 `resolveScheme`'s output plus `--radius-primary`/`--font-primary`/`--font-heading` in one
 `:root { … }` string — **no `--shadow-*`**: shadow utilities compile to a literal at build
 time (see below), so a runtime CSS variable for it would do nothing, the same reason the
-brand patcher never patched one. `DEFAULT_UI_THEME_DARK`/`DEFAULT_UI_THEME_LIGHT` are the
-template's current look expressed in this shape — what a site falls back to before an
-operator has customised anything in the panel.
+brand patcher never patched one. An axis the record does not carry is left out of that
+string rather than written empty, so a half-filled theme cannot blank a value the image
+already has. `DEFAULT_UI_THEME_DARK`/`DEFAULT_UI_THEME_LIGHT` are the template's current look
+expressed in this shape — the panel's starting point for a new theme, not what the site
+falls back to: a site with no record renders from the CSS in its own image (see "Runtime
+theme").
 
 Storage: `models/schemas/UiTheme.ts`, embedded as `Setting.uiTheme`. `scheme` and `variants`
 are their own sub-schemas with `strict: false` — the known keys are declared (so a real typo
 still shows up in review), but an unrecognised one is kept rather than silently dropped,
 because the panel and this image don't always deploy in the same breath. `setting.repository.ts`
 `getPublic()` returns `uiTheme` alongside `redirectsRoutes`/`headerLinks`.
+
+## Runtime theme
+
+**The theme reaches a running site from its own database, not from the image it was built
+into.** `app/plugins/ui-theme.ts` (`enforce: "pre"`) awaits
+`/api/v1/public/settings/settings` before the first render and puts the whole public answer
+into `useState("settings")` — the state `useSettings()` wraps and `useUiTheme()` reads.
+Repainting a site is an edit in the panel plus a `settings` cache purge; no rebuild, no
+redeploy. The fetch is awaited on purpose: `layouts/default.vue` used to fire the same
+request without `await`, so SSR rendered whatever it had and the answer arrived too late to
+matter.
+
+The plugin also owns `<html lang>`, `<html data-theme>` and `<meta name="color-scheme">`.
+They used to sit in `nuxt.config.ts`, where they could only ever carry what the build
+machine knew; a plugin runs for `error.vue` as well, so the 404 page stays themed — which
+was the reason they were not in `app.vue` to begin with.
+
+**A site without `uiTheme` renders exactly as before.** An empty or half-filled record is
+not a theme: `isUiThemeConfigured` demands a `mode` and all nine colours, and anything less
+falls back to the brand baked into `tailwind.css` by the AppsPro patcher, to
+`seoConfig.site.theme` for the mode, and to the build's own Lato. That is the state every
+site is in until an operator saves a theme for it, so the fallback is the normal path, not
+an error path.
+
+Two details that look like noise and are not:
+
+- `<style id="ui-theme">` is pushed with **`tagPriority: 65`**. unhead sorts head tags by
+  weight, and both `<link rel="stylesheet">` and `<style>` weigh 60, ties broken by
+  registration order — the plugin registers before the bundle's own CSS, so at the default
+  weight the runtime `:root` would land _above_ `tailwind.css` and lose the cascade to it.
+  65 puts it after every stylesheet and before the preloads (70).
+- **The font link is written by hand.** `@nuxt/fonts` scans CSS at build time and knows
+  nothing about a family that arrives from Mongo, so the plugin emits two `preconnect`s and
+  one `<link rel="stylesheet">` to Google Fonts covering both families (`type.display` and
+  `type.body`) in a single request. `vitalizer.disableStylesheets` cannot eat it: that
+  option only strips `css` entries from the build manifest and never touches head tags.
+
+`useUiTheme()` is where a component asks about the theme: `theme` (the record or `null`),
+`mode`, `cssVars`, `fontsHref`, `contrast`, and two deliberate placeholders — `variantFor(key)`
+returns `"default"` until block variants exist, and `frameAttrs` builds the `data-*`
+attributes (`type.scale`, `geometry.*`, `frame.*`, `decor.*`, `accents.*`) that a later stage
+will hang on the page root. `setTheme()` replaces the theme in state; the head is described
+as a getter, so the style tag, `data-theme`, the font link and the attributes all repaint
+without a reload.
+
+### Preview protocol
+
+The panel previews a theme by embedding the site and talking to it over `postMessage`.
+
+| Message                           | Direction    | When                                            |
+| --------------------------------- | ------------ | ----------------------------------------------- |
+| `{ type: "ui-ready" }`            | site → panel | once, on mount                                  |
+| `{ type: "ui-theme", theme }`     | panel → site | on every change the operator makes              |
+| `{ type: "ui-contrast", report }` | site → panel | after each applied theme, from `contrastReport` |
+
+Two gates, both required: the URL carries `?preview=` (the same query the staging pass
+already uses) **and** `event.origin` is listed in `runtimeConfig.public.PANEL_ORIGINS`, a
+comma-separated env value (`.env` locally, the site's Vault record in production, so adding
+a panel domain needs no rebuild). Without them a message is dropped: an unlisted origin —
+or the live URL of the same page — must not be able to repaint a production site. An empty
+`PANEL_ORIGINS` accepts nothing, which is the right default for a site nobody previews.
 
 ## `:root` is a contract, not a stylesheet
 
