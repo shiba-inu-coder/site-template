@@ -1,7 +1,7 @@
 <template>
   <div class="max-w-340 mx-auto flex flex-col items-center my-5 px-5">
     <div
-      class="flex max-w-[850px] w-full contact-form flex-col border-2 border-primary-100 p-4 rounded-primary bg-primary-200 sm:p-6 lg:p-8"
+      class="flex max-w-[850px] w-full contact-form flex-col border-2 border-ui-input-border p-4 rounded-primary bg-ui-panel-bg sm:p-6 lg:p-8"
     >
       <form
         class="w-full space-y-4"
@@ -19,7 +19,7 @@
             v-model="form.name"
             type="text"
             name="name-contacts-1"
-            class="py-3 px-4 block w-full border-2 border-primary-100 outline-none bg-primary-100 rounded-primary text-step-8 disabled:opacity-50 disabled:pointer-events-none"
+            class="py-3 px-4 block w-full border-2 border-ui-input-border outline-none bg-ui-input-bg rounded-primary text-step-8 disabled:opacity-50 disabled:pointer-events-none"
           />
         </div>
         <!-- End Grid -->
@@ -37,7 +37,7 @@
             type="email"
             name="email-contacts-1"
             autocomplete="email"
-            class="py-3 px-4 block w-full border-2 border-primary-100 outline-none bg-primary-100 rounded-primary text-step-8 disabled:opacity-50 disabled:pointer-events-none"
+            class="py-3 px-4 block w-full border-2 border-ui-input-border outline-none bg-ui-input-bg rounded-primary text-step-8 disabled:opacity-50 disabled:pointer-events-none"
           />
           <span
             v-if="!isValidEmail"
@@ -58,7 +58,7 @@
             v-model="form.message"
             name="about-contacts-1"
             rows="4"
-            class="py-3 px-4 block w-full outline-none border-2 border-primary-100 bg-primary-100 rounded-primary text-step-8 disabled:opacity-50 disabled:pointer-events-none"
+            class="py-3 px-4 block w-full outline-none border-2 border-ui-input-border bg-ui-input-bg rounded-primary text-step-8 disabled:opacity-50 disabled:pointer-events-none"
           ></textarea>
         </div>
         <!-- End Grid -->
@@ -67,7 +67,7 @@
           <button
             :disabled="isDisabled"
             type="submit"
-            class="rounded-primary px-3 py-2.5 justify-center font-medium inline-flex items-center gap-x-2 whitespace-pre-wrap focus:outline-none focus:ring-2 text-center border border-transparent bg-active-200 text-surface-on-brand hover:bg-active-300 disabled:opacity-50 disabled:pointer-events-none"
+            class="rounded-primary px-3 py-2.5 justify-center font-medium inline-flex items-center gap-x-2 whitespace-pre-wrap focus:outline-none focus:ring-2 text-center border border-transparent bg-ui-cta-bg text-ui-cta-text hover:bg-ui-cta-hover disabled:opacity-50 disabled:pointer-events-none"
           >
             {{ seoConfig.translates.contacts.submit }}
           </button>

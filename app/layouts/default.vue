@@ -1,5 +1,5 @@
 <template>
-  <div class="relative font-primary bg-primary-300">
+  <div class="relative font-primary bg-ui-page-bg">
     <HeaderLayout></HeaderLayout>
     <div>
       <slot></slot>

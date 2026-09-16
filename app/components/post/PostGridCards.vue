@@ -33,7 +33,7 @@
             </div>
             <div
               v-if="item.title"
-              class="text-center text-step-5 mt-2 font-medium text-accent-200"
+              class="text-center text-step-5 mt-2 font-medium text-ui-card-title"
               v-html="safeHTMLWrap(item.title)"
             ></div>
           </div>
@@ -41,11 +41,11 @@
       </template>
       <template v-if="list.data.variant === '2'">
         <div
-          class="flex flex-col items-center bg-primary-100 py-3 px-5 rounded-primary border-2 border-primary-300"
+          class="flex flex-col items-center bg-ui-card-bg py-3 px-5 rounded-primary border-2 border-ui-card-border"
         >
           <div
             v-if="item.title"
-            class="text-center text-step-5 font-medium text-accent-200"
+            class="text-center text-step-5 font-medium text-ui-card-title"
             v-html="safeHTMLWrap(item.title)"
           ></div>
           <NuxtImg
@@ -70,7 +70,7 @@
             target="_blank"
             rel="nofollow noopener"
             data-id="ref_link"
-            class="w-5/6 block bg-active-200 hover:bg-active-300 transition duration-500 ease-in-out px-4 py-2.5 text-center rounded-primary text-surface-on-brand font-medium text-step-5 mt-3 mb-5"
+            class="w-5/6 block bg-ui-cta-bg hover:bg-ui-cta-hover transition duration-500 ease-in-out px-4 py-2.5 text-center rounded-primary text-ui-cta-text font-medium text-step-5 mt-3 mb-5"
           >
             {{ item.buttonText }}
           </a>

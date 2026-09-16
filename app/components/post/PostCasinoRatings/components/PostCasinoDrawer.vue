@@ -4,16 +4,16 @@
       'translate-x-0': model,
       '-translate-x-full': !model,
     }"
-    class="fixed top-0 start-0 transition-all duration-500 transform h-full w-full z-[999] bg-primary-300/50"
+    class="fixed top-0 start-0 transition-all duration-500 transform h-full w-full z-[999] bg-ui-page-bg/50"
     role="dialog"
     tabindex="-1"
     @click.self="emit('update:modelValue', false)"
   >
     <div
-      class="max-w-4xl w-full relative h-full overflow-scroll border-x-2 border-primary-300 bg-primary-200"
+      class="max-w-4xl w-full relative h-full overflow-scroll border-x-2 border-ui-panel-border bg-ui-panel-bg"
     >
       <div
-        class="flex justify-between items-center p-primary-1 border-y-2 border-primary-300"
+        class="flex justify-between items-center p-primary-1 border-y-2 border-ui-panel-border"
       >
         <div class="flex items-center gap-x-2">
           <NuxtImg
@@ -29,7 +29,7 @@
         </div>
         <button
           type="button"
-          class="focus:outline-hidden text-active-200 transition-colors duration-500 ease-in-out hover:text-active-300 text-step-2 focus:text-surface-text"
+          class="focus:outline-hidden text-ui-link transition-colors duration-500 ease-in-out hover:text-ui-link-hover text-step-2 focus:text-ui-text"
           @click="emit('update:modelValue', false)"
         >
           <svg-icon name="client/close-round" />
@@ -37,10 +37,10 @@
       </div>
       <PostCasinoRatingBody :casino="casino"></PostCasinoRatingBody>
       <div
-        class="flex justify-center items-center p-primary-1 border-y-2 border-primary-300"
+        class="flex justify-center items-center p-primary-1 border-y-2 border-ui-panel-border"
       >
         <nuxt-link
-          class="font-semibold px-12 py-1 rounded-primary inline-flex justify-center transition-all focus:outline-none focus:ring-2 text-center border border-transparent bg-active-200 text-surface-on-brand hover:bg-active-300 focus:bg-active-300 text-step-6"
+          class="font-semibold px-12 py-1 rounded-primary inline-flex justify-center transition-all focus:outline-none focus:ring-2 text-center border border-transparent bg-ui-cta-bg text-ui-cta-text hover:bg-ui-cta-hover focus:bg-ui-cta-hover text-step-6"
           >{{ seoConfig.translates.playNow }}</nuxt-link
         >
       </div>

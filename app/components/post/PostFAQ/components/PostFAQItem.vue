@@ -1,5 +1,5 @@
 <template>
-  <div class="border border-primary-200 rounded-primary p-2">
+  <div class="border border-ui-panel-bg rounded-primary p-2">
     <!-- <button
       :id="`accordion-header-${id}`"
       type="button"

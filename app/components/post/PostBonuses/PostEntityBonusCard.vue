@@ -1,7 +1,7 @@
 <template>
   <div class="h-full">
     <div
-      class="h-full bg-primary-200/50 rounded-primary shadow-primary relative flex flex-col"
+      class="h-full bg-ui-panel-bg/50 rounded-primary shadow-primary relative flex flex-col"
       @keydown.esc="toggle(false)"
     >
       <div
@@ -24,7 +24,7 @@
       <div class="flex flex-col px-10 gap-y-3">
         <div
           v-if="bonus.wager.length"
-          class="flex justify-between border-b border-primary-100 pb-2 text-md"
+          class="flex justify-between border-b border-ui-input-border pb-2 text-md"
         >
           <span class="block">Wager</span>
           <span class="block">{{ bonus.wager }}</span>

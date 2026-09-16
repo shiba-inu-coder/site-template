@@ -1,6 +1,6 @@
 <template>
   <footer>
-    <div class="px-5 border-t border-primary-200">
+    <div class="px-5 border-t border-ui-panel-bg">
       <div class="grid grid-cols-1 py-6">
         <div
           class="flex items-center justify-center space-x-5 col-span-5 md:col-span-1 mb-6"
@@ -21,14 +21,14 @@
           </a>
         </div>
         <div
-          class="col-span-5 md:col-span-4 leading-5 text-step-9 font-normal text-surface-text"
+          class="col-span-5 md:col-span-4 leading-5 text-step-9 font-normal text-ui-text"
         >
           <div v-html="seoConfig.layout.footer.body"></div>
         </div>
       </div>
     </div>
     <div
-      class="flex-col-reverse bg-primary-200 md:flex-row items-center flex flex-wrap justify-around py-3 text-step-8 gap-4"
+      class="flex-col-reverse bg-ui-footer-bg md:flex-row items-center flex flex-wrap justify-around py-3 text-step-8 gap-4"
     >
       <nuxt-link
         v-for="{ link, name } in seoConfig.layout.footer.links"
@@ -40,9 +40,9 @@
       </nuxt-link>
     </div>
     <div
-      class="bg-primary-300 flex-wrap flex-col gap-5 md:px-0 pb-6 pt-6 flex justify-center items-center mt-5"
+      class="bg-ui-footer-bg-alt flex-wrap flex-col gap-5 md:px-0 pb-6 pt-6 flex justify-center items-center mt-5"
     >
-      <p class="text-surface-text text-step-9 uppercase text-center">
+      <p class="text-ui-text text-step-9 uppercase text-center">
         {{ seoConfig.layout.footer.title }}
       </p>
       <nuxt-link

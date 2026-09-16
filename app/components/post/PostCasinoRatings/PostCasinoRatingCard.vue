@@ -6,7 +6,7 @@
       :index="index"
     ></PostCasinoDrawer>
     <div
-      class="h-full bg-primary-200/50 rounded-primary shadow-primary relative flex flex-col"
+      class="h-full bg-ui-panel-bg/50 rounded-primary shadow-primary relative flex flex-col"
       @keydown.esc="toggle(false)"
     >
       <PostEntityRibbon v-if="casino.ribbon">
@@ -61,14 +61,14 @@
           <nuxt-link
             v-if="casino?.reviewPost?.slug"
             :to="`/${casino?.reviewPost?.slug}/`"
-            class="font-semibold rounded-primary inline-flex justify-center items-center whitespace-pre-wrap focus:outline-none focus:ring-2 text-center border text-active-200 bg-primary-200 border-active-200 hover:bg-active-200 transition duration-500 ease-in-out hover:text-surface-on-brand focus:bg-active-300 text-step-5 py-2.5 px-2 w-full"
+            class="font-semibold rounded-primary inline-flex justify-center items-center whitespace-pre-wrap focus:outline-none focus:ring-2 text-center border text-ui-link bg-ui-panel-bg border-ui-link hover:bg-ui-cta-bg transition duration-500 ease-in-out hover:text-ui-cta-text focus:bg-ui-cta-hover text-step-5 py-2.5 px-2 w-full"
           >
             {{ seoConfig.translates.entity.readReview }}
           </nuxt-link>
         </span>
         <!-- Button More Info  -->
         <button
-          class="mt-3 py-2 bg-primary-200 text-step-8 text-surface-muted hover:text-surface-text transition duration-500 ease-in-out flex items-center justify-center gap-x-2 rounded-b-primary"
+          class="mt-3 py-2 bg-ui-panel-bg text-step-8 text-ui-muted hover:text-ui-text transition duration-500 ease-in-out flex items-center justify-center gap-x-2 rounded-b-primary"
           @click="toggle(true)"
         >
           <span>{{ seoConfig.translates.btnMoreInfo }}</span>

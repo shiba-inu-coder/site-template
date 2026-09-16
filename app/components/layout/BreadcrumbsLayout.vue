@@ -12,7 +12,7 @@
           v-if="index !== breadcrumbs.length - 1"
           trailing-slash="append"
           prefetch-on="interaction"
-          class="font-semibold text-active-200 hover:text-active-300 transition duration-500 ease-in-out"
+          class="font-semibold text-ui-link hover:text-ui-link-hover transition duration-500 ease-in-out"
           :to="crumb.slug"
           :class="{
             breadcrumb: index !== breadcrumbs.length - 1,
@@ -28,7 +28,7 @@
         </span>
         <svg-icon
           v-if="index !== breadcrumbs.length - 1"
-          class="mx-2 rotate-90 text-surface-muted size-5"
+          class="mx-2 rotate-90 text-ui-muted size-5"
           name="client/chevron-up"
         />
       </li>

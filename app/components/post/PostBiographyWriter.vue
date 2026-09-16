@@ -1,7 +1,7 @@
 <template>
   <div class="flex flex-col rounded-t-primary">
     <div
-      class="flex items-center gap-x-4 bg-primary-200 p-primary-1 border border-primary-300 rounded-t-primary"
+      class="flex items-center gap-x-4 bg-ui-panel-bg p-primary-1 border border-ui-panel-border rounded-t-primary"
     >
       <NuxtImg
         loading="lazy"
@@ -15,13 +15,13 @@
       <div class="grow space-y-1">
         <span class="block text-step-7 font-medium">{{ writer.fullName }}</span>
         <span
-          class="text-step-8 text-surface-on-brand font-medium bg-accent-200 rounded-primary py-1 px-2"
+          class="text-step-8 text-ui-badge-text font-medium bg-ui-badge-bg rounded-primary py-1 px-2"
           >{{ writer.position }}</span
         >
       </div>
     </div>
     <span
-      class="text-step-7 p-primary-1 border-x-2 border-b-2 border-primary-300 rounded-b-primary"
+      class="text-step-7 p-primary-1 border-x-2 border-b-2 border-ui-panel-border rounded-b-primary"
       >{{ writer.info }}</span
     >
 

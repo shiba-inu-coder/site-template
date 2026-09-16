@@ -1,6 +1,6 @@
 <template>
   <nav
-    class="bg-primary-300 p-primary-1 fixed left-0 right-0 top-0 z-50 px-3 md:px-8"
+    class="bg-ui-header-bg p-primary-1 fixed left-0 right-0 top-0 z-50 px-3 md:px-8"
   >
     <div class="flex justify-between items-center w-full gap-3">
       <div class="flex items-center gap-3">

@@ -1,5 +1,5 @@
 <template>
-  <div class="ribbon text-surface-text absolute left-0 top-0">
+  <div class="ribbon text-ui-text absolute left-0 top-0">
     <span> <slot></slot> <span class="pl-1">🏆</span></span>
   </div>
 </template>
@@ -22,7 +22,7 @@
     calc(100% - var(--r)) 100%,
     -100vw 100%
   );
-  border-image: conic-gradient(var(--color-accent-300) 0 0) fill 0;
+  border-image: conic-gradient(var(--color-ui-accent-strong) 0 0) fill 0;
   width: fit-content;
 }
 </style>

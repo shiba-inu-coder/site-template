@@ -23,7 +23,7 @@
       <button
         v-show="!showAll"
         type="button"
-        class="bg-active-200 transition duration-500 ease-in-out hover:bg-active-300 px-4 py-2 rounded-primary text-step-6 font-medium"
+        class="bg-ui-cta-bg transition duration-500 ease-in-out hover:bg-ui-cta-hover px-4 py-2 rounded-primary text-step-6 font-medium"
         @click="toggleShowAll(true)"
       >
         {{ seoConfig.translates.showMore }}

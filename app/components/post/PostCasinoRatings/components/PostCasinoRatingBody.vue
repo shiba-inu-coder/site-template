@@ -1,6 +1,6 @@
 <template>
   <!-- BOX 1  -->
-  <div class="space-y-3 py-4 px-3 md:p-primary-1 bg-primary-100">
+  <div class="space-y-3 py-4 px-3 md:p-primary-1 bg-ui-card-bg">
     <div class="grid md:grid-cols-3 gap-3">
       <div class="">
         <PostCasinoRatingTitle
@@ -65,12 +65,12 @@
           <svg-icon
             v-if="casino.mobileApps.includes('ios')"
             name="client/brand-apple"
-            class="text-step-5 text-surface-text"
+            class="text-step-5 text-ui-text"
           ></svg-icon>
           <svg-icon
             v-if="casino.mobileApps.includes('android')"
             name="client/brand-android"
-            class="text-step-5 text-surface-text"
+            class="text-step-5 text-ui-text"
           ></svg-icon>
         </div>
         <div
@@ -171,6 +171,6 @@ const gameTypes = computed(
   line-height: 1.5;
   font-weight: 400;
   padding-left: calc(var(--spacing) * 8);
-  color: var(--color-surface-text);
+  color: var(--color-ui-text);
 }
 </style>

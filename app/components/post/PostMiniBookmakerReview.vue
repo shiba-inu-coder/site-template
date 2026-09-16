@@ -1,7 +1,7 @@
 <template>
   <div
     v-if="data"
-    class="bg-accent-300/10 rounded-primary px-3 py-4 border-2 border-primary-300 no-format"
+    class="bg-ui-accent-strong/10 rounded-primary px-3 py-4 border-2 border-ui-card-border no-format"
   >
     <div v-html="safeHTMLWrap(data.title)"></div>
 
@@ -35,9 +35,9 @@
           <div
             v-for="(bonus, i) in data.bonuses"
             :key="i"
-            class="bg-primary-200 px-2 py-3 border-2 border-primary-100 rounded-primary"
+            class="bg-ui-panel-bg px-2 py-3 border-2 border-ui-input-border rounded-primary"
           >
-            <span class="font-semibold text-step-7 text-accent-200">
+            <span class="font-semibold text-step-7 text-ui-heading">
               {{ bonus.title }} {{ bonus.text }}
             </span>
           </div>

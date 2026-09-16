@@ -1,5 +1,6 @@
 <template>
-  <span class="font-semibold text-step-5 block rounded-primary text-accent-300"
+  <span
+    class="font-semibold text-step-5 block rounded-primary text-ui-accent-strong"
     >{{ Number(rating).toFixed(1) }}/5</span
   >
 </template>

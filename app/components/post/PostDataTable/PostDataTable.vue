@@ -1,14 +1,14 @@
 <template>
   <div>
     <div
-      class="rounded-primary overflow-table overflow-x-auto relative border-2 border-primary-100"
+      class="rounded-primary overflow-table overflow-x-auto relative border-2 border-ui-table-row-border"
     >
       <table
         class="sm:table-auto w-full border-separate border-spacing-0 overflow-hidden text-left"
       >
         <thead
           v-if="state.data.showTableHead"
-          class="bg-primary-300 text-surface-text"
+          class="bg-ui-table-head-bg text-ui-table-head-text"
         >
           <tr class="">
             <th
@@ -26,8 +26,8 @@
             v-for="(row, i) in formatedRows"
             :key="i"
             :class="{
-              'bg-primary-200': i % 2 === 0,
-              'bg-primary-300': i % 2 !== 0,
+              'bg-ui-table-row': i % 2 === 0,
+              'bg-ui-table-row-alt': i % 2 !== 0,
             }"
           >
             <td
@@ -35,7 +35,8 @@
               :key="columnIndex"
               :class="{
                 'last:rounded-primary': columnIndex === 0,
-                'border-b border-primary-300': formatedRows.length - 1 !== i,
+                'border-b border-ui-table-row-alt':
+                  formatedRows.length - 1 !== i,
               }"
               class="break-words px-2 py-1.5 text-step-6"
             >
@@ -53,7 +54,7 @@
       <button
         v-show="isShowMoreBtn"
         type="button"
-        class="bg-primary-100 border-2 border-active-200 text-active-200 hover:border-active-300 hover:text-surface-on-brand font-medium hover:bg-active-300 transition ease-in-out duration-500 px-3.5 rounded-primary py-2.5"
+        class="bg-ui-card-bg border-2 border-ui-link text-ui-link hover:border-ui-link-hover hover:text-ui-cta-text font-medium hover:bg-ui-cta-hover transition ease-in-out duration-500 px-3.5 rounded-primary py-2.5"
         @click="setCount(state.data.rows.length)"
       >
         {{ seoConfig.translates.showMore }}
@@ -61,7 +62,7 @@
       <button
         v-show="!isShowMoreBtn"
         type="button"
-        class="bg-primary-100 border-2 border-active-200 text-active-200 hover:border-active-300 hover:text-surface-on-brand font-medium hover:bg-active-300 transition ease-in-out duration-500 px-3.5 rounded-primary py-2.5"
+        class="bg-ui-card-bg border-2 border-ui-link text-ui-link hover:border-ui-link-hover hover:text-ui-cta-text font-medium hover:bg-ui-cta-hover transition ease-in-out duration-500 px-3.5 rounded-primary py-2.5"
         @click="setCount(defaultCountRows)"
       >
         {{ seoConfig.translates.showLess }}

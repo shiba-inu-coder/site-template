@@ -16,7 +16,7 @@
     <button
       v-if="showBtn"
       type="button"
-      class="border h-[45px] flex justify-center items-center border-active-200 text-active-200 transition py-3 text-step-5 font-semibold duration-500 ease-in-out hover:border-active-300 hover:text-active-300 rounded-primary"
+      class="border h-[45px] flex justify-center items-center border-ui-link text-ui-link transition py-3 text-step-5 font-semibold duration-500 ease-in-out hover:border-ui-link-hover hover:text-ui-link-hover rounded-primary"
       @click="toggle"
     >
       {{ btnName }}

@@ -64,10 +64,10 @@ const positionClassesMap: Record<Props["position"], string> = {
 
 const variantClasses: Record<Props["variant"], string> = {
   solid:
-    "border border-transparent bg-active-200 text-surface-on-brand hover:bg-active-300 focus:bg-active-300",
+    "border border-transparent bg-ui-cta-bg text-ui-cta-text hover:bg-ui-cta-hover focus:bg-ui-cta-hover",
   outline:
-    "border text-active-200 bg-primary-200 border-active-200 hover:bg-active-200 transition duration-500 ease-in-out hover:text-surface-on-brand focus:bg-active-300",
-  soft: "border border-transparent bg-active-100 text-primary-300 hover:bg-active-200 focus:bg-active-200",
+    "border text-ui-link bg-ui-panel-bg border-ui-link hover:bg-ui-cta-bg transition duration-500 ease-in-out hover:text-ui-cta-text focus:bg-ui-cta-hover",
+  soft: "border border-transparent bg-ui-highlight-bg text-ui-highlight-text hover:bg-ui-cta-bg focus:bg-ui-cta-bg",
   link: "app-link text-left text-step-6!",
 };
 

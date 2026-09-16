@@ -6,7 +6,7 @@
       :index="index"
     ></PostBookmakerDrawer>
     <div
-      class="h-full bg-primary-200/50 rounded-primary shadow-primary relative flex flex-col"
+      class="h-full bg-ui-panel-bg/50 rounded-primary shadow-primary relative flex flex-col"
       @keydown.esc="toggle(false)"
     >
       <PostEntityRibbon v-if="bookmaker.ribbon">
@@ -72,7 +72,7 @@
         </ul>
         <!-- Button More Info  -->
         <button
-          class="mt-3 py-2 bg-primary-200 text-step-8 text-surface-muted hover:text-surface-text transition duration-500 ease-in-out flex items-center justify-center gap-x-2 rounded-b-primary"
+          class="mt-3 py-2 bg-ui-panel-bg text-step-8 text-ui-muted hover:text-ui-text transition duration-500 ease-in-out flex items-center justify-center gap-x-2 rounded-b-primary"
           @click="toggle(true)"
         >
           <span>{{ seoConfig.translates.btnMoreInfo }}</span>

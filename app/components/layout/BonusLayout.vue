@@ -5,7 +5,7 @@
     @click="toggleGiftIconVisibility"
   >
     <div
-      class="bg-active-200 border-2 transition duration-500 ease-in-out hover:bg-active-300 border-primary-300 group rounded-primary inline-block p-2.5 left-3 z-30 fixed bottom-5 cursor-pointer"
+      class="bg-ui-cta-bg border-2 transition duration-500 ease-in-out hover:bg-ui-cta-hover border-ui-card-border group rounded-primary inline-block p-2.5 left-3 z-30 fixed bottom-5 cursor-pointer"
     >
       <svg-icon
         class="size-10 block"
@@ -21,11 +21,11 @@
     target="_blank"
     rel="nofollow noopener"
     data-id="ref_link"
-    class="bg-primary-300 border fixed bottom-10 left-1/2 -translate-1/2 rounded-primary z-998 border-accent-300 w-[95%] md:w-[50%] px-6 py-2.5"
+    class="bg-ui-page-bg border fixed bottom-10 left-1/2 -translate-1/2 rounded-primary z-998 border-ui-accent-strong w-[95%] md:w-[50%] px-6 py-2.5"
   >
     <button
       type="button"
-      class="bg-primary-300 hover:border-active-300 hover:text-active-300 transition duration-500 ease-in-out text-active-200 cursor-pointer shrink-0 absolute right-0 top-0 rounded-l-xs rounded-b-xs rounded-t-primary md:rounded-primary inline-flex justify-center w-6 h-6 items-center"
+      class="bg-ui-page-bg hover:border-ui-link-hover hover:text-ui-link-hover transition duration-500 ease-in-out text-ui-link cursor-pointer shrink-0 absolute right-0 top-0 rounded-l-xs rounded-b-xs rounded-t-primary md:rounded-primary inline-flex justify-center w-6 h-6 items-center"
       @click.prevent="toggleGiftIconVisibility"
     >
       <svg-icon name="close" />
@@ -39,7 +39,7 @@
         :src="banner.entity.logo.path"
         :modifiers="seoConfig.img.modifiers"
       ></NuxtImg>
-      <span class="text-accent-200 font-medium text-step-5 text-center">
+      <span class="text-ui-heading font-medium text-step-5 text-center">
         {{ banner.text }}
       </span>
     </div>

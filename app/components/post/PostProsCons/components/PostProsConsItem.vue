@@ -1,6 +1,6 @@
 <template>
   <ul
-    class="rounded-primary not-format flex flex-col bg-primary-200 border-2 border-primary-300"
+    class="rounded-primary not-format flex flex-col bg-ui-panel-bg border-2 border-ui-panel-border"
     tabindex="0"
   >
     <li class="p-primary-1 rounded-t-primary text-left">

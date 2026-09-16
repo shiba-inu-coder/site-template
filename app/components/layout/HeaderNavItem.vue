@@ -11,7 +11,7 @@
     </button>
 
     <div
-      class="absolute hidden group-hover:flex flex-col left-0 top-full mt-1 min-w-[180px] rounded-primary bg-primary-300 py-2 shadow-lg z-10"
+      class="absolute hidden group-hover:flex flex-col left-0 top-full mt-1 min-w-[180px] rounded-primary bg-ui-header-bg py-2 shadow-lg z-10"
     >
       <a
         v-for="(child, i) in item.children.filter((c) => c.kind === 'ref')"
@@ -20,7 +20,7 @@
         target="_blank"
         rel="nofollow noopener"
         data-id="ref_link"
-        class="px-4 py-2 hover:text-active-200 transition"
+        class="px-4 py-2 hover:text-ui-link transition"
       >
         {{ child.label }}
       </a>
@@ -29,7 +29,7 @@
         :key="`page-${i}`"
         :to="child.link"
         data-id="ref_link"
-        class="px-4 py-2 hover:text-active-200 transition"
+        class="px-4 py-2 hover:text-ui-link transition"
       >
         {{ child.label }}
       </nuxt-link>
@@ -91,10 +91,10 @@ const refLink = useFakeRefLink(seoConfig.site.brandSlug);
 // собранный из строки (`bg-${x}-200`), в сборке не появится.
 const styleClassMap: Record<HeaderItem["style"], string> = {
   primary:
-    "font-bold bg-primary-200 transition ease-in-out duration-500 hover:bg-primary-100 px-7 py-3 rounded-primary",
+    "font-bold bg-ui-panel-bg transition ease-in-out duration-500 hover:bg-ui-card-bg px-7 py-3 rounded-primary",
   active:
-    "font-bold bg-active-200 text-surface-on-brand transition ease-in-out duration-500 hover:bg-active-300 px-7 py-3 rounded-primary",
-  link: "transition ease-in-out duration-500 hover:text-active-200 font-semibold",
+    "font-bold bg-ui-cta-bg text-ui-cta-text transition ease-in-out duration-500 hover:bg-ui-cta-hover px-7 py-3 rounded-primary",
+  link: "transition ease-in-out duration-500 hover:text-ui-link font-semibold",
 };
 
 const itemClass = computed(

@@ -3,7 +3,7 @@
     <button
       :id="`accordion-header-post-table-content`"
       type="button"
-      class="p-primary-1 border-active-200 bg-primary-300 rounded-primary flex items-center justify-between w-full text-active-200 transition duration-500 ease-in-out hover:text-active-300"
+      class="p-primary-1 border-ui-link bg-ui-table-head-bg rounded-primary flex items-center justify-between w-full text-ui-link transition duration-500 ease-in-out hover:text-ui-link-hover"
       :class="{
         'rounded-bl-none rounded-br-none rounded-t-primary border-y-2 border-x-2 ':
           isShow,
@@ -28,7 +28,7 @@
         v-show="isShow"
         :id="`accordion-content-post-table-content`"
         role="region"
-        class="bg-active-100/10 p-primary-1 rounded-b-primary text-step-7 border-x-2 border-b-2 border-active-200"
+        class="bg-ui-highlight-bg/10 p-primary-1 rounded-b-primary text-step-7 border-x-2 border-b-2 border-ui-link"
         :aria-labelledby="`accordion-header-post-table-content`"
       >
         <ul>
@@ -39,7 +39,7 @@
             <a
               :title="contentItem.title"
               :href="`#${contentItem.value}`"
-              class="block text-step-5 transition duration-500 ease-in-out hover:text-active-200"
+              class="block text-step-5 transition duration-500 ease-in-out hover:text-ui-link"
               @click.prevent="scrollTo(contentItem.value)"
             >
               {{ contentItem.title }}

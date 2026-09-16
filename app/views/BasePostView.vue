@@ -8,7 +8,7 @@
         <div class="px-2.5 md:px-4 xl:px-0 w-full max-w-7xl mx-auto">
           <span
             v-if="postDated"
-            class="text-step-8 text-accent-200 font-medium block"
+            class="text-step-8 text-ui-heading font-medium block"
           >
             {{ seoConfig.translates.lastUpdated }}:
             <NuxtTime
