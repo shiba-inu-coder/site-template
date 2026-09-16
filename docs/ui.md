@@ -33,8 +33,8 @@ Three things that are always bugs, and all three were in this repo:
 - a hover that skips a step (`bg-active-300 hover:bg-active-100`).
 
 Text on a surface may use the 100 shade when 200 does not have the contrast — the bonus
-amount in `PostCasinoRatingBonus.vue` is `text-accent-100` for exactly that reason. Family
-first, shade second.
+amount in `PostCasinoRatingBonus.vue` is `text-ui-accent-soft` (default `accent-100`) for
+exactly that reason. Family first, shade second.
 
 ## Light and dark
 
@@ -72,11 +72,131 @@ The stock Tailwind palette — `text-blue-500`, `text-slate-200`, `border-slate-
 **not allowed**: it moves with neither the brand nor the theme. The repo is currently free
 of it, and of raw `rgb()`/hex inside components.
 
+## UI tokens
+
+**A component is coloured only by a `ui-*` token — never `bg-primary-200`, never
+`text-accent-100`, never `text-surface-text` directly.** Which brand or neutral token
+stands behind each `ui-*` one is decided in exactly one place, the `/* UI scheme */` block
+in `:root` below — components don't know or care that `bg-ui-cta-bg` happens to resolve to
+`active-200` today. That indirection is the whole point: from stage 6 the panel rewrites the
+scheme per site (a CTA that resolves to `accent-200` instead, a card that borrows the page
+background), and every component using `ui-cta-bg` repaints without a template touched.
+**The brand/surface scale is taken directly by nobody except the scheme's own defaults.**
+
+The defaults below reproduce, token for token, what every component had hardcoded before
+this layer existed — this was a pure refactor, not a redesign. A default is written as the
+brand or surface ref it resolves to, the same string `shared/utils/ui-theme.ts` uses in
+`scheme[token]`.
+
+| Token              | Default       | Role                                          |
+| ------------------ | ------------- | --------------------------------------------- |
+| `ui-page-bg`       | `primary-300` | page/layout background, floating promo banner |
+| `ui-header-bg`     | `primary-300` | `HeaderLayout`, its dropdown panel            |
+| `ui-footer-bg`     | `primary-200` | footer links row                              |
+| `ui-footer-bg-alt` | `primary-300` | footer bottom row (title + logo)              |
+
+| Token               | Default       | Role                                                 |
+| ------------------- | ------------- | ---------------------------------------------------- |
+| `ui-card-bg`        | `primary-100` | `PostGridCards` boxed card, error page background    |
+| `ui-card-border`    | `primary-300` | card border, bonus-icon border                       |
+| `ui-card-title`     | `accent-200`  | `PostGridCards` item title                           |
+| `ui-panel-bg`       | `primary-200` | rating/bonus card body, drawer, FAQ/pros-cons box    |
+| `ui-panel-border`   | `primary-300` | panel/drawer/biography border                        |
+| `ui-input-bg`       | `primary-100` | form input background                                |
+| `ui-input-border`   | `primary-100` | form input border, small logo/divider borders        |
+| `ui-highlight-bg`   | `active-100`  | `PostButtonRef` soft variant, table-of-contents tint |
+| `ui-highlight-text` | `primary-300` | `PostButtonRef` soft variant text                    |
+
+| Token           | Default            | Role                                                 |
+| --------------- | ------------------ | ---------------------------------------------------- |
+| `ui-heading`    | `accent-200`       | `#article h1`–`h6`, eyebrow labels, gift/bonus icons |
+| `ui-text`       | `surface-text`     | body text                                            |
+| `ui-muted`      | `surface-muted`    | secondary text (breadcrumb chevron, card hint)       |
+| `ui-link`       | `active-200`       | inline links, outline-button text/border             |
+| `ui-link-hover` | `active-300`       | hover/focus target for `ui-link`                     |
+| `ui-cta-bg`     | `active-200`       | solid CTA background (`PostButtonRef` solid)         |
+| `ui-cta-hover`  | `active-300`       | hover/focus target for `ui-cta-bg`                   |
+| `ui-cta-text`   | `surface-on-brand` | text/icon sitting on `ui-cta-bg`                     |
+
+| Token                 | Default            | Role                                                                                           |
+| --------------------- | ------------------ | ---------------------------------------------------------------------------------------------- |
+| `ui-table-head-bg`    | `primary-300`      | `PostDataTable` head row, table-of-contents trigger                                            |
+| `ui-table-head-text`  | `surface-text`     | `PostDataTable` head row text                                                                  |
+| `ui-table-row`        | `primary-200`      | even data-table row                                                                            |
+| `ui-table-row-alt`    | `primary-300`      | odd row, row divider                                                                           |
+| `ui-table-row-border` | `primary-100`      | data-table outer border                                                                        |
+| `ui-badge-bg`         | `accent-200`       | author/position badge background                                                               |
+| `ui-badge-text`       | `surface-on-brand` | text on `ui-badge-bg`                                                                          |
+| `ui-marker`           | `accent-200`       | `#article` ordered/unordered list markers                                                      |
+| `ui-accent-strong`    | `accent-300`       | rating score, entity ribbon cutout                                                             |
+| `ui-accent-soft`      | `accent-100`       | bonus amount (needs the lighter shade for contrast — same reason as the old `text-accent-100`) |
+
+Two families exist only because the code did: `ui-highlight-*` is `PostButtonRef`'s `soft`
+variant (and the table-of-contents' tinted panel, at `/10` opacity) — a real fifth shade
+combination, not a duplicate of `ui-cta-*`. `ui-accent-strong`/`ui-accent-soft` split
+`accent-300`/`accent-100` out from `ui-heading` (`accent-200`) the same way the brand family
+itself splits by shade — same hue, different weight, independently tunable later.
+
+### `/* UI scheme */` is additive, not a second patcher contract
+
+The block lives in `:root`, under the nine brand colours, behind its own anchor comment. It
+is **not** read by `appspro/server/helpers/brand-apply/patch-tailwind-css.js` — that patcher
+only touches `/* Primary */`/`/* Accent */`/`/* Active */`, `--radius-primary`,
+`--font-primary` and `--font-heading`, all still exactly where the "`:root` is a contract"
+section below describes. Renaming or reordering a `ui-*` line does not break brand apply. It
+does break the site the moment a component's class stops matching a declared token, the same
+way a typo in any Tailwind class would — there is no separate machine check for that yet.
+
+Every `--color-ui-*` value is a `var(--color-<family>-<shade>)` or `var(--color-surface-*)`
+reference, never a literal hex — that's what makes the scheme swappable later without
+touching the nine brand values themselves. `:root[data-theme="light"]` is untouched by this
+layer: `ui-text`/`ui-muted`/`ui-cta-text` resolve through `surface-*`, which is what already
+flips with the theme.
+
+### `settings.uiTheme`
+
+The full per-site theme form (`shared/utils/ui-theme.ts`, mirrored by the admin panel) has
+twelve axes; this stage implements four of them — `colors`, `scheme`, `type` (font family
+only) and `geometry.radius`. The rest (`frame`, `variants`, `decor`, `accents`, the
+non-family parts of `type` and `geometry`) exist in the type so a later stage doesn't need a
+migration, but nothing reads or writes them yet:
+
+```ts
+UiTheme = {
+  templateId, templateName, mode: "dark" | "light",
+  colors: { primary, active, accent } × { 300, 200, 100 },
+  scheme: { [uiToken]: "primary-200" | "surface-text" | "#hex" }, // ~31 keys, see table above
+  type: { display: { family, weight?, case?, tracking? }, body: { family }, scale?, h1Align? },
+  geometry: { radius, borders?, shadow?, density? },
+  frame: {…}, variants: {…}, decor: {…}, accents: {…}, // reserved for 4c/4e
+  updatedAt,
+}
+```
+
+`resolveScheme(theme)` turns `scheme` into `Record<uiToken, hex>` — a ref starting with
+`primary-`/`active-`/`accent-` reads `theme.colors`, one starting with `surface-` reads a
+fixed dark/light neutral pair (the same values as `:root`/`:root[data-theme="light"]`), and
+anything else (a `#hex`) passes through unchanged. `themeToCssVars(theme)` wraps
+`resolveScheme`'s output plus `--radius-primary`/`--font-primary`/`--font-heading` in one
+`:root { … }` string — **no `--shadow-*`**: shadow utilities compile to a literal at build
+time (see below), so a runtime CSS variable for it would do nothing, the same reason the
+brand patcher never patched one. `DEFAULT_UI_THEME_DARK`/`DEFAULT_UI_THEME_LIGHT` are the
+template's current look expressed in this shape — what a site falls back to before an
+operator has customised anything in the panel.
+
+Storage: `models/schemas/UiTheme.ts`, embedded as `Setting.uiTheme`. `scheme` and `variants`
+are their own sub-schemas with `strict: false` — the known keys are declared (so a real typo
+still shows up in review), but an unrecognised one is kept rather than silently dropped,
+because the panel and this image don't always deploy in the same breath. `setting.repository.ts`
+`getPublic()` returns `uiTheme` alongside `redirectsRoutes`/`headerLinks`.
+
 ## `:root` is a contract, not a stylesheet
 
 `app/assets/css/tailwind.css` is parsed by
 `appspro/server/helpers/brand-apply/patch-tailwind-css.js`, which throws rather than guesses.
-It needs, verbatim:
+This is about the nine brand values only — the `/* UI scheme */` block a few lines below them
+is a **different, additive** layer the patcher never reads; see "UI tokens" above. The
+patcher needs, verbatim:
 
 - the literal `:root {`, and the block closed by a `\n}`;
 - the comments `/* Primary */`, `/* Accent */`, `/* Active */`, each followed by its three
