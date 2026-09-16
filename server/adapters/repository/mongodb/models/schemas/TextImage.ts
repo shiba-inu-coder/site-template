@@ -8,6 +8,13 @@ export const TextImageSchema = [
         required: true,
         trim: true,
       },
+      // Вариант вёрстки: split | overlay | card | caption | banner. Пусто —
+      // берётся из темы сайта.
+      variant: {
+        type: String,
+        default: "",
+        trim: true,
+      },
       // HTML: блок для того и нужен, чтобы рядом с картинкой лежала вёрстка.
       text: {
         type: String,

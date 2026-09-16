@@ -10,11 +10,6 @@ import {
 } from "#shared/utils/ui-theme";
 import type { UiTheme, UiThemeMode, UiVariants } from "#shared/utils/ui-theme";
 
-// Вариантов блоков ещё нет: до 4c любой ключ отвечает одним и тем же именем.
-// Это точка расширения, а не заглушка на выброс — вариант приедет в
-// `theme.variants` и начнёт возвращаться отсюда без правки вызывающих.
-const DEFAULT_VARIANT = "default";
-
 export const useUiTheme = () => {
   const { uiTheme, setUiTheme } = useSettings();
 
@@ -51,8 +46,11 @@ export const useUiTheme = () => {
     theme.value ? contrastReport(resolveScheme(theme.value)) : [],
   );
 
+  // Пустая строка, а не имя дефолта: дефолт знает сам блок, и он у каждого
+  // свой — `pickVariant` просто пропустит пустого кандидата дальше по цепочке
+  // «запись → тема → дефолт блока».
   const variantFor = (key: keyof UiVariants): string =>
-    theme.value?.variants?.[key] || DEFAULT_VARIANT;
+    theme.value?.variants?.[key] || "";
 
   // Оси каркаса, декора и акцентов корень страницы получает атрибутами, а не
   // переменными: по ним 4e разводит вёрстку через `[data-*]`-селекторы.

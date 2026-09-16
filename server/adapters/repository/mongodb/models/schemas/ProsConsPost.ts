@@ -8,6 +8,11 @@ export const ProsConsPostSchema = [
         required: true,
         trim: true,
       },
+      variant: {
+        type: String,
+        default: "",
+        trim: true,
+      },
       data: {
         _id: false,
         prosList: {

@@ -10,6 +10,11 @@ export const BiographyWriterSchema = [
         type: String,
         required: true,
       },
+      variant: {
+        type: String,
+        default: "",
+        trim: true,
+      },
       data: {
         _id: false,
         writer: {

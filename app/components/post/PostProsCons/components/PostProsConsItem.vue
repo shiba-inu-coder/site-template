@@ -1,9 +1,14 @@
 <template>
   <ul
-    class="rounded-primary not-format flex flex-col bg-ui-panel-bg border-2 border-ui-panel-border"
+    class="not-format flex flex-col"
+    :class="chromeClasses"
     tabindex="0"
   >
-    <li class="p-primary-1 rounded-t-primary text-left">
+    <li
+      v-if="title"
+      class="p-primary-1 rounded-t-primary text-left"
+      :class="{ 'px-0!': chrome === 'plain' }"
+    >
       <span
         class="my-0! font-semibold! text-shadow-none! text-step-6"
         :class="{
@@ -18,14 +23,15 @@
       v-for="(item, index) in list"
       :key="index"
       class="inline-flex relative items-center gap-x-2 p-primary-1"
+      :class="{ 'px-0!': chrome === 'plain' }"
     >
       <svg-icon
         :name="icon"
-        :class="{
-          ' text-status-positive': type === 'pros',
-          ' text-status-negative': type === 'cons',
-        }"
-        class="size-5 absolute left-[8px] top-[18.5px]"
+        :class="[
+          type === 'pros' ? 'text-status-positive' : 'text-status-negative',
+          chrome === 'plain' ? 'left-0' : 'left-[8px]',
+        ]"
+        class="size-5 absolute top-[18.5px]"
       ></svg-icon>
       <span
         class="ml-7"
@@ -38,13 +44,26 @@
 <script setup lang="ts">
 import { safeHTMLWrap } from "#shared/utils/safeHTMLWrap";
 
-const { list, type } = defineProps<{
+const {
+  type,
+  title = "",
+  chrome = "panel",
+} = defineProps<{
   list: string[];
-  title: string;
+  title?: string;
   type: "pros" | "cons";
+  // Рамка списка принадлежит варианту, а не списку: у merged, scoreboard и
+  // table она своя или её нет вовсе.
+  chrome?: "panel" | "plain";
 }>();
 
 const icon = computed(() =>
   type === "cons" ? "client/close-round" : "client/check",
+);
+
+const chromeClasses = computed(() =>
+  chrome === "panel"
+    ? "rounded-primary bg-ui-panel-bg border-2 border-ui-panel-border"
+    : "",
 );
 </script>

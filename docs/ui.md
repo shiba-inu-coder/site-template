@@ -97,17 +97,17 @@ brand or surface ref it resolves to, the same string `shared/utils/ui-theme.ts` 
 | `ui-footer-bg`     | `primary-200` | footer links row                              |
 | `ui-footer-bg-alt` | `primary-300` | footer bottom row (title + logo)              |
 
-| Token               | Default       | Role                                                 |
-| ------------------- | ------------- | ---------------------------------------------------- |
-| `ui-card-bg`        | `primary-100` | `PostGridCards` boxed card, error page background    |
-| `ui-card-border`    | `primary-300` | card border, bonus-icon border                       |
-| `ui-card-title`     | `accent-200`  | `PostGridCards` item title                           |
-| `ui-panel-bg`       | `primary-200` | rating/bonus card body, drawer, FAQ/pros-cons box    |
-| `ui-panel-border`   | `primary-300` | panel/drawer/biography border                        |
-| `ui-input-bg`       | `primary-100` | form input background                                |
-| `ui-input-border`   | `primary-100` | form input border, small logo/divider borders        |
-| `ui-highlight-bg`   | `active-100`  | `PostButtonRef` soft variant, table-of-contents tint |
-| `ui-highlight-text` | `primary-300` | `PostButtonRef` soft variant text                    |
+| Token               | Default       | Role                                              |
+| ------------------- | ------------- | ------------------------------------------------- |
+| `ui-card-bg`        | `primary-100` | `PostGridCards` boxed card, error page background |
+| `ui-card-border`    | `primary-300` | card border, bonus-icon border                    |
+| `ui-card-title`     | `accent-200`  | `PostGridCards` item title                        |
+| `ui-panel-bg`       | `primary-200` | rating/bonus card body, drawer, FAQ/pros-cons box |
+| `ui-panel-border`   | `primary-300` | panel/drawer/biography border                     |
+| `ui-input-bg`       | `primary-100` | form input background                             |
+| `ui-input-border`   | `primary-100` | form input border, small logo/divider borders     |
+| `ui-highlight-bg`   | `active-100`  | `PostButtonRef` soft variant                      |
+| `ui-highlight-text` | `primary-300` | `PostButtonRef` soft variant text                 |
 
 | Token           | Default            | Role                                                 |
 | --------------- | ------------------ | ---------------------------------------------------- |
@@ -122,20 +122,19 @@ brand or surface ref it resolves to, the same string `shared/utils/ui-theme.ts` 
 
 | Token                 | Default            | Role                                                                                           |
 | --------------------- | ------------------ | ---------------------------------------------------------------------------------------------- |
-| `ui-table-head-bg`    | `primary-300`      | `PostDataTable` head row, table-of-contents trigger                                            |
+| `ui-table-head-bg`    | `primary-300`      | `PostDataTable` head row, `compare` card header, `prosCons: table` header                      |
 | `ui-table-head-text`  | `surface-text`     | `PostDataTable` head row text                                                                  |
 | `ui-table-row`        | `primary-200`      | even data-table row                                                                            |
 | `ui-table-row-alt`    | `primary-300`      | odd row, row divider                                                                           |
 | `ui-table-row-border` | `primary-100`      | data-table outer border                                                                        |
 | `ui-badge-bg`         | `accent-200`       | author/position badge background                                                               |
 | `ui-badge-text`       | `surface-on-brand` | text on `ui-badge-bg`                                                                          |
-| `ui-marker`           | `accent-200`       | `#article` ordered/unordered list markers                                                      |
+| `ui-marker`           | `accent-200`       | `#article` list markers, stars, `ranking` top row, the rule/stripe of `toc`/`quote`/`stripe`   |
 | `ui-accent-strong`    | `accent-300`       | rating score, entity ribbon cutout                                                             |
 | `ui-accent-soft`      | `accent-100`       | bonus amount (needs the lighter shade for contrast — same reason as the old `text-accent-100`) |
 
 Two families exist only because the code did: `ui-highlight-*` is `PostButtonRef`'s `soft`
-variant (and the table-of-contents' tinted panel, at `/10` opacity) — a real fifth shade
-combination, not a duplicate of `ui-cta-*`. `ui-accent-strong`/`ui-accent-soft` split
+variant — a real fifth shade combination, not a duplicate of `ui-cta-*`. `ui-accent-strong`/`ui-accent-soft` split
 `accent-300`/`accent-100` out from `ui-heading` (`accent-200`) the same way the brand family
 itself splits by shade — same hue, different weight, independently tunable later.
 
@@ -158,10 +157,10 @@ flips with the theme.
 ### `settings.uiTheme`
 
 The full per-site theme form (`shared/utils/ui-theme.ts`, mirrored by the admin panel) has
-twelve axes; this stage implements four of them — `colors`, `scheme`, `type` (font family
-only) and `geometry.radius`. The rest (`frame`, `variants`, `decor`, `accents`, the
-non-family parts of `type` and `geometry`) exist in the type so a later stage doesn't need a
-migration, but nothing reads or writes them yet:
+twelve axes; five of them are read today — `colors`, `scheme`, `type` (font family only),
+`geometry.radius` and `variants` (see "Shortcodes"). The rest (`frame`, `decor`, `accents`,
+the non-family parts of `type` and `geometry`) exist in the type so a later stage doesn't
+need a migration, but nothing reads or writes them yet:
 
 ```ts
 UiTheme = {
@@ -170,7 +169,8 @@ UiTheme = {
   scheme: { [uiToken]: "primary-200" | "surface-text" | "#hex" }, // ~31 keys, see table above
   type: { display: { family, weight?, case?, tracking? }, body: { family }, scale?, h1Align? },
   geometry: { radius, borders?, shadow?, density? },
-  frame: {…}, variants: {…}, decor: {…}, accents: {…}, // reserved for 4c/4e
+  variants: { gridCards?, dataTable?, textImage?, faq?, … }, // see "Shortcodes"
+  frame: {…}, decor: {…}, accents: {…}, // reserved for the frame stage
   updatedAt,
 }
 ```
@@ -232,8 +232,8 @@ Two details that look like noise and are not:
   option only strips `css` entries from the build manifest and never touches head tags.
 
 `useUiTheme()` is where a component asks about the theme: `theme` (the record or `null`),
-`mode`, `cssVars`, `fontsHref`, `contrast`, and two deliberate placeholders — `variantFor(key)`
-returns `"default"` until block variants exist, and `frameAttrs` builds the `data-*`
+`mode`, `cssVars`, `fontsHref`, `contrast`, `variantFor(key)` (the block-variant lookup, see
+"Shortcodes") and one deliberate placeholder — `frameAttrs` builds the `data-*`
 attributes (`type.scale`, `geometry.*`, `frame.*`, `decor.*`, `accents.*`) that a later stage
 will hang on the page root. `setTheme()` replaces the theme in state; the head is described
 as a getter, so the style tag, `data-theme`, the font link and the attributes all repaint
@@ -387,8 +387,11 @@ compound widget keeps its private pieces in its own `components/` subfolder (`Po
 plus `PostFAQ/components/PostFAQItem.vue`).
 
 **`PostButtonRef` is the only button.** It carries the affiliate contract — `useFakeRefLink`,
-`target="_blank"`, `rel="nofollow noopener"`, `data-id="ref_link"` — plus the four variants
-(`solid`, `outline`, `soft`, `link`). Never copy its class string into a template; that copy
+`target="_blank"`, `rel="nofollow noopener"`, `data-id="ref_link"` — plus its variants
+(`solid`, `outline`, `soft`, `block`, and `link` for a button that reads as text inside a
+table cell). **A CTA inside another block passes no `variant` at all** — left alone the
+button asks the theme, which is the whole point of `variants.buttonRef`; pass one only where
+the button is chrome rather than a call to action. Never copy its class string into a template; that copy
 in `PostCasinoRatingCard.vue` is how `easy-in-out` (a typo for `ease-in-out`, silently
 disabling the easing) survived in two places at once. It cannot render an internal
 `nuxt-link`, which is the one legitimate reason to hand-roll a button — colour that from the
@@ -420,20 +423,94 @@ in `app/components/layout/RuntimeTemplateLayout.vue` — Vue camelises `vue:text
 key `TextImage`.
 
 The registry on the other side lives in `appspro/shared/constants/shortcodes.js`. Adding a
-shortcode means touching both repositories, and the props must agree: `button-ref` currently
-offers a `wrapper-class` attribute in the panel that `PostButtonRef` has no prop for, and the
-two disagree on the default `size`.
+shortcode means touching both repositories, and the props must agree: `button-ref` still
+offers a `wrapper-class` attribute in the panel that `PostButtonRef` has no prop for — the
+`block` variant is what replaces it — and the two disagree on the default `size`.
 
 **A marker can outlive its config entry.** Guard for it — `PostTextImage.vue` shows the
 pattern. Most shortcode components do not, and will throw on a stale marker.
 
-`PostTextImage.vue` (`text-image` marker, `textImages` shortcode) is the one with a real
-layout to get right: two columns on desktop (image left or right, 33 % or 50 % of the row via
-`imgColumn`), one column on mobile (image ordered top or bottom via `imgMobileSide`), or a
-single full-width column (`imgSide: "full"`) with the image always first, above the text.
+### Variants
+
+**A variant is a different layout, never a different colour.** Colour comes only from the
+`ui-*` tokens above, which is what lets any variant live under any brand: the operator picks
+`faq: chat` once for the site and every article's FAQ becomes a chat, in whatever palette the
+theme carries. A variant that needed its own colour would be a second theme.
+
+**The default comes from the theme, one block overrides it.** Every component resolves
+`entry.data.variant ?? uiTheme.variants.<key> ?? <the block's own default>` through
+`pickVariant` (`shared/utils/block-variant.ts`), which takes the **first candidate the block
+can actually draw** — not the first non-empty one. That is deliberate: what is stored may be
+a value from an older epoch (`gridCards` still holds `"1"` and `"2"` on live sites), a
+variant that was removed, or a typo, and none of those may leave a block unrendered. The
+block's own default is the first value in the table below, and for most blocks it is what
+the template already drew. **`toc: box` is the exception**: the collapsible panel behind a
+"Show table of contents" button is not one of the five variants, so the list now stands
+open — a visible change on every site that has no theme yet.
+
+| Block              | `variants.*` key | Values (default first)                                             | Modifiers, not variants                 |
+| ------------------ | ---------------- | ------------------------------------------------------------------ | --------------------------------------- |
+| `grid-cards`       | `gridCards`      | `text`, `image-caption`, `image-title-text`, `horizontal`, `offer` | `cardsPerRowDesktop`                    |
+| `data-table`       | `dataTable`      | `classic`, `ranking`, `rows`, `compare`, `key-value`               | `density`, `head`, `striped`            |
+| `text-image`       | `textImage`      | `split`, `overlay`, `card`, `caption`, `banner`                    | `imgSide`, `imgColumn`, `imgMobileSide` |
+| `faq`              | `faq`            | `list`, `accordion`, `numbered`, `grid`, `chat`                    | —                                       |
+| `pros-cons`        | `prosCons`       | `two-col`, `stacked`, `merged`, `scoreboard`, `table`              | —                                       |
+| `table-content`    | `toc`            | `box`, `rule`, `pills`, `columns`, `steps`                         | —                                       |
+| `biography-writer` | `biography`      | `card`, `inline`, `banner`, `centered`, `signature`                | a `variant` **prop** forces one         |
+| `contact-us`       | `contact`        | `card`, `plain`, `split`                                           | — (theme only, no record)               |
+| `button-ref`       | `buttonRef`      | `solid`, `outline`, `soft`, `block`                                | `size`                                  |
+| `rating-strip`     | `ratingStrip`    | `strip`, `scorecard`, `bars`, `chips`                              | —                                       |
+| `bonus-box`        | `bonusBox`       | `stripe`, `banner`, `ticket`, `split`, `bar`                       | —                                       |
+| `verdict-box`      | `verdictBox`     | `card`, `split`, `quote`, `strip`                                  | —                                       |
+
+A modifier is not a variant: it stacks on top of whichever one is chosen, and it lives on the
+record rather than in the theme, because two tables in the same article legitimately want
+different densities while both stay `classic`. `PostBiographyWriter` is the one that also
+takes a `variant` **prop**, which beats both record and theme — the author line under an H1
+is always `inline`, whatever the site's full-size variant is.
+
+**`grid-cards` keeps a legacy translation, not an enum.** `"1"` → `image-caption` and `"2"`
+→ `image-title-text` are applied before the variant is resolved: those two values are what
+the panel wrote for years, and they are still in every live post.
+
+**Every prop a variant reads is optional.** A record written before this stage carries no
+`variant`, no `logo`/`score`/`bonus`, no `density` — and has to render. That is why the
+Mongoose schemas default them to `""`/`true` rather than requiring them, and why the
+components fall back rather than branch on presence.
+
+**Shapes.** `rating-strip` and `verdict-box` are **singletons** — one per article, stored
+next to `faq` and `tableContent` as an object rather than an array, and read straight from
+`usePost()` instead of by `uniqId`. `bonus-box` is an array keyed by `uniqId` like the rest.
+
+| Shortcode      | Data                                                                                           |
+| -------------- | ---------------------------------------------------------------------------------------------- |
+| `rating-strip` | `score` (0–5), `facts: [{ label, value }]` — at most 4; for `bars` the `value` is a number 0–5 |
+| `bonus-box`    | `label`, `amount`, `terms`, `code` (the `ticket` stub), `refLink`, `buttonText`                |
+| `verdict-box`  | `score`, `title`, `text` (HTML), `badges: [string]` — at most 5, `refLink`, `buttonText`       |
+
+The caps are enforced in the component (`slice`), not in the panel: a record written by an
+older panel, or by hand, must not be able to break the row.
+
+**A new variant is three edits, not one.** The component's literal class map here, a row in
+the `/ui` fixture page, and the enum the panel offers the operator — a variant the panel
+cannot write is a variant nobody will ever see, and a variant missing from `/ui` is one
+nobody checks after a theme change.
+
+The axes a variant does **not** read: `geometry.borders`/`shadow`, `decor.img`/`btn` and
+`accents.badge` arrive as `data-*` attributes on the page root, so a component must not
+hardcode a border, a shadow or a button shape where those are meant to reach it.
+
+`PostTextImage.vue` (`text-image` marker, `textImages` shortcode) is where the side/column
+modifiers do real work, under the `split` and `card` variants: two columns on desktop (image
+left or right, 33 % or 50 % of the row via `imgColumn`), one column on mobile (image ordered
+top or bottom via `imgMobileSide`), or a single full-width column (`imgSide: "full"`) with
+the image always first, above the text. The other three variants are one column by
+construction, and `caption` is the one that renders `imgHint`.
 Because `@config` only scans `.vue` files, both the grid-column map (`${imgSide}-${imgColumn}`
 → `md:grid-cols-[1fr_2fr]` and friends) and the `sizes` map for `NuxtImg` are written out as
-literal objects in the component, the same way `PostGridCards.vue` already does.
+literal objects in the component — **every variant's classes are literal for the same
+reason**, which is why each component carries a `Record<variant, string>` map instead of
+building a class from the stored value.
 
 The record predates that grid, so the component defaults defensively rather than trusting what
 is stored: an `imgSide` outside `left`/`right`/`full` falls back to `right`, a missing
@@ -501,7 +578,11 @@ Real, found, deliberately not fixed yet:
   about fifteen lines. Every fix has to be applied two or three times or the copies drift.
 - **Dead files.** `common/PaginationDots.vue`, `PostProsCons/PostProsConsEntity.vue` and
   `PostCasinoReviewCard/PostCasinoReviewCard.vue` are imported by nothing.
-  `PostFAQItem.vue` is a commented-out accordion with its state still declared.
+- **`contact: split` has nothing to put in its left column.** The mock-up wants the
+  editorial contacts there (e-mail, Telegram, reply time); `seo.conf.ts` carries no such
+  keys, and `appspro/server/helpers/brand-apply/render-seo-conf.js` rewrites that file from
+  a fixed template, so adding them here alone would lose them on the next brand apply. The
+  column currently shows `site.name` and nothing else until both sides carry the keys.
 - **`settings.headerLinks`** is fetched from Mongo through the repository and the composable
   and read by nobody — the header renders `seoConfig.layout.header.items` instead. Left alone
   because the model is shared with the admin service.
