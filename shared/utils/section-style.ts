@@ -18,7 +18,8 @@ const LEGACY_PADDING_VERTICAL_PX: Record<string, number> = {
 };
 
 const legacyPaddingToPx = (preset: string): PostSectionPadding => {
-  const vertical = LEGACY_PADDING_VERTICAL_PX[preset] ?? LEGACY_PADDING_VERTICAL_PX.md;
+  const vertical =
+    LEGACY_PADDING_VERTICAL_PX[preset] ?? LEGACY_PADDING_VERTICAL_PX.md;
 
   return { top: vertical, right: 0, bottom: vertical, left: 0 };
 };
@@ -78,7 +79,11 @@ export const normalizeSectionLayout = (
 
   const margin = {
     top: clampPx(layout.margin?.top, SECTION_MARGIN_MAX, base.margin.top),
-    bottom: clampPx(layout.margin?.bottom, SECTION_MARGIN_MAX, base.margin.bottom),
+    bottom: clampPx(
+      layout.margin?.bottom,
+      SECTION_MARGIN_MAX,
+      base.margin.bottom,
+    ),
   };
 
   const radius = clampPx(layout.radius, SECTION_RADIUS_MAX, base.radius);

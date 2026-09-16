@@ -1,61 +1,45 @@
 <template>
   <div>
-    <div
-      class="rounded-primary overflow-table overflow-x-auto relative border-2 border-ui-table-row-border"
-    >
-      <table
-        class="sm:table-auto w-full border-separate border-spacing-0 overflow-hidden text-left"
-      >
-        <thead
-          v-if="state.data.showTableHead"
-          class="bg-ui-table-head-bg text-ui-table-head-text"
-        >
-          <tr class="">
-            <th
-              v-for="(column, columnIndex) in state.data.columns"
-              :key="columnIndex"
-              scope="col"
-              class="break-words p-primary-1 text-step-6"
-            >
-              {{ column.title }}
-            </th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr
-            v-for="(row, i) in formatedRows"
-            :key="i"
-            :class="{
-              'bg-ui-table-row': i % 2 === 0,
-              'bg-ui-table-row-alt': i % 2 !== 0,
-            }"
-          >
-            <td
-              v-for="(column, columnIndex) in state.data.columns"
-              :key="columnIndex"
-              :class="{
-                'last:rounded-primary': columnIndex === 0,
-                'border-b border-ui-table-row-alt':
-                  formatedRows.length - 1 !== i,
-              }"
-              class="break-words px-2 py-1.5 text-step-6"
-            >
-              <PostDataTableRuntime :template="row[column.name]" />
-            </td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
+    <PostDataTableRows
+      v-if="variant === 'rows'"
+      :columns="data.columns"
+      :rows="formatedRows"
+      :density="density"
+    />
+    <PostDataTableCompare
+      v-else-if="variant === 'compare'"
+      :columns="data.columns"
+      :rows="formatedRows"
+      :btn-name="data.btnName"
+      :ref-link="data.refLink"
+    />
+    <PostDataTableKeyValue
+      v-else-if="variant === 'key-value'"
+      :columns="data.columns"
+      :rows="formatedRows"
+      :density="density"
+      :striped="striped"
+    />
+    <PostDataTableGrid
+      v-else
+      :columns="data.columns"
+      :rows="formatedRows"
+      :variant="variant"
+      :density="density"
+      :head="head"
+      :striped="striped"
+      :show-table-head="data.showTableHead"
+    />
 
     <div
-      v-if="state.data.rows.length > defaultCountRows"
+      v-if="data.rows.length > defaultCountRows"
       class="mt-10 mb-4.5 flex justify-center"
     >
       <button
         v-show="isShowMoreBtn"
         type="button"
         class="bg-ui-card-bg border-2 border-ui-link text-ui-link hover:border-ui-link-hover hover:text-ui-cta-text font-medium hover:bg-ui-cta-hover transition ease-in-out duration-500 px-3.5 rounded-primary py-2.5"
-        @click="setCount(state.data.rows.length)"
+        @click="setCount(data.rows.length)"
       >
         {{ seoConfig.translates.showMore }}
       </button>
@@ -72,8 +56,12 @@
 </template>
 
 <script setup lang="ts">
-import PostDataTableRuntime from "./PostDataTableRuntime/PostDataTableRuntime.vue";
+import PostDataTableGrid from "./components/PostDataTableGrid.vue";
+import PostDataTableRows from "./components/PostDataTableRows.vue";
+import PostDataTableCompare from "./components/PostDataTableCompare.vue";
+import PostDataTableKeyValue from "./components/PostDataTableKeyValue.vue";
 import { seoConfig } from "@@/seo.conf";
+import { pickVariant } from "#shared/utils/block-variant";
 
 const { uniqId } = defineProps({
   uniqId: {
@@ -83,34 +71,46 @@ const { uniqId } = defineProps({
 });
 
 const { getShortcode } = usePost();
+const { variantFor } = useUiTheme();
 
-const state = computed(
-  () =>
-    getShortcode({
-      uniqId,
-      shortcode: "dataTables",
-    }) || {
-      data: {
-        uniqId: "",
-        btnName: "",
-        refLink: "",
-        defaultCountRows: "0",
-        showTableHead: false,
-        columns: [],
-        rows: [],
-      },
-    },
+const VARIANTS = [
+  "classic",
+  "ranking",
+  "rows",
+  "compare",
+  "key-value",
+] as const;
+
+// Маркер в статье может пережить свою запись в конфиге.
+const FALLBACK: PostDataTable = {
+  data: {
+    uniqId: "",
+    btnName: "",
+    refLink: "",
+    defaultCountRows: "0",
+    showTableHead: false,
+    columns: [],
+    rows: [],
+  },
+};
+
+const data = computed(
+  () => (getShortcode({ uniqId, shortcode: "dataTables" }) || FALLBACK).data,
 );
 
-const formatedRows = computed(() =>
-  state.value.data.rows.slice(0, count.value),
+const variant = computed(() =>
+  pickVariant(VARIANTS, "classic", data.value.variant, variantFor("dataTable")),
 );
-const isShowMoreBtn = computed(
-  () => state.value.data.rows.length > count.value,
-);
-const defaultCountRows = computed(() =>
-  Number(state.value.data.defaultCountRows),
-);
+
+// Модификаторы живут на записи, а не в теме: одна таблица в статье бывает
+// плотным досье, соседняя — обычной сеткой.
+const density = computed(() => data.value.density || "regular");
+const head = computed(() => data.value.head || "solid");
+const striped = computed(() => data.value.striped !== false);
+
+const formatedRows = computed(() => data.value.rows.slice(0, count.value));
+const isShowMoreBtn = computed(() => data.value.rows.length > count.value);
+const defaultCountRows = computed(() => Number(data.value.defaultCountRows));
 
 const count = ref(defaultCountRows.value);
 const setCount = (val: number) => (count.value = val);

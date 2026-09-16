@@ -67,6 +67,23 @@ export const GridCardSchema = [
             enum: ["casino", "bookmaker"],
             default: "casino",
           },
+          // Вариант offer: лого текстом (иначе рисуется img), оценка 0–5,
+          // строка бонуса.
+          logo: {
+            type: String,
+            trim: true,
+            default: "",
+          },
+          score: {
+            type: String,
+            trim: true,
+            default: "",
+          },
+          bonus: {
+            type: String,
+            trim: true,
+            default: "",
+          },
           img: {
             type: {
               path: {

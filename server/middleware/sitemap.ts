@@ -15,7 +15,10 @@ export default defineEventHandler(async (event: H3Event) => {
 
     const externalSitemapUrl = settings.externalSitemapUrl || "";
 
-    if (externalSitemapUrl && (await resolvesToPublicHost(externalSitemapUrl))) {
+    if (
+      externalSitemapUrl &&
+      (await resolvesToPublicHost(externalSitemapUrl))
+    ) {
       const xml = await $fetch<string>(externalSitemapUrl, {
         responseType: "text",
         timeout: 5000,

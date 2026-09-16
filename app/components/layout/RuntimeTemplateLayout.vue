@@ -48,6 +48,21 @@ const TextImage = defineLazyHydrationComponent(
   "visible",
   () => import("#rc/components/post/PostTextImage.vue"),
 );
+
+const RatingStrip = defineLazyHydrationComponent(
+  "visible",
+  () => import("#rc/components/post/PostRatingStrip.vue"),
+);
+
+const BonusBox = defineLazyHydrationComponent(
+  "visible",
+  () => import("#rc/components/post/PostBonusBox.vue"),
+);
+
+const VerdictBox = defineLazyHydrationComponent(
+  "visible",
+  () => import("#rc/components/post/PostVerdictBox.vue"),
+);
 // const CasinoRatings = defineLazyHydrationComponent(
 //   "visible",
 //   () => import("#rc/components/post/PostCasinoRatings/PostCasinoRatings.vue"),
@@ -77,6 +92,9 @@ const components = {
   DataTable,
   ContactUs,
   TextImage,
+  RatingStrip,
+  BonusBox,
+  VerdictBox,
   // CasinoRatings,
   // BookmakerRatings,
   // MiniCasinoReview,

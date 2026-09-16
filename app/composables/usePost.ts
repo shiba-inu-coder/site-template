@@ -14,15 +14,24 @@ export const usePost = <E>() => {
   const sections = computed(() => state.value.currentPost.sections ?? []);
   const isActive = computed(() => state.value.currentPost.isActive);
   const slug = computed(() => state.value.currentPost.slug);
+  const tableContentEntry = computed(
+    () => state.value.currentPost.shortcodesConfig.tableContent,
+  );
   const tableContent = computed(() =>
-    state.value.currentPost.shortcodesConfig.tableContent.data.filter(
-      (item) => item.isActive,
-    ),
+    tableContentEntry.value.data.filter((item) => item.isActive),
   );
   const banner = computed(() => state.value.currentPost.banner);
   const createdAt = computed(() => state.value.currentPost.createdAt);
   const updatedAt = computed(() => state.value.currentPost.updatedAt);
   const faq = computed(() => state.value.currentPost.shortcodesConfig.faq);
+  // Синглтоны: статья, написанная до появления блока, поля в конфиге не несёт
+  // вовсе — пустой объект вместо undefined держит шаблон от падения.
+  const ratingStrip = computed(
+    () => state.value.currentPost.shortcodesConfig.ratingStrip ?? {},
+  );
+  const verdictBox = computed(
+    () => state.value.currentPost.shortcodesConfig.verdictBox ?? {},
+  );
   const breadcrumbs = computed(() => state.value.currentPost.breadcrumbs);
   const postDated = computed(
     () =>
@@ -74,6 +83,10 @@ export const usePost = <E>() => {
     uniqId: string;
     shortcode: "textImages";
   }): IPostBySlug["shortcodesConfig"]["textImages"][number] | undefined;
+  function getShortcode(params: {
+    uniqId: string;
+    shortcode: "bonusBoxes";
+  }): IPostBySlug["shortcodesConfig"]["bonusBoxes"][number] | undefined;
   function getShortcode({
     uniqId,
     shortcode,
@@ -96,10 +109,12 @@ export const usePost = <E>() => {
       | "miniCasinoReviews"
       | "miniBookmakerReviews"
       | "textImages"
+      | "bonusBoxes"
     >;
   }) {
     const post = state.value.currentPost as IPostBySlug;
-    return post.shortcodesConfig[shortcode].find(
+    // Статья старше самого шорткода несёт конфиг без этого ключа вовсе.
+    return post.shortcodesConfig[shortcode]?.find(
       (table) => table.data.uniqId === uniqId,
     );
   }
@@ -130,11 +145,14 @@ export const usePost = <E>() => {
     breadcrumbs,
     getShortcode,
     faq,
+    ratingStrip,
+    verdictBox,
     title,
     updatedAt,
     createdAt,
     banner,
     tableContent,
+    tableContentEntry,
     slug,
     content,
     metaTags,

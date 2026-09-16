@@ -3,6 +3,9 @@ import type { Document, Model, ObjectId } from "mongoose";
 export interface PostGridCard {
   data: {
     uniqId: string;
+    // Варианты вёрстки: text | image-caption | image-title-text | horizontal |
+    // offer. "1" и "2" — значения дошорткодовой эпохи, компонент переводит их
+    // в image-caption и image-title-text.
     variant: string;
     refLink: string;
     refLinkType: RefLinkType;
@@ -16,10 +19,15 @@ export interface PostGridCard {
       buttonText: string;
       refLink: string;
       refLinkType: RefLinkType;
+      // Только вариант offer: лого текстом (иначе рисуется img), оценка 0–5 и
+      // строка бонуса.
+      logo?: string;
+      score?: string;
+      bonus?: string;
       img: {
         path: string;
         alt: string;
-      };
+      } | null;
     }[];
   };
 }
@@ -27,6 +35,7 @@ export interface PostGridCard {
 export interface PostTextImage {
   data: {
     uniqId: string;
+    variant?: string;
     text: string;
     img: {
       path: string;
@@ -47,6 +56,7 @@ export interface PostTextImage {
 export interface PostProsCons {
   data: {
     uniqId: string;
+    variant?: string;
     data: {
       prosList: string[];
       consList: string[];
@@ -61,7 +71,10 @@ export interface PostTableContentItem {
   isActive: boolean;
 }
 
+// Синглтон: своей записи на блок нет, вариант перекрывает тему для всей
+// статьи целиком.
 export interface PostTableContent {
+  variant?: string;
   data: PostTableContentItem[];
 }
 
@@ -153,7 +166,14 @@ export interface Column {
 export interface PostDataTable {
   data: {
     uniqId: string;
+    variant?: string;
+    // Модификаторы поверх варианта, а не варианты: любой из них применим к
+    // classic и ranking одинаково.
+    density?: string;
+    head?: string;
+    striped?: boolean;
     btnName?: string;
+    refLink?: string;
     showTableHead: boolean;
     defaultCountRows: string;
     columns: Column[];
@@ -162,7 +182,44 @@ export interface PostDataTable {
 }
 
 export interface PostFaq {
+  variant?: string;
   data: { label: string; value: string }[];
+}
+
+export interface PostRatingStripFact {
+  label: string;
+  value: string;
+}
+
+// Синглтон: полоса оценки идёт под H1 и в статье одна.
+export interface PostRatingStrip {
+  variant?: string;
+  score?: number;
+  facts?: PostRatingStripFact[];
+}
+
+export interface PostBonusBox {
+  data: {
+    uniqId: string;
+    variant?: string;
+    label?: string;
+    amount?: string;
+    terms?: string;
+    code?: string;
+    refLink?: string;
+    buttonText?: string;
+  };
+}
+
+// Синглтон: вердикт редакции в статье один, в конце.
+export interface PostVerdictBox {
+  variant?: string;
+  score?: number;
+  title?: string;
+  text?: string;
+  badges?: string[];
+  refLink?: string;
+  buttonText?: string;
 }
 
 export interface PostBanner {
@@ -283,6 +340,7 @@ export interface PostMiniBookmakerReview<E = ObjectId, B = ObjectId> {
 export interface PostBiographyWriter<W> {
   data: {
     uniqId: string;
+    variant?: string;
     data: {
       writer: W;
     };
@@ -344,6 +402,9 @@ export interface IPost<
     biographyWriters: PostBiographyWriter<BiographyWriter>[];
     tableContent: PostTableContent;
     textImages: PostTextImage[];
+    bonusBoxes: PostBonusBox[];
+    ratingStrip: PostRatingStrip;
+    verdictBox: PostVerdictBox;
   };
   isDeleted: boolean;
   createdAt?: Date;

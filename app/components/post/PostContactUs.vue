@@ -1,13 +1,20 @@
 <template>
   <div class="max-w-340 mx-auto flex flex-col items-center my-5 px-5">
     <div
-      class="flex max-w-[850px] w-full contact-form flex-col border-2 border-ui-input-border p-4 rounded-primary bg-ui-panel-bg sm:p-6 lg:p-8"
+      class="contact-form max-w-[850px] w-full"
+      :class="WRAPPER_CLASSES[variant]"
     >
+      <div
+        v-if="variant === 'split' && seoConfig.site.name"
+        class="content-start"
+      >
+        <h3 class="mt-0! text-step-4">{{ seoConfig.site.name }}</h3>
+      </div>
+
       <form
         class="w-full space-y-4"
         @submit.prevent
       >
-        <!-- Grid -->
         <div>
           <label
             for="firstname-contacts-1"
@@ -22,9 +29,7 @@
             class="py-3 px-4 block w-full border-2 border-ui-input-border outline-none bg-ui-input-bg rounded-primary text-step-8 disabled:opacity-50 disabled:pointer-events-none"
           />
         </div>
-        <!-- End Grid -->
 
-        <!-- Grid -->
         <div>
           <label
             for="email-contacts-1"
@@ -45,7 +50,6 @@
             >{{ seoConfig.translates.contacts.invalidEmail }}</span
           >
         </div>
-        <!-- End Grid -->
 
         <div class="col-span-full">
           <label
@@ -61,7 +65,6 @@
             class="py-3 px-4 block w-full outline-none border-2 border-ui-input-border bg-ui-input-bg rounded-primary text-step-8 disabled:opacity-50 disabled:pointer-events-none"
           ></textarea>
         </div>
-        <!-- End Grid -->
 
         <div class="mt-6 grid">
           <button
@@ -78,6 +81,24 @@
 </template>
 <script setup lang="ts">
 import { seoConfig } from "@@/seo.conf";
+import { pickVariant } from "#shared/utils/block-variant";
+
+const { variantFor } = useUiTheme();
+
+// У контактов нет своей записи в конфиге статьи: форма одна на сайт, и
+// вариант ей задаёт только тема.
+const VARIANTS = ["card", "plain", "split"] as const;
+
+const WRAPPER_CLASSES: Record<(typeof VARIANTS)[number], string> = {
+  card: "flex flex-col border-2 border-ui-input-border p-4 rounded-primary bg-ui-panel-bg sm:p-6 lg:p-8",
+  plain: "flex flex-col",
+  split:
+    "grid gap-6 p-5 bg-ui-card-bg border border-ui-card-border rounded-primary md:grid-cols-[1fr_1.2fr]",
+};
+
+const variant = computed(() =>
+  pickVariant(VARIANTS, "card", variantFor("contact")),
+);
 
 const form = ref({
   name: "",

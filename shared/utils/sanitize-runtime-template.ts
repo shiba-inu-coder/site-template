@@ -13,7 +13,8 @@
 const collapseMustache = (val: string) =>
   val.replace(/\{{2,}/g, "{").replace(/\}{2,}/g, "}");
 
-const DIRECTIVE_ATTR = /\s(?:v-[a-zA-Z0-9_-]+|[:@#][^\s=/>]+)(?:\s*=\s*(?:"[^"]*"|'[^']*'|[^\s>]+))?/g;
+const DIRECTIVE_ATTR =
+  /\s(?:v-[a-zA-Z0-9_-]+|[:@#][^\s=/>]+)(?:\s*=\s*(?:"[^"]*"|'[^']*'|[^\s>]+))?/g;
 
 const OPEN_TAG = /<[a-zA-Z][^>]*>/g;
 
