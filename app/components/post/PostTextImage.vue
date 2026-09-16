@@ -1,34 +1,33 @@
 <template>
-  <div class="flex flex-col md:block after:block after:clear-both">
+  <div>
     <div
-      v-if="data.img"
-      class="mb-4 md:max-w-[45%]"
-      :class="[
-        mobileOrderClasses[data.imgMobileSide],
-        sideClasses[data.imgSide],
-      ]"
-      :style="sizeStyle"
+      class="grid grid-cols-1 gap-4 md:gap-6 items-start"
+      :class="gridColsClass"
     >
-      <NuxtImg
-        loading="lazy"
-        provider="cloudinary"
-        class="w-full"
-        :width="imgWidth"
-        :height="imgHeight"
-        :alt="data.img.alt"
-        :src="data.img.path"
-        :modifiers="{ roundCorner: data.imgRoundCorner }"
-      />
+      <div
+        v-if="data.img"
+        :class="imageOrderClass"
+      >
+        <NuxtImg
+          loading="lazy"
+          provider="cloudinary"
+          class="w-full h-auto"
+          :src="data.img.path"
+          :alt="data.img.alt"
+          :sizes="SIZES[sizeKey]"
+          :modifiers="{ roundCorner: data.imgRoundCorner }"
+        />
+      </div>
+
+      <div
+        v-if="data.text"
+        v-html="safeHTMLWrap(data.text, TEXT_TAGS)"
+      ></div>
     </div>
 
     <div
-      v-if="data.text"
-      v-html="safeHTMLWrap(data.text)"
-    ></div>
-
-    <div
       v-if="data.buttonText"
-      class="clear-both order-last"
+      class="mt-4"
     >
       <PostButtonRef
         :name="data.buttonText"
@@ -46,31 +45,48 @@ import { safeHTMLWrap } from "#shared/utils/safeHTMLWrap";
 const { uniqId } = defineProps<{ uniqId: string }>();
 const { getShortcode } = usePost();
 
+// text приходит абзацами и инлайн-разметкой шире общего списка
+// safeHTMLWrap — extraTags расширяет allowlist только для этого вызова.
+const TEXT_TAGS = ["p", "em", "u", "s", "sup", "sub", "blockquote"];
+
 // Классы перечислены целиком: tailwind.config.js сканирует только .vue,
 // контент из базы он не видит, поэтому собранные строкой варианты
-// (`md:float-${side}`) в сборку не попадут.
-const sideClasses: Record<PostTextImage["data"]["imgSide"], string> = {
-  left: "md:float-left md:mr-6",
-  right: "md:float-right md:ml-6",
+// (`md:grid-cols-${...}`) в сборку не попадут.
+const GRID_COLS: Record<string, string> = {
+  "left-33": "md:grid-cols-[1fr_2fr]",
+  "left-50": "md:grid-cols-2",
+  "right-33": "md:grid-cols-[2fr_1fr]",
+  "right-50": "md:grid-cols-2",
+  full: "",
 };
 
-const mobileOrderClasses: Record<
-  PostTextImage["data"]["imgMobileSide"],
-  string
-> = {
+const SIZES: Record<string, string> = {
+  "33": "xs:100vw md:33vw",
+  "50": "xs:100vw md:50vw",
+  full: "xs:100vw xl:1280px",
+};
+
+const MOBILE_ORDER: Record<PostTextImage["data"]["imgMobileSide"], string> = {
   top: "order-first",
   bottom: "order-last",
 };
+
+const DESKTOP_ORDER: Record<"left" | "right", string> = {
+  left: "md:order-first",
+  right: "md:order-last",
+};
+
+const VALID_SIDES = ["left", "right", "full"];
 
 const FALLBACK: PostTextImage = {
   data: {
     uniqId: "",
     text: "",
     img: null,
+    imgHint: "",
     imgSide: "right",
     imgMobileSide: "top",
-    imgWidth: "auto",
-    imgHeight: "auto",
+    imgColumn: "50",
     imgRoundCorner: "0",
     buttonText: "",
     refLink: "",
@@ -78,20 +94,40 @@ const FALLBACK: PostTextImage = {
 };
 
 // Маркер в тексте может пережить удаление своей записи из конфига.
-const data = computed(
-  () => (getShortcode({ uniqId, shortcode: "textImages" }) || FALLBACK).data,
-);
+// Запись может быть и старше самой сетки: imgSide вне left/right/full → right,
+// нет imgColumn → 50, imgMobileSide не top/bottom → top.
+const data = computed(() => {
+  const raw = (getShortcode({ uniqId, shortcode: "textImages" }) || FALLBACK)
+    .data;
+  return {
+    ...raw,
+    imgSide: VALID_SIDES.includes(raw.imgSide) ? raw.imgSide : "right",
+    imgColumn: raw.imgColumn === "33" ? "33" : "50",
+    imgMobileSide: raw.imgMobileSide === "bottom" ? "bottom" : "top",
+  };
+});
 
-const toSize = (value: string) =>
-  value?.trim() && !isNaN(Number(value)) ? parseInt(value) : undefined;
+// full — одна колонка на всю ширину, второй записи в GRID_COLS у неё нет.
+// Без картинки колонка тоже всегда одна — иначе пустая вторая колонка
+// осталась бы рядом с текстом (старый блок с картинкой прямо в HTML текста).
+const gridColsClass = computed(() => {
+  if (!data.value.img) return "";
+  const side = data.value.imgSide;
+  return side === "full"
+    ? GRID_COLS.full
+    : GRID_COLS[`${side}-${data.value.imgColumn}`];
+});
 
-const imgWidth = computed(() => toSize(data.value.imgWidth));
-const imgHeight = computed(() => toSize(data.value.imgHeight));
+const sizeKey = computed(() => {
+  const side = data.value.imgSide;
+  return side === "full" ? "full" : data.value.imgColumn;
+});
 
-// Только числом: «auto» дало бы `autopx`, объявление отбросилось бы, и
-// плавающий блок остался бы без ограничения ширины.
-const sizeStyle = computed(() => ({
-  ...(imgWidth.value ? { maxWidth: `${imgWidth.value}px` } : {}),
-  ...(imgHeight.value ? { maxHeight: `${imgHeight.value}px` } : {}),
-}));
+// full всегда первая и сверху, независимо от imgMobileSide.
+const imageOrderClass = computed(() => {
+  const side = data.value.imgSide;
+  return side === "full"
+    ? "order-first"
+    : [MOBILE_ORDER[data.value.imgMobileSide], DESKTOP_ORDER[side]].join(" ");
+});
 </script>

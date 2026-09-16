@@ -241,6 +241,29 @@ two disagree on the default `size`.
 **A marker can outlive its config entry.** Guard for it — `PostTextImage.vue` shows the
 pattern. Most shortcode components do not, and will throw on a stale marker.
 
+`PostTextImage.vue` (`text-image` marker, `textImages` shortcode) is the one with a real
+layout to get right: two columns on desktop (image left or right, 33 % or 50 % of the row via
+`imgColumn`), one column on mobile (image ordered top or bottom via `imgMobileSide`), or a
+single full-width column (`imgSide: "full"`) with the image always first, above the text.
+Because `@config` only scans `.vue` files, both the grid-column map (`${imgSide}-${imgColumn}`
+→ `md:grid-cols-[1fr_2fr]` and friends) and the `sizes` map for `NuxtImg` are written out as
+literal objects in the component, the same way `PostGridCards.vue` already does.
+
+The record predates that grid, so the component defaults defensively rather than trusting what
+is stored: an `imgSide` outside `left`/`right`/`full` falls back to `right`, a missing
+`imgColumn` to `"50"`, a missing/invalid `imgMobileSide` to `"top"`. A record with no `img` at
+all — text-only, or an old block whose picture lives in the body HTML instead — collapses the
+grid to a single column rather than leaving an empty second one next to the text.
+
+`safeHTMLWrap`'s second argument, `extraTags`, extends the sanitiser's tag allowlist
+(DOMPurify's `ADD_TAGS`) for one call site without loosening it everywhere. `PostTextImage.vue`
+passes `p`/`em`/`u`/`s`/`sup`/`sub`/`blockquote` because its `text` carries real paragraphs —
+without `p` on the allowlist DOMPurify unwraps the tag instead of keeping it.
+
+`.article-img*` in `tailwind.css` is an unrelated, older legacy: floated figures baked directly
+into article body HTML rather than a shortcode record. It renders through the article's own
+HTML, not through `PostTextImage.vue`, and stays as-is.
+
 ## Sections
 
 A post written in the AppsPro constructor arrives as `sections[]` — an ordered list where each

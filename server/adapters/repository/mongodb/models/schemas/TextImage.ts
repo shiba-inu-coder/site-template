@@ -31,10 +31,17 @@ export const TextImageSchema = [
         },
         default: null,
       },
-      // Сторона обтекания на десктопе и порядок на мобиле, где float снят.
+      imgHint: {
+        type: String,
+        trim: true,
+        default: "",
+      },
+      // Сторона и ширина колонки на десктопе (33/50 %), либо full — одна
+      // колонка на всю ширину и imgColumn не участвует. На мобиле только
+      // порядок (imgMobileSide), колонка всегда одна.
       imgSide: {
         type: String,
-        enum: ["left", "right"],
+        enum: ["left", "right", "full"],
         default: "right",
       },
       imgMobileSide: {
@@ -42,18 +49,17 @@ export const TextImageSchema = [
         enum: ["top", "bottom"],
         default: "top",
       },
-      imgWidth: {
+      imgColumn: {
         type: String,
-        default: "auto",
-      },
-      imgHeight: {
-        type: String,
-        default: "auto",
+        enum: ["33", "50"],
+        default: "50",
       },
       imgRoundCorner: {
         type: String,
         default: "0",
       },
+      // Из дошорткодовой эпохи: кнопка была отдельным полем записи, пока
+      // текст не поглотил её в шорткоде 2a. Старые записи ещё несут оба поля.
       buttonText: {
         type: String,
         trim: true,

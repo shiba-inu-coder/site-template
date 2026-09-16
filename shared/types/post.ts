@@ -32,11 +32,13 @@ export interface PostTextImage {
       path: string;
       alt: string;
     } | null;
-    imgSide: "left" | "right";
+    imgHint: string;
+    imgSide: "left" | "right" | "full";
     imgMobileSide: "top" | "bottom";
-    imgWidth: string;
-    imgHeight: string;
+    imgColumn: "33" | "50";
     imgRoundCorner: string;
+    // Из дошорткодовой эпохи: кнопка была отдельным полем записи, пока
+    // текст не поглотил её в шорткоде 2a. Старые записи ещё несут оба поля.
     buttonText: string;
     refLink: string;
   };
@@ -104,7 +106,9 @@ export interface PostSectionLayout {
 
 // Вход normalizeSectionLayout: запись любой эпохи — padding может быть ещё
 // строковым пресетом, margin/radius могут отсутствовать вовсе.
-export type RawPostSectionLayout = Partial<Omit<PostSectionLayout, "padding">> & {
+export type RawPostSectionLayout = Partial<
+  Omit<PostSectionLayout, "padding">
+> & {
   padding?: PostSectionPadding | LegacyPostSectionPadding;
 };
 
