@@ -24,6 +24,50 @@
   --color-surface-muted: var(--color-surface-muted);
   --color-surface-raised: var(--color-surface-raised);
   --color-surface-on-brand: var(--color-surface-on-brand);
+
+  /* UI-токены. Компоненты красят себя только ими — какой бренд/нейтральный
+     токен стоит за каждым, решает блок "UI scheme" в :root ниже. */
+  --color-ui-page-bg: var(--color-ui-page-bg);
+  --color-ui-header-bg: var(--color-ui-header-bg);
+  --color-ui-footer-bg: var(--color-ui-footer-bg);
+  --color-ui-footer-bg-alt: var(--color-ui-footer-bg-alt);
+
+  --color-ui-card-bg: var(--color-ui-card-bg);
+  --color-ui-card-border: var(--color-ui-card-border);
+  --color-ui-card-title: var(--color-ui-card-title);
+
+  --color-ui-panel-bg: var(--color-ui-panel-bg);
+  --color-ui-panel-border: var(--color-ui-panel-border);
+
+  --color-ui-input-bg: var(--color-ui-input-bg);
+  --color-ui-input-border: var(--color-ui-input-border);
+
+  --color-ui-highlight-bg: var(--color-ui-highlight-bg);
+  --color-ui-highlight-text: var(--color-ui-highlight-text);
+
+  --color-ui-heading: var(--color-ui-heading);
+  --color-ui-text: var(--color-ui-text);
+  --color-ui-muted: var(--color-ui-muted);
+
+  --color-ui-link: var(--color-ui-link);
+  --color-ui-link-hover: var(--color-ui-link-hover);
+
+  --color-ui-cta-bg: var(--color-ui-cta-bg);
+  --color-ui-cta-hover: var(--color-ui-cta-hover);
+  --color-ui-cta-text: var(--color-ui-cta-text);
+
+  --color-ui-table-head-bg: var(--color-ui-table-head-bg);
+  --color-ui-table-head-text: var(--color-ui-table-head-text);
+  --color-ui-table-row: var(--color-ui-table-row);
+  --color-ui-table-row-alt: var(--color-ui-table-row-alt);
+  --color-ui-table-row-border: var(--color-ui-table-row-border);
+
+  --color-ui-badge-bg: var(--color-ui-badge-bg);
+  --color-ui-badge-text: var(--color-ui-badge-text);
+  --color-ui-marker: var(--color-ui-marker);
+
+  --color-ui-accent-strong: var(--color-ui-accent-strong);
+  --color-ui-accent-soft: var(--color-ui-accent-soft);
 }
 
 @theme {
@@ -97,6 +141,54 @@
   /* Текст поверх active/accent — не то же, что текст страницы: подложка там
      бренд, а не нейтраль, и по контрасту она противоположна фону. */
   --color-surface-on-brand: #0f172a;
+
+  /* UI scheme. Слой между брендом и компонентами: какой брендовый или
+     нейтральный токен стоит за каждым ui-*, решает только этот блок —
+     компоненты сами брендовую шкалу больше не трогают. Дефолты один в один
+     воспроизводят то, что раньше было захардкожено по месту; с этапа 6 схему
+     сможет переписывать панель. Ссылки на surface-* (не на литералы) — так
+     text/cta-text остаются тем, что переворачивается вместе с темой. */
+  --color-ui-page-bg: var(--color-primary-300);
+  --color-ui-header-bg: var(--color-primary-300);
+  --color-ui-footer-bg: var(--color-primary-200);
+  --color-ui-footer-bg-alt: var(--color-primary-300);
+
+  --color-ui-card-bg: var(--color-primary-100);
+  --color-ui-card-border: var(--color-primary-300);
+  --color-ui-card-title: var(--color-accent-200);
+
+  --color-ui-panel-bg: var(--color-primary-200);
+  --color-ui-panel-border: var(--color-primary-300);
+
+  --color-ui-input-bg: var(--color-primary-100);
+  --color-ui-input-border: var(--color-primary-100);
+
+  --color-ui-highlight-bg: var(--color-active-100);
+  --color-ui-highlight-text: var(--color-primary-300);
+
+  --color-ui-heading: var(--color-accent-200);
+  --color-ui-text: var(--color-surface-text);
+  --color-ui-muted: var(--color-surface-muted);
+
+  --color-ui-link: var(--color-active-200);
+  --color-ui-link-hover: var(--color-active-300);
+
+  --color-ui-cta-bg: var(--color-active-200);
+  --color-ui-cta-hover: var(--color-active-300);
+  --color-ui-cta-text: var(--color-surface-on-brand);
+
+  --color-ui-table-head-bg: var(--color-primary-300);
+  --color-ui-table-head-text: var(--color-surface-text);
+  --color-ui-table-row: var(--color-primary-200);
+  --color-ui-table-row-alt: var(--color-primary-300);
+  --color-ui-table-row-border: var(--color-primary-100);
+
+  --color-ui-badge-bg: var(--color-accent-200);
+  --color-ui-badge-text: var(--color-surface-on-brand);
+  --color-ui-marker: var(--color-accent-200);
+
+  --color-ui-accent-strong: var(--color-accent-300);
+  --color-ui-accent-soft: var(--color-accent-100);
 }
 
 /* Светлая тема. Переворачивается только нейтраль: шкала primary — это уже
@@ -173,7 +265,7 @@
       font-family: var(--font-heading);
       font-weight: 500;
       word-break: break-word;
-      color: var(--color-accent-200);
+      color: var(--color-ui-heading);
     }
 
     .no-format h1,
@@ -217,7 +309,7 @@
       line-height: 16.5px;
       text-align: center;
       border-radius: 50%;
-      background-color: var(--color-accent-200);
+      background-color: var(--color-ui-marker);
       font-size: 11px;
       font-weight: 500;
     }
@@ -225,7 +317,7 @@
     @media (min-width: 48rem) {
       ol:not(.not-format) > li::before {
         top: 3px;
-        color: var(--color-surface-text);
+        color: var(--color-ui-text);
       }
     }
 
@@ -242,7 +334,7 @@
       width: 10px;
       height: 10px;
       border-radius: 50%;
-      background-color: var(--color-accent-200);
+      background-color: var(--color-ui-marker);
     }
 
     @media (min-width: 48rem) {
@@ -316,7 +408,7 @@
 
 .app-link {
   text-wrap: pretty;
-  color: var(--color-active-200);
+  color: var(--color-ui-link);
   text-decoration-line: underline;
   text-underline-offset: 4px;
   font-weight: 400;
@@ -325,18 +417,18 @@
 }
 
 .app-link:hover {
-  color: var(--color-active-300);
+  color: var(--color-ui-link-hover);
 }
 
 .app-link_no_underline {
   text-wrap: pretty;
-  color: var(--color-active-200);
+  color: var(--color-ui-link);
   transition: ease-in-out 0.3s;
   font-weight: 500;
   text-decoration-line: none;
 
   &:hover {
-    color: var(--color-active-300);
+    color: var(--color-ui-link-hover);
     text-decoration-line: underline;
     text-underline-offset: 2px;
   }
@@ -344,7 +436,7 @@
   &:focus-within {
     text-decoration-line: underline;
     text-underline-offset: 2px;
-    color: var(--color-active-300);
+    color: var(--color-ui-link-hover);
   }
 }
 
