@@ -5,10 +5,10 @@
       :class="WRAPPER_CLASSES[variant]"
     >
       <div
-        v-if="variant === 'split' && seoConfig.site.name"
+        v-if="variant === 'split' && siteConfig.site.name"
         class="content-start"
       >
-        <h3 class="mt-0! text-step-4">{{ seoConfig.site.name }}</h3>
+        <h3 class="mt-0! text-step-4">{{ siteConfig.site.name }}</h3>
       </div>
 
       <form
@@ -19,7 +19,7 @@
           <label
             for="firstname-contacts-1"
             class="block mb-2 text-step-8 font-medium"
-            >{{ seoConfig.translates.contacts.nameLabel }}</label
+            >{{ siteConfig.translates.contacts.nameLabel }}</label
           >
           <input
             id="name-contacts-1"
@@ -34,7 +34,7 @@
           <label
             for="email-contacts-1"
             class="block mb-2 text-step-8 font-medium"
-            >{{ seoConfig.translates.contacts.emailLabel }}</label
+            >{{ siteConfig.translates.contacts.emailLabel }}</label
           >
           <input
             id="email-contacts-1"
@@ -47,7 +47,7 @@
           <span
             v-if="!isValidEmail"
             class="text-step-9 mt-1 text-status-negative"
-            >{{ seoConfig.translates.contacts.invalidEmail }}</span
+            >{{ siteConfig.translates.contacts.invalidEmail }}</span
           >
         </div>
 
@@ -55,7 +55,7 @@
           <label
             for="message-contacts-1"
             class="block mb-2 text-step-8 font-medium"
-            >{{ seoConfig.translates.contacts.messageLabel }}</label
+            >{{ siteConfig.translates.contacts.messageLabel }}</label
           >
           <textarea
             id="message-contacts-1"
@@ -72,7 +72,7 @@
             type="submit"
             class="rounded-primary px-3 py-2.5 justify-center font-medium inline-flex items-center gap-x-2 whitespace-pre-wrap focus:outline-none focus:ring-2 text-center border border-transparent bg-ui-cta-bg text-ui-cta-text hover:bg-ui-cta-hover disabled:opacity-50 disabled:pointer-events-none"
           >
-            {{ seoConfig.translates.contacts.submit }}
+            {{ siteConfig.translates.contacts.submit }}
           </button>
         </div>
       </form>
@@ -80,8 +80,9 @@
   </div>
 </template>
 <script setup lang="ts">
-import { seoConfig } from "@@/seo.conf";
 import { pickVariant } from "#shared/utils/block-variant";
+
+const siteConfig = useSiteConfig();
 
 const { variantFor } = useUiTheme();
 

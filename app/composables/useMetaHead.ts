@@ -1,7 +1,6 @@
-import { seoConfig } from "@@/seo.conf";
-
 export const useMetaHead = () => {
   const route = useRoute();
+  const siteConfig = useSiteConfig();
   const { metaTags, isActive } = usePost();
   const SITE_URL = useRuntimeConfig().public.SITE_URL;
 
@@ -49,8 +48,10 @@ export const useMetaHead = () => {
       });
     }
     return {
-      title: metaTags.value?.title ? metaTags.value.title : seoConfig.site.name,
-      htmlAttrs: { lang: metaTags.value.lang || seoConfig.site.lang },
+      title: metaTags.value?.title
+        ? metaTags.value.title
+        : siteConfig.value.site.name,
+      htmlAttrs: { lang: metaTags.value.lang || siteConfig.value.site.lang },
       meta,
       link,
     };

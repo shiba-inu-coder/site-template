@@ -97,9 +97,10 @@
 <script lang="ts" setup>
 import PostBookmakerListLogos from "./PostBookmakerListLogos.vue";
 import PostBookmakerRatingTitle from "./PostBookmakerRatingTitle.vue";
-import { seoConfig } from "@@/seo.conf";
 
-const t = seoConfig.translates.entity;
+const siteConfig = useSiteConfig();
+
+const t = computed(() => siteConfig.value.translates.entity);
 
 const { bookmaker } = defineProps<{
   bookmaker: PostBookmakerRatingEntity;

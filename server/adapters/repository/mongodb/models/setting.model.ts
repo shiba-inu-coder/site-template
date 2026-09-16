@@ -5,7 +5,9 @@ import {
   type ISettingModel,
 } from "#shared/types";
 import { RedirectsRoutesSchema } from "./schemas/RedirectsRoutes";
-import { HeaderLinkSchema } from "./schemas/HeaderLink";
+import { BrandSchema } from "./schemas/Brand";
+import { LayoutSchema } from "./schemas/Layout";
+import { StringsSchema } from "./schemas/Strings";
 import { PreviewGrantSchema } from "./schemas/PreviewGrant";
 import { UiThemeSchema } from "./schemas/UiTheme";
 
@@ -22,9 +24,17 @@ const ModelSchema = new Schema<ISettingDocument, ISettingModel>(
       trim: true,
     },
     redirectsRoutes: RedirectsRoutesSchema,
-    headerLinks: {
-      type: [HeaderLinkSchema],
-      default: () => [],
+    brand: {
+      type: BrandSchema,
+      default: () => ({}),
+    },
+    layout: {
+      type: LayoutSchema,
+      default: () => ({}),
+    },
+    strings: {
+      type: StringsSchema,
+      default: () => ({}),
     },
     previewGrants: {
       type: [PreviewGrantSchema],

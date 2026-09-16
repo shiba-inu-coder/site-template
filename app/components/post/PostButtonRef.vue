@@ -5,7 +5,7 @@
   >
     <a
       data-id="ref_link"
-      :href="useFakeRefLink(slug)"
+      :href="useFakeRefLink(refSlug)"
       target="_blank"
       rel="nofollow noopener"
       class="font-semibold rounded-primary items-center transition-all whitespace-pre-wrap focus:outline-none focus:ring-2 text-center"
@@ -38,7 +38,6 @@
 <script setup lang="ts">
 import { computed } from "vue";
 import { useFakeRefLink } from "#rc/composables/useFakeRefLink";
-import { seoConfig } from "@@/seo.conf";
 import { pickVariant } from "#shared/utils/block-variant";
 
 type ButtonVariant = "solid" | "outline" | "soft" | "block" | "link";
@@ -64,11 +63,17 @@ const {
   padding = true,
   name = "",
   note = "",
-  slug = seoConfig.site.brandSlug,
+  slug = "",
   showMobileIcon = false,
 } = defineProps<Props>();
 
+const siteConfig = useSiteConfig();
 const { variantFor } = useUiTheme();
+
+// Слаг бренда приезжает из базы, а не из сборки, поэтому он не может быть
+// значением пропа по умолчанию: то вычисляется до того, как настройки легли
+// в состояние.
+const refSlug = computed(() => slug || siteConfig.value.site.brandSlug);
 
 // Тема умеет только первые четыре; link — кнопка-текст внутри таблицы, её
 // ставят пропом руками. Список общий, потому что проп и тема проходят один и

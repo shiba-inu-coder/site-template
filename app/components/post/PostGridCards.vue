@@ -220,11 +220,12 @@
 
 <script setup lang="ts">
 import { safeHTMLWrap } from "#shared/utils/safeHTMLWrap";
-import { seoConfig } from "@@/seo.conf";
 import { useFakeRefLink } from "#rc/composables/useFakeRefLink";
 import { pickVariant } from "#shared/utils/block-variant";
 import PostButtonRef from "#rc/components/post/PostButtonRef.vue";
 import PostStars from "#rc/components/post/PostStars.vue";
+
+const siteConfig = useSiteConfig();
 
 const { uniqId } = defineProps<{ uniqId: string }>();
 const { getShortcode } = usePost();
@@ -292,7 +293,9 @@ const imgHeight = computed(() => {
 });
 
 const roundCorner = computed(
-  () => list.value?.data.imgRoundCorner || seoConfig.img.modifiers.roundCorner,
+  () =>
+    list.value?.data.imgRoundCorner ||
+    siteConfig.value.img.modifiers.roundCorner,
 );
 
 const globalRefLink = computed(() => list.value?.data.refLink ?? "");

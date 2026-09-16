@@ -5,29 +5,18 @@ export class SettingRepository implements ISettingRepository {
   async getPublic() {
     try {
       const settings = await SettingModel.findOneOrCreate();
-      const data = (await settings.populate({
-        path: "headerLinks",
-        populate: [
-          {
-            path: "post",
-            select: "slug",
-          },
-          {
-            path: "children",
-            populate: [
-              {
-                path: "post",
-                select: "slug",
-              },
-            ],
-          },
-        ],
-      })) satisfies ISettingPublic;
+      // `toJSON`, а не сам документ: `strings` объявлена схемой без единого
+      // объявленного пути (`strict: false`), и дерево переводов доезжает
+      // наружу только развёрнутым в обычный объект.
+      const data = settings.toJSON() as ISetting;
+
       return {
         redirectsRoutes: data.redirectsRoutes,
-        headerLinks: data.headerLinks,
+        brand: data.brand,
+        layout: data.layout,
+        strings: data.strings,
         uiTheme: data.uiTheme,
-      };
+      } satisfies ISettingPublic;
     } catch (e: any) {
       throw AppError.handleMongoError(e);
     }

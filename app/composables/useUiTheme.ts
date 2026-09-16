@@ -1,4 +1,3 @@
-import { seoConfig } from "@@/seo.conf";
 import { contrastReport } from "#shared/utils/contrast";
 import type { ContrastReportEntry } from "#shared/utils/contrast";
 import {
@@ -8,17 +7,23 @@ import {
   resolveScheme,
   themeToCssVars,
 } from "#shared/utils/ui-theme";
-import type { UiTheme, UiThemeMode, UiVariants } from "#shared/utils/ui-theme";
+import type {
+  UiFrame,
+  UiTheme,
+  UiThemeMode,
+  UiVariants,
+} from "#shared/utils/ui-theme";
 
 export const useUiTheme = () => {
   const { uiTheme, setUiTheme } = useSettings();
+  const siteConfig = useSiteConfig();
 
   const theme = computed<UiTheme | null>(() =>
     isUiThemeConfigured(uiTheme.value) ? uiTheme.value : null,
   );
 
   const mode = computed<UiThemeMode>(
-    () => theme.value?.mode || (seoConfig.site.theme as UiThemeMode),
+    () => theme.value?.mode || (siteConfig.value.site.theme as UiThemeMode),
   );
 
   const cssVars = computed(() =>
@@ -42,6 +47,10 @@ export const useUiTheme = () => {
     return googleFontsHref(families, weights);
   });
 
+  // Каркас читают компоненты, а не только CSS: от `frame.hero` зависит, кто
+  // рисует H1, а от `frame.sidebar` — рендерится ли колонка вообще.
+  const frame = computed<UiFrame>(() => theme.value?.frame ?? {});
+
   const contrast = computed<ContrastReportEntry[]>(() =>
     theme.value ? contrastReport(resolveScheme(theme.value)) : [],
   );
@@ -53,7 +62,9 @@ export const useUiTheme = () => {
     theme.value?.variants?.[key] || "";
 
   // Оси каркаса, декора и акцентов корень страницы получает атрибутами, а не
-  // переменными: по ним 4e разводит вёрстку через `[data-*]`-селекторы.
+  // переменными: по ним блок `/* UI axes */` в `tailwind.css` разводит вёрстку
+  // через `[data-*]`-селекторы. Оси, которой в записи нет, нет и в атрибутах —
+  // без атрибута сайт рисует свой дефолт, а не пустое значение.
   const frameAttrs = computed<Record<string, string>>(() => {
     const value = theme.value;
 
@@ -63,6 +74,7 @@ export const useUiTheme = () => {
 
     const attrs: Record<string, unknown> = {
       "data-scale": value.type?.scale,
+      "data-h1": value.type?.h1Align,
       "data-borders": value.geometry?.borders,
       "data-shadow": value.geometry?.shadow,
       "data-density": value.geometry?.density,
@@ -102,6 +114,7 @@ export const useUiTheme = () => {
     fontsHref,
     contrast,
     variantFor,
+    frame,
     frameAttrs,
     setTheme,
   };

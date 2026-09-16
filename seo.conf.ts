@@ -39,15 +39,13 @@ export const seoConfig = {
     lastUpdated: "Last updated",
     btnMoreInfo: "Learn more",
     playNow: "Play now",
+    menu: "Menu",
+    search: "Search",
 
     gdprBanner: {
       btnAgree: "I agree",
       btnMoreInfo: "Learn more",
       text: "This website uses cookies. By continuing to use the website, you agree to the use of cookies.",
-    },
-
-    bonusBanner: {
-      btn: "Claim bonus",
     },
 
     tableContent: "Show table of contents",

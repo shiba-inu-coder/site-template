@@ -41,7 +41,7 @@
         class="bg-ui-card-bg border-2 border-ui-link text-ui-link hover:border-ui-link-hover hover:text-ui-cta-text font-medium hover:bg-ui-cta-hover transition ease-in-out duration-500 px-3.5 rounded-primary py-2.5"
         @click="setCount(data.rows.length)"
       >
-        {{ seoConfig.translates.showMore }}
+        {{ siteConfig.translates.showMore }}
       </button>
       <button
         v-show="!isShowMoreBtn"
@@ -49,7 +49,7 @@
         class="bg-ui-card-bg border-2 border-ui-link text-ui-link hover:border-ui-link-hover hover:text-ui-cta-text font-medium hover:bg-ui-cta-hover transition ease-in-out duration-500 px-3.5 rounded-primary py-2.5"
         @click="setCount(defaultCountRows)"
       >
-        {{ seoConfig.translates.showLess }}
+        {{ siteConfig.translates.showLess }}
       </button>
     </div>
   </div>
@@ -60,8 +60,9 @@ import PostDataTableGrid from "./components/PostDataTableGrid.vue";
 import PostDataTableRows from "./components/PostDataTableRows.vue";
 import PostDataTableCompare from "./components/PostDataTableCompare.vue";
 import PostDataTableKeyValue from "./components/PostDataTableKeyValue.vue";
-import { seoConfig } from "@@/seo.conf";
 import { pickVariant } from "#shared/utils/block-variant";
+
+const siteConfig = useSiteConfig();
 
 const { uniqId } = defineProps({
   uniqId: {

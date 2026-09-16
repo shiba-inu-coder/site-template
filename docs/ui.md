@@ -1,10 +1,11 @@
 # UI & theme
 
 Everything visual in this template is driven by a manifest that a **different program
-writes in** — the AppsPro panel patches `app/assets/css/tailwind.css`, `nuxt.config.ts` and
-`seo.conf.ts` from a brand manifest before the image is built. A class picked by feel rather
-than by role does not just look wrong here; it puts a brand's call-to-action colour on an
-article heading.
+writes in** — the AppsPro panel patches `app/assets/css/tailwind.css` from a brand manifest
+before the image is built, and everything else about a particular site (menu, footer, texts,
+logo, language, favicon, theme) arrives at runtime from that site's own database. See "Site
+config from DB". A class picked by feel rather than by role does not just look wrong here;
+it puts a brand's call-to-action colour on an article heading.
 
 ## The three colour families
 
@@ -40,7 +41,7 @@ exactly that reason. Family first, shade second.
 
 The site is light or dark **per brand**, chosen by the operator in the panel. It arrives
 either from the database (`settings.uiTheme.mode`) or, when the site has no theme record
-yet, from `seoConfig.site.theme` baked into the image; `app/plugins/ui-theme.ts` puts the
+yet, from `seo.conf.ts`'s `site.theme` baked into the image; `app/plugins/ui-theme.ts` puts the
 winner on `<html data-theme>` and emits the matching `<meta name="color-scheme">` — the meta
 is not decoration, without it scrollbars, autofill and native controls stay dark on a light
 page. See "Runtime theme" below.
@@ -90,12 +91,12 @@ this layer existed — this was a pure refactor, not a redesign. A default is wr
 brand or surface ref it resolves to, the same string `shared/utils/ui-theme.ts` uses in
 `scheme[token]`.
 
-| Token              | Default       | Role                                          |
-| ------------------ | ------------- | --------------------------------------------- |
-| `ui-page-bg`       | `primary-300` | page/layout background, floating promo banner |
-| `ui-header-bg`     | `primary-300` | `HeaderLayout`, its dropdown panel            |
-| `ui-footer-bg`     | `primary-200` | footer links row                              |
-| `ui-footer-bg-alt` | `primary-300` | footer bottom row (title + logo)              |
+| Token              | Default       | Role                               |
+| ------------------ | ------------- | ---------------------------------- |
+| `ui-page-bg`       | `primary-300` | page/layout background             |
+| `ui-header-bg`     | `primary-300` | `HeaderLayout`, its dropdown panel |
+| `ui-footer-bg`     | `primary-200` | footer links row                   |
+| `ui-footer-bg-alt` | `primary-300` | footer bottom row (title + logo)   |
 
 | Token               | Default       | Role                                              |
 | ------------------- | ------------- | ------------------------------------------------- |
@@ -157,10 +158,10 @@ flips with the theme.
 ### `settings.uiTheme`
 
 The full per-site theme form (`shared/utils/ui-theme.ts`, mirrored by the admin panel) has
-twelve axes; five of them are read today — `colors`, `scheme`, `type` (font family only),
-`geometry.radius` and `variants` (see "Shortcodes"). The rest (`frame`, `decor`, `accents`,
-the non-family parts of `type` and `geometry`) exist in the type so a later stage doesn't
-need a migration, but nothing reads or writes them yet:
+twelve axes, and all of them are read now: `colors`, `scheme`, `type`, `geometry` and
+`variants` (see "Shortcodes") by the components and the runtime `:root`, `frame`, `decor`,
+`accents` and the non-family parts of `type`/`geometry` as `data-*` attributes on the page
+root (see "Frame"):
 
 ```ts
 UiTheme = {
@@ -170,7 +171,8 @@ UiTheme = {
   type: { display: { family, weight?, case?, tracking? }, body: { family }, scale?, h1Align? },
   geometry: { radius, borders?, shadow?, density? },
   variants: { gridCards?, dataTable?, textImage?, faq?, … }, // see "Shortcodes"
-  frame: {…}, decor: {…}, accents: {…}, // reserved for the frame stage
+  frame: { header?, headerInverted?, hero?, heroStyle?, sidebar?, bands?, width?, sticky? },
+  decor: { h2?, bg?, img?, btn? }, accents: { badge?, big? }, // see "Frame"
   updatedAt,
 }
 ```
@@ -192,8 +194,63 @@ theme").
 Storage: `models/schemas/UiTheme.ts`, embedded as `Setting.uiTheme`. `scheme` and `variants`
 are their own sub-schemas with `strict: false` — the known keys are declared (so a real typo
 still shows up in review), but an unrecognised one is kept rather than silently dropped,
-because the panel and this image don't always deploy in the same breath. `setting.repository.ts`
-`getPublic()` returns `uiTheme` alongside `redirectsRoutes`/`headerLinks`.
+because the panel and this image don't always deploy in the same breath. `frame`, `decor`
+and `accents` are `Mixed` — their fields are read by CSS, not by the schema, and declaring
+them twice would only mean migrating twice. `setting.repository.ts` `getPublic()` returns
+`uiTheme` alongside `redirectsRoutes`, `brand`, `layout` and `strings`.
+
+## Site config from DB
+
+**Nothing about a particular site lives in this repository any more.** The menu, the footer,
+every interface string, the logo, the favicon, the brand slug and the language arrive from
+that site's `settings` document; `seo.conf.ts` is the template's neutral default underneath
+them — empty name, `lang: "en"`, English strings, empty menus. Editing a brand in the panel is
+a write into Mongo plus a `settings` cache purge: no commit, no image, no deploy.
+
+Three subdocuments carry it (`server/adapters/repository/mongodb/models/schemas/`):
+
+| Field              | Schema       | Holds                                                                                               |
+| ------------------ | ------------ | --------------------------------------------------------------------------------------------------- |
+| `settings.brand`   | `Brand.ts`   | `name`, `lang`, `brandSlug`, `logo {src,alt,width,height}`, `favicon {src}`, `imgRoundCorner`       |
+| `settings.layout`  | `Layout.ts`  | `header {items, topbar, cta}`, `footer {title, body, links, legalLogos}`, `breadcrumbs {homeLabel}` |
+| `settings.strings` | `Strings.ts` | the whole `seoConfig.translates` tree                                                               |
+
+`Strings.ts` declares **no** keys and is `strict: false` on purpose: the key set is the
+panel's (`seo-conf-defaults.js`), it grows there, and the site's image does not redeploy in
+the same breath — an unknown key is kept, not dropped. `HeaderItem` in `Layout.ts` references
+itself through a separate `.add()` because Mongoose cannot reference a schema inside its own
+literal.
+
+**`useSiteConfig()` is the only way a component reads any of this.** It is a `computed` over
+`buildSiteConfig(seoConfig, settings)` (`shared/utils/site-config.ts`, pure, no Nuxt), and it
+returns the template's own shape — `site`, `logo`, `favicon`, `img`, `layout`, `translates` —
+so a component does not know or care which layer answered. `settings.brand` is flat in the
+database and is unfolded into `site`/`logo`/`img` by that one function.
+
+Two rules inside the merge, both deliberate:
+
+- **An empty value never overrides a template default.** The panel writes settings in
+  pieces, and a half-filled record would otherwise blank a button's label into an empty
+  string — the same reason `themeToCssVars` leaves an unset axis out instead of writing it
+  empty.
+- **The result always has the full shape**, whatever `seo.conf.ts` happens to be. Until the
+  panel stops rewriting that file from its own fixed template, a key added here can vanish
+  from it, and `config.favicon.src` must not throw on such a file.
+
+What is left in the repository: the neutral defaults themselves, and `site.theme` — the
+light/dark mode a site falls back to when it has no `uiTheme` record. That one is a property
+of the image, not of the site, which is why `settings.brand` has no field for it.
+
+The load is `app/plugins/ui-theme.ts`, the same awaited fetch that brings the theme, so the
+menu is in the SSR HTML rather than arriving with hydration. The plugin also emits
+`<html lang>` from `brand.lang` and `<link rel="icon">` from `brand.favicon.src` — a
+Cloudinary public id, built into a URL with `getCloudinaryBaseUrl`. **There is no
+`public/favicon.ico`** and none should be added: a brandless template declares no icon,
+browsers ask for `/favicon.ico` anyway and get a 404, which is fine.
+
+`@nuxt/fonts` in `nuxt.config.ts` carries one neutral family (Inter) as the template's
+fallback; the brand's own pair comes from `uiTheme.type` as a Google Fonts link written by
+the plugin. Nothing in `nuxt.config.ts` is patched per site any more.
 
 ## Runtime theme
 
@@ -214,7 +271,7 @@ was the reason they were not in `app.vue` to begin with.
 **A site without `uiTheme` renders exactly as before.** An empty or half-filled record is
 not a theme: `isUiThemeConfigured` demands a `mode` and all nine colours, and anything less
 falls back to the brand baked into `tailwind.css` by the AppsPro patcher, to
-`seoConfig.site.theme` for the mode, and to the build's own Lato. That is the state every
+`seo.conf.ts`'s `site.theme` for the mode, and to the build's own Inter. That is the state every
 site is in until an operator saves a theme for it, so the fallback is the normal path, not
 an error path.
 
@@ -233,11 +290,11 @@ Two details that look like noise and are not:
 
 `useUiTheme()` is where a component asks about the theme: `theme` (the record or `null`),
 `mode`, `cssVars`, `fontsHref`, `contrast`, `variantFor(key)` (the block-variant lookup, see
-"Shortcodes") and one deliberate placeholder — `frameAttrs` builds the `data-*`
-attributes (`type.scale`, `geometry.*`, `frame.*`, `decor.*`, `accents.*`) that a later stage
-will hang on the page root. `setTheme()` replaces the theme in state; the head is described
-as a getter, so the style tag, `data-theme`, the font link and the attributes all repaint
-without a reload.
+"Shortcodes"), `frame` (the frame a component has to branch on — who draws the H1, whether
+the sidebar column exists at all) and `frameAttrs` (the `data-*` attributes for the page
+root, see "Frame"). `setTheme()` replaces the theme in state; the head is described as a
+getter, so the style tag, `data-theme`, the font link and the attributes all repaint without
+a reload.
 
 ### Preview protocol
 
@@ -255,6 +312,88 @@ comma-separated env value (`.env` locally, the site's Vault record in production
 a panel domain needs no rebuild). Without them a message is dropped: an unlisted origin —
 or the live URL of the same page — must not be able to repaint a production site. An empty
 `PANEL_ORIGINS` accepts nothing, which is the right default for a site nobody previews.
+
+## Frame
+
+**The page around the article is a set of variants, not a fixed layout.** Which one a site
+draws comes from `uiTheme.frame`/`decor`/`type`/`geometry`, and it reaches the CSS as
+`data-*` attributes on the page root — `<div id="site">` in `layouts/default.vue` **and in
+`error.vue`**, because a 404 is not drawn by the layout and would otherwise lose the frame.
+`useUiTheme().frameAttrs` builds the object; the template just `v-bind`s it.
+
+| Attribute                       | Axis                            | Values                                                          | Without a theme |
+| ------------------------------- | ------------------------------- | --------------------------------------------------------------- | --------------- |
+| `data-scale`                    | `type.scale`                    | `compact` / `regular` / `display`                               | `regular`       |
+| `data-h1`                       | `type.h1Align`                  | `left` / `center`                                               | `left`          |
+| `data-density`                  | `geometry.density`              | `tight` / `regular` / `airy`                                    | `regular`       |
+| `data-borders`                  | `geometry.borders`              | `0` / `1` / `2`                                                 | `1`             |
+| `data-shadow`                   | `geometry.shadow`               | `none` / `soft` / `glow`                                        | `none`          |
+| `data-width`                    | `frame.width`                   | `narrow` / `wide`                                               | `wide`          |
+| `data-header`                   | `frame.header`                  | `classic` / `centered` / `compact` / `two-row` / `search`       | `classic`       |
+| `data-header-inverted`          | `frame.headerInverted`          | `true` / `false`                                                | `false`         |
+| `data-hero` / `data-hero-style` | `frame.hero`, `frame.heroStyle` | `none`/`band`/`photo`; `radial`…`flat`                          | `none`          |
+| `data-sidebar`                  | `frame.sidebar`                 | `none` / `toc` / `toc-offer`                                    | `none`          |
+| `data-bands`                    | `frame.bands`                   | `true` / `false`                                                | `false`         |
+| `data-sticky`                   | `frame.sticky`                  | `none` / `bar` / `button`                                       | `none`          |
+| `data-h2`                       | `decor.h2`                      | `none`/`underline`/`left-rule`/`dot`/`gradient`/`number`/`line` | `none`          |
+| `data-bg`                       | `decor.bg`                      | `flat` / `radial` / `dots` / `grid` / `stripes`                 | `flat`          |
+| `data-img`                      | `decor.img`                     | `rounded` / `framed` / `square` / `tilt`                        | `rounded`       |
+| `data-btn`                      | `decor.btn[]`                   | space-joined subset of `pill skew gradient`                     | none            |
+| `data-badge`                    | `accents.badge`                 | `pill` / `square`                                               | `pill`          |
+
+**An axis the record does not carry is not written as an attribute at all**, and the
+`/* UI axes */` block in `tailwind.css` only ever styles a _deviation_ — so a site with no
+theme renders exactly what it rendered before this existed. That is the rule to keep when
+adding a value: never write the default branch.
+
+That block is plain CSS on purpose. `@config` turns off Tailwind's source scanning, so a
+class assembled at runtime is never compiled — an attribute selector is not a class and is
+not scanned. Its selectors hang off the **utility classes the components already carry**
+(`.bg-ui-card-bg`, `.border-ui-panel-border`, `[data-id="ref_link"]`), because there is no
+`.card`/`.panel` vocabulary in this template. The cost is honest: a component that stops
+using one of those classes silently drops out of the axis instead of breaking.
+
+Where the frame parts are drawn:
+
+- **Header** — `HeaderLayout.vue`, five literal branches. `classic` is what the header always
+  was (three groups by `position`); the other four regroup the same items by role
+  (logo / CTA / the rest), because "logo above the menu" is not something `position` can say.
+  `two-row` shows `layout.header.topbar`, `search` posts a GET form to `/search/` — the
+  template ships no such page, so that variant is for a site that has one. `HeaderNavItem.vue`
+  is untouched by any of it.
+- **Hero** — `HeroLayout.vue`, rendered by `BasePostView.vue` above the sections when
+  `frame.hero !== "none"`. Breadcrumbs, the date line, the first section's H1, the lead's
+  rating strip, the author line (forced to `inline`) and a CTA move into it; with
+  `hero: "photo"` the lead's `text-image` picture moves too. **What moves is decided once**,
+  in `useHeroContent()`, and `PostSections.vue` reads the same decision — it drops the first
+  section's H1 and renders its body with the moved markers removed
+  (`shared/utils/shortcode-markers.ts`), or the strip and the picture would appear twice.
+  `heroStyle` is seven branches of background in CSS; `skew` lays its ribbon with a
+  pseudo-element, and `solid` is the one branch that redefines `--color-ui-*` locally.
+- **Sidebar** — `AsideLayout.vue`, `md+` only. The article's own table of contents, or one
+  assembled from the section titles when the article has no `table-content` block, plus the
+  offer card under `toc-offer`. The in-flow table of contents is hidden on desktop when a
+  sidebar exists (`.toc-block` in the axes block) and stays in the page on a phone, where
+  there is no sidebar at all.
+- **Bands** — `PostSections.vue` puts `band` on every second section (the lead is never
+  banded). No `calc(50% - 50cqw)` is needed here: sections already sit at full width and the
+  band is an ordinary block around the centred column. Bands and a sidebar are not meant to
+  be combined, and no preset does.
+- **Sticky CTA** — `StickyCtaLayout.vue`, phone only, `bar` (bonus line plus button) or
+  `button`. It **replaced `BonusLayout.vue`**, the floating gift that used to sit in the
+  corner of every page; a site with no theme now shows nothing there.
+- **Breadcrumbs** — `BreadcrumbsLayout.vue`: `slash` (what it always drew), `pills`, `back`
+  (one link to the parent section). The BreadcrumbList schema.org is emitted by all three.
+- **Footer** — `FooterLayout.vue`: `columns`, `minimal`, `centered`, `disclaimer`.
+
+The offer behind the sidebar card and the sticky bar is `usePageOffer()`: there is no "offer"
+record in an article, so it is assembled from what the page already has — the banner's casino
+(logo, title), the rating strip's score, the first bonus block's amount — and falls back to
+`layout.header.cta`.
+
+`CtaButtonLayout.vue` is the one button those three places use. It exists because
+`PostButtonRef` is always an external affiliate link and cannot render an internal
+`nuxt-link`, which `layout.header.cta.link` may well be.
 
 ## `:root` is a contract, not a stylesheet
 
@@ -321,25 +460,33 @@ is chosen per site in `:root[data-theme="light"]`, not per element.
 The size scale is called `step` and not `primary` on purpose: `text-primary-3` (a size) and
 `text-primary-300` (a colour) differed by one character and both were valid.
 
-Three radii are deliberately off the scale and should stay: `rounded-full` (a circle, not a
-brand corner), `rounded-*-none` (a corner squared off where a panel meets its header) and the
-two `rounded-*-xs` on the bonus banner's tucked close button.
+Two radii are deliberately off the scale and should stay: `rounded-full` (a circle, not a
+brand corner, and what `accents.badge` toggles) and `rounded-*-none` (a corner squared off
+where a panel meets its header).
 
 Article headings — `#article h1…h6` — keep their own ramp of hardcoded rem values, because
 folding a 2rem → 1.3rem sequence into the nine steps would either distort it or force the
 scale to grow again. They do take `--font-heading`.
 
-`BasePostView.vue` opens with `mt-18` — an undocumented offset for the fixed header in
-`HeaderLayout.vue`. Changing the header's padding silently breaks the gap under it.
+`BasePostView.vue` opens with `mt-18` — an offset for the fixed header in
+`HeaderLayout.vue`. Changing the header's padding silently breaks the gap under it, and the
+two taller header variants have to say so by hand: `#site[data-header="two-row"] #article`
+and `[data-header="centered"]` push that margin further down in the axes block.
 
-Z-index has no scale yet; the values in use are `z-20`, `z-30`, `z-50`, `z-998` and
-`z-[999]`. Pick from those rather than inventing a sixth.
+Z-index has no scale yet; the values in use are `z-20` (the hero's content over its
+decorations, the back-to-top button), `z-30` (the sticky CTA), `z-50` (the fixed header) and
+`z-[999]` (a drawer). Pick from those rather than inventing a fifth.
 
 ## Fonts
 
-Two families, both from Google Fonts via `@nuxt/fonts`: `--font-primary` on the layout root
-and `--font-heading` on `#article h1…h6`. A brand with one font gets the same family in
-both — the manifest's `fontHeading` is optional and the patcher falls back.
+Two families: `--font-primary` on the layout root and `--font-heading` on `#article h1…h6`
+plus the two largest text steps (a rating score and a bonus sum read as headings and are set
+like them). A brand with one font gets the same family in both — the manifest's `fontHeading`
+is optional and the patcher falls back.
+
+`@nuxt/fonts` carries **one** family, Inter, and it is the template's fallback, not the
+brand's font: the pair a themed site actually uses arrives from `uiTheme.type` as a Google
+Fonts link written by `app/plugins/ui-theme.ts` at runtime.
 
 `defaults.weights` in `nuxt.config.ts` is **one list for every family**, so the patcher writes
 the union of both fonts' weights. Declaring the heading font with the same name but a heavier
@@ -348,14 +495,15 @@ weight is a supported way to ask for that weight.
 ## Logos
 
 Brand logos are square badges and long wordmarks alike, so nothing renders them at a fixed
-width. `seoConfig.logo` carries the file's own `width`/`height`, and
+width. The logo (from `useSiteConfig()`) carries the file's own `width`/`height`, and
 `app/utils/logo-size.ts` turns a target height — and a width ceiling — into the pair that
-fits both:
+fits both. The logo is passed in rather than read inside, because that file is not a
+composable and its callers already hold the resolved config:
 
 ```ts
 <NuxtImg
   provider="cloudinary"
-  v-bind="logoSize(36, 200)"
+  v-bind="logoSize(siteConfig.logo, 36, 200)"
   class="h-auto w-auto max-h-9 max-w-[200px] object-contain"
   …
 />
@@ -404,9 +552,9 @@ registered by nuxt-svg-sprite-icon.
 
 ## Strings
 
-**Every user-facing string comes from `seo.conf.ts`.** The site's language is set per brand;
-nothing is hardcoded in a template. The template's own defaults are English placeholders — a
-site gets its real texts when the brand manifest is applied.
+**Every user-facing string comes from `useSiteConfig().translates`** — the site's own
+`settings.strings`, with `seo.conf.ts` as the English default under it. The site's language is
+set per brand; nothing is hardcoded in a template.
 
 `translates.entity` holds the labels of a casino card (licence, min deposit, payout speed,
 the plain `yes`/`no` of a boolean row). They are shared by the rating widgets, the bonus
@@ -446,7 +594,12 @@ variant that was removed, or a typo, and none of those may leave a block unrende
 block's own default is the first value in the table below, and for most blocks it is what
 the template already drew. **`toc: box` is the exception**: the collapsible panel behind a
 "Show table of contents" button is not one of the five variants, so the list now stands
-open — a visible change on every site that has no theme yet.
+open — a visible change on every site that has no theme yet. **`footer: columns` is the
+second one**: the footer used to be a single stack (legal logos, text, links row, title) and
+the default variant lays the same content out in columns.
+
+The last two rows are the frame's, not a block's: neither breadcrumbs nor the footer has a
+record in an article, so only the theme can choose for them.
 
 | Block              | `variants.*` key | Values (default first)                                             | Modifiers, not variants                 |
 | ------------------ | ---------------- | ------------------------------------------------------------------ | --------------------------------------- |
@@ -462,6 +615,8 @@ open — a visible change on every site that has no theme yet.
 | `rating-strip`     | `ratingStrip`    | `strip`, `scorecard`, `bars`, `chips`                              | —                                       |
 | `bonus-box`        | `bonusBox`       | `stripe`, `banner`, `ticket`, `split`, `bar`                       | —                                       |
 | `verdict-box`      | `verdictBox`     | `card`, `split`, `quote`, `strip`                                  | —                                       |
+| `breadcrumbs`      | `breadcrumbs`    | `slash`, `pills`, `back`                                           | — (frame, no record)                    |
+| footer             | `footer`         | `columns`, `minimal`, `centered`, `disclaimer`                     | — (frame, no record)                    |
 
 A modifier is not a variant: it stacks on top of whichever one is chosen, and it lives on the
 record rather than in the theme, because two tables in the same article legitimately want
@@ -583,9 +738,6 @@ Real, found, deliberately not fixed yet:
   keys, and `appspro/server/helpers/brand-apply/render-seo-conf.js` rewrites that file from
   a fixed template, so adding them here alone would lose them on the next brand apply. The
   column currently shows `site.name` and nothing else until both sides carry the keys.
-- **`settings.headerLinks`** is fetched from Mongo through the repository and the composable
-  and read by nobody — the header renders `seoConfig.layout.header.items` instead. Left alone
-  because the model is shared with the admin service.
 - **Missing shortcode guards** in nine components (see above).
 - **`pages/index.vue` and `pages/[...slug].vue`** are the same forty lines twice.
 - **Lint escape hatches.** `@typescript-eslint/no-unused-vars`, `vue/no-v-html` and

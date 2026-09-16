@@ -6,12 +6,12 @@
       :height="heightImg"
       :alt="altImg"
       :src="srcImg"
-      :modifiers="seoConfig.img.modifiers"
+      :modifiers="siteConfig.img.modifiers"
     ></NuxtImg>
   </div>
 </template>
 <script lang="ts" setup>
-import { seoConfig } from "@@/seo.conf";
+const siteConfig = useSiteConfig();
 
 const { name, alt, width, height } = defineProps<{
   name: string;

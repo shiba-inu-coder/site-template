@@ -78,9 +78,10 @@
 <script lang="ts" setup>
 import PostProsConsBase from "#rc/components/post/PostProsCons/components/PostProsConsBase.vue";
 import { safeHTMLWrap } from "#shared/utils/safeHTMLWrap";
-import { seoConfig } from "@@/seo.conf";
 
-const t = seoConfig.translates.entity;
+const siteConfig = useSiteConfig();
+
+const t = computed(() => siteConfig.value.translates.entity);
 
 const { uniqId } = defineProps<{
   uniqId: string;

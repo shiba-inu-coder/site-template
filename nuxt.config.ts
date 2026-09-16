@@ -40,10 +40,13 @@ export default defineNuxtConfig({
     "nuxt-svg-sprite-icon",
   ],
 
+  // Одно нейтральное семейство — дефолт шаблона и фолбэк. Пару шрифтов темы
+  // (`type.display`/`type.body`) подключает ссылкой `app/plugins/ui-theme.ts`:
+  // @nuxt/fonts сканирует CSS на сборке и о семействе из базы не знает.
   fonts: {
     families: [
       {
-        name: "Lato",
+        name: "Inter",
         provider: "google",
         subsets: ["latin", "latin-ext"],
       },

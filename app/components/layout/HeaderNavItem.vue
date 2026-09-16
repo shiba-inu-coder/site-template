@@ -57,16 +57,17 @@
   </a>
 
   <nuxt-link
-    v-else-if="item.kind === 'logo' && seoConfig.logo.src"
+    v-else-if="item.kind === 'logo' && siteConfig.logo.src"
     to="/"
     data-id="ref_link"
+    class="logo"
   >
     <NuxtImg
       provider="cloudinary"
-      v-bind="logoSize(36, 200)"
+      v-bind="logoSize(siteConfig.logo, 36, 200)"
       class="h-auto w-auto max-h-9 max-w-[200px] object-contain"
-      :alt="seoConfig.logo.alt"
-      :src="seoConfig.logo.src"
+      :alt="siteConfig.logo.alt"
+      :src="siteConfig.logo.src"
     />
   </nuxt-link>
 </template>
@@ -75,7 +76,6 @@
 import { computed } from "vue";
 import { useFakeRefLink } from "#rc/composables/useFakeRefLink";
 import { logoSize } from "#rc/utils/logo-size";
-import { seoConfig } from "@@/seo.conf";
 import type { HeaderItem } from "#shared/types";
 
 interface Props {
@@ -84,7 +84,9 @@ interface Props {
 
 const { item } = defineProps<Props>();
 
-const refLink = useFakeRefLink(seoConfig.site.brandSlug);
+const siteConfig = useSiteConfig();
+
+const refLink = computed(() => useFakeRefLink(siteConfig.value.site.brandSlug));
 
 // Три вида — три полных набора классов литералами: `@config` отключает скан
 // Tailwind по всему проекту, кроме глобов `tailwind.config.js`, и класс,

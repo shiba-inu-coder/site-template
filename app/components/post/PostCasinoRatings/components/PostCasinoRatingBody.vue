@@ -147,9 +147,10 @@
 <script lang="ts" setup>
 import PostCasinoListLogos from "./PostCasinoListLogos.vue";
 import PostCasinoRatingTitle from "./PostCasinoRatingTitle.vue";
-import { seoConfig } from "@@/seo.conf";
 
-const t = seoConfig.translates.entity;
+const siteConfig = useSiteConfig();
+
+const t = computed(() => siteConfig.value.translates.entity);
 
 const { casino } = defineProps<{
   casino: PostCasinoRatingEntity;
