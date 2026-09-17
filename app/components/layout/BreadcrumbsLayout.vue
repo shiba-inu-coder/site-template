@@ -1,69 +1,75 @@
 <template>
-  <nav
-    v-if="variant === 'back'"
-    class="mt-4 flex w-full text-step-8"
-  >
-    <nuxt-link
-      v-if="backCrumb"
-      trailing-slash="append"
-      prefetch-on="interaction"
-      class="font-semibold text-ui-link transition duration-500 ease-in-out hover:text-ui-link-hover"
-      :to="backCrumb.slug"
-    >
-      ← {{ backCrumb.title }}
-    </nuxt-link>
-  </nav>
+  <div class="group relative">
+    <VariantPicker v-bind="UI_VARIANT_PICKERS.breadcrumbs"></VariantPicker>
 
-  <nav
-    v-else
-    class="mt-4 flex w-full"
-  >
-    <ol
-      class="not-format flex items-center overflow-x-auto overflow-y-hidden text-step-8"
-      :class="variant === 'pills' ? 'gap-2' : ''"
+    <nav
+      v-if="variant === 'back'"
+      class="mt-4 flex w-full text-step-8"
     >
-      <li
-        v-for="(crumb, index) in items"
-        :key="index"
-        class="flex items-center whitespace-nowrap"
+      <nuxt-link
+        v-if="backCrumb"
+        trailing-slash="append"
+        prefetch-on="interaction"
+        class="font-semibold text-ui-link transition duration-500 ease-in-out hover:text-ui-link-hover"
+        :to="backCrumb.slug"
       >
-        <nuxt-link
-          v-if="index !== items.length - 1"
-          trailing-slash="append"
-          prefetch-on="interaction"
-          class="font-semibold text-ui-link transition duration-500 ease-in-out hover:text-ui-link-hover"
-          :class="
-            variant === 'pills'
-              ? 'rounded-full border border-ui-panel-border bg-ui-panel-bg px-2.5 py-0.5'
-              : ''
-          "
-          :to="crumb.slug"
+        ← {{ backCrumb.title }}
+      </nuxt-link>
+    </nav>
+
+    <nav
+      v-else
+      class="mt-4 flex w-full"
+    >
+      <ol
+        class="not-format flex items-center overflow-x-auto overflow-y-hidden text-step-8"
+        :class="variant === 'pills' ? 'gap-2' : ''"
+      >
+        <li
+          v-for="(crumb, index) in items"
+          :key="index"
+          class="flex items-center whitespace-nowrap"
         >
-          <span>{{ crumb.title }} </span>
-        </nuxt-link>
-        <span
-          v-else
-          class="font-medium"
-          :class="
-            variant === 'pills'
-              ? 'rounded-full border border-ui-panel-border bg-ui-panel-bg px-2.5 py-0.5 text-ui-muted'
-              : ''
-          "
-        >
-          {{ crumb.title }}
-        </span>
-        <svg-icon
-          v-if="index !== items.length - 1"
-          class="mx-2 size-5 rotate-90 text-ui-muted"
-          :class="variant === 'pills' ? 'mx-0.5' : ''"
-          name="client/chevron-up"
-        />
-      </li>
-    </ol>
-  </nav>
+          <nuxt-link
+            v-if="index !== items.length - 1"
+            trailing-slash="append"
+            prefetch-on="interaction"
+            class="font-semibold text-ui-link transition duration-500 ease-in-out hover:text-ui-link-hover"
+            :class="
+              variant === 'pills'
+                ? 'rounded-full border border-ui-panel-border bg-ui-panel-bg px-2.5 py-0.5'
+                : ''
+            "
+            :to="crumb.slug"
+          >
+            <span>{{ crumb.title }} </span>
+          </nuxt-link>
+          <span
+            v-else
+            class="font-medium"
+            :class="
+              variant === 'pills'
+                ? 'rounded-full border border-ui-panel-border bg-ui-panel-bg px-2.5 py-0.5 text-ui-muted'
+                : ''
+            "
+          >
+            {{ crumb.title }}
+          </span>
+          <svg-icon
+            v-if="index !== items.length - 1"
+            class="mx-2 size-5 rotate-90 text-ui-muted"
+            :class="variant === 'pills' ? 'mx-0.5' : ''"
+            name="client/chevron-up"
+          />
+        </li>
+      </ol>
+    </nav>
+  </div>
 </template>
 <script setup lang="ts">
 import { pickVariant } from "#shared/utils/block-variant";
+import VariantPicker from "#rc/components/layout/VariantPicker.vue";
+import { UI_VARIANT_PICKERS } from "#shared/constants/ui-variant-options";
 
 const { breadcrumbs } = defineProps<{
   breadcrumbs: PostBreadcrumb[];

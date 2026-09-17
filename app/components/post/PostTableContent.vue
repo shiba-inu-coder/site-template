@@ -48,6 +48,13 @@
 <script setup lang="ts">
 import { pickVariant } from "#shared/utils/block-variant";
 
+// Оглавление — синглтон без своего uniqId, но библиотека вариантов на `/ui`
+// (5b) показывает все пять сразу над одним и тем же списком: проп `variant`
+// бьёт и запись, и тему — тот же приём, что у `PostBiographyWriter`.
+const { variant: forcedVariant = "" } = defineProps<{
+  variant?: string;
+}>();
+
 const siteConfig = useSiteConfig();
 
 const { tableContent, tableContentEntry } = usePost();
@@ -105,6 +112,7 @@ const variant = computed(() =>
   pickVariant(
     VARIANTS,
     "box",
+    forcedVariant,
     tableContentEntry.value.variant,
     variantFor("toc"),
   ),

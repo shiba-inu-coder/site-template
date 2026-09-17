@@ -175,6 +175,13 @@ import PostStars from "#rc/components/post/PostStars.vue";
 import { safeHTMLWrap } from "#shared/utils/safeHTMLWrap";
 import { pickVariant } from "#shared/utils/block-variant";
 
+// Вердикт — синглтон без своего uniqId, но библиотека вариантов на `/ui`
+// (5b) показывает все четыре сразу над одним и тем же текстом: проп
+// `variant` бьёт и запись, и тему — тот же приём, что у `PostBiographyWriter`.
+const { variant: forcedVariant = "" } = defineProps<{
+  variant?: string;
+}>();
+
 const { verdictBox } = usePost();
 const { variantFor } = useUiTheme();
 
@@ -197,6 +204,7 @@ const variant = computed(() =>
   pickVariant(
     VARIANTS,
     "card",
+    forcedVariant,
     verdict.value.variant,
     variantFor("verdictBox"),
   ),

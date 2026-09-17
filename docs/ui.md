@@ -294,17 +294,23 @@ Two details that look like noise and are not:
 the sidebar column exists at all) and `frameAttrs` (the `data-*` attributes for the page
 root, see "Frame"). `setTheme()` replaces the theme in state; the head is described as a
 getter, so the style tag, `data-theme`, the font link and the attributes all repaint without
-a reload.
+a reload. `isPreview`, `panelOrigins` and `notifyPanel(message)` are the same preview-bridge
+plumbing the plugin uses for `ui-ready`/`ui-contrast`, exposed so `VariantPicker` (see "`/ui`
+page" below) can reuse it instead of duplicating the origin check; `previewAttached` and
+`markPreviewAttached()` track whether the panel answered `ui-ready` with `ui-attach`, and
+`setVariant(group, key, value)` is what a picker click actually calls.
 
 ### Preview protocol
 
 The panel previews a theme by embedding the site and talking to it over `postMessage`.
 
-| Message                           | Direction    | When                                            |
-| --------------------------------- | ------------ | ----------------------------------------------- |
-| `{ type: "ui-ready" }`            | site → panel | once, on mount                                  |
-| `{ type: "ui-theme", theme }`     | panel → site | on every change the operator makes              |
-| `{ type: "ui-contrast", report }` | site → panel | after each applied theme, from `contrastReport` |
+| Message                              | Direction    | When                                                       |
+| ------------------------------------ | ------------ | ---------------------------------------------------------- |
+| `{ type: "ui-ready" }`               | site → panel | once, on mount                                             |
+| `{ type: "ui-attach" }`              | panel → site | reply to `ui-ready` — this is what "live connection" means |
+| `{ type: "ui-theme", theme }`        | panel → site | on every change the operator makes                         |
+| `{ type: "ui-contrast", report }`    | site → panel | after each applied theme, from `contrastReport`            |
+| `{ type: "ui-variant", key, value }` | site → panel | a `VariantPicker` click, on any page — see "`/ui` page"    |
 
 Two gates, both required: the URL carries `?preview=` (the same query the staging pass
 already uses) **and** `event.origin` is listed in `runtimeConfig.public.PANEL_ORIGINS`, a
@@ -312,6 +318,9 @@ comma-separated env value (`.env` locally, the site's Vault record in production
 a panel domain needs no rebuild). Without them a message is dropped: an unlisted origin —
 or the live URL of the same page — must not be able to repaint a production site. An empty
 `PANEL_ORIGINS` accepts nothing, which is the right default for a site nobody previews.
+`ui-variant` carries no `group` (`variants.*` vs `frame.*`) — the panel already knows which
+axis each `key` belongs to from its own theme editor (6a), and the site's own local apply
+(`setVariant`) gets it from the picker's own config instead of guessing from the key name.
 
 ## Frame
 
@@ -720,6 +729,87 @@ brand token becomes `color-mix(in srgb, var(--color-primary-200) 40%, transparen
 a resolved colour, so repainting the brand repaints articles that were written long before. If
 that formula changes on one side and not the other, the same article renders differently
 depending on which of the two paths drew it.
+
+## `/ui` page
+
+**`/ui` is the site's own UI library** — one demo article that exercises every shortcode in
+every variant, so a theme (a preset or a real `settings.uiTheme` record) can be checked
+without a real post. `app/pages/ui.vue` is a static route, so `[...slug].vue`'s catch-all
+never sees it; it renders the same `BasePostView` a real page does, over a fixture instead of
+a fetch.
+
+- **`app/fixtures/demo-post.ts`** (`buildDemoPost({ lorem })`) is the only data source. It
+  has two halves in one `sections[]`: the first seven sections are a normal article — one
+  instance of each block, no `variant` of its own, so the whole thing renders however the
+  active theme's `variants.*`/`frame.*` say to (this is the part that answers "what does a
+  real page look like under this theme"). The rest are `lib-*` sections, one per shortcode,
+  each with every variant value **forced** on the marker (`marker("data-table", { variant:
+"ranking" })`) so all of them are visible at once regardless of what the theme picked. A
+  typography section (`h1`–`h6`, a list, `.app-link`, a legacy `.article-img--right` figure)
+  and a coloured section background sit right after the article, exercising
+  `shared/utils/section-style.ts` the same way.
+- **Marker names are the PascalCase key in `RuntimeTemplateLayout.vue`'s `components` map,
+  kebab-cased — not always the short label this doc uses elsewhere.** Vue's own component
+  resolver (`resolveAsset`/`resolve` in `@vue/runtime-core`) only tries three spellings for an
+  `is="vue:x"` marker: the literal string, `camelize(x)`, and `capitalize(camelize(x))`. That
+  is why the pros/cons marker has to be `vue:pros-cons-post` (→ `ProsConsPost`) and not
+  `vue:pros-cons`, even though the "Shortcodes" table above calls the block `pros-cons` for
+  readability. Get this wrong and the block silently fails to resolve — Vue warns to the
+  console and renders nothing, there is no build-time check for it.
+- **Five singleton blocks — `rating-strip`, `verdict-box`, `table-content`, `faq`,
+  `contact-us`** — had no way to force a variant before this page: they read the theme and
+  their own (singleton, not `uniqId`-keyed) record only. Showing all of a singleton's variants
+  side by side needed the same escape hatch `PostBiographyWriter` already had for its `inline`
+  hero placement, so each of those five components now also takes an optional `variant` prop
+  that wins over both the record and the theme (`pickVariant(VARIANTS, default, forcedVariant,
+ownRecordVariant, variantFor(key))`). It is additive — every existing call site that does not
+  pass the prop behaves exactly as before.
+- **`?preview=`** is the same query the staging pass and the runtime-theme plugin already
+  gate on — presence is enough, the value is never checked. **`?preset=<id>`** looks `id` up in
+  `shared/constants/ui-presets.ts` (`UI_PRESETS`, 14 entries, `findUiPreset`) and applies it
+  with `setTheme()`, overriding whatever `settings.uiTheme` loaded; drop the param and the
+  page shows the site's real theme (or the template default, if it has none yet) — that is
+  what makes `/ui` with no query the site's UI library rather than just a preset gallery.
+  `shared/constants/ui-presets.ts` is a straight port of the approved mockup's `PRESETS` array
+  (`plans/…/1e.макеты-14-пресетов.html`) into the real `UiTheme` shape — same 14 themes, same
+  keys, `resolveScheme`'s own `DEFAULT_UI_SCHEME` filling in every token a preset does not
+  override. **`?lorem=1`** swaps the fixture's Russian copy for standard (Latin) lorem ipsum —
+  same structure, longer paragraphs — to check line length and rhythm independent of language.
+- **The panelling picker.** `app/components/layout/VariantPicker.vue` renders a small fixed-style
+  chip (deliberately outside the theme — always dark, always legible, the same reasoning as
+  "status colours are neither brand nor theme") over a block on hover, one dot per option, with
+  the current one filled; a click calls `useUiTheme().setVariant(group, key, value)`, which
+  patches the theme locally and sends `{ type: "ui-variant", key, value }` to the panel (see
+  "Preview protocol" above). It only draws when `previewAttached` is true — a bare `?preview=`
+  with nothing on the other end of the `postMessage` channel shows no chip, on `/ui` or any
+  real page. `shared/constants/ui-variant-options.ts` (`UI_VARIANT_PICKERS`) is the label/option
+  table it reads from — one entry per shortcode plus `header`/`hero`/`sticky` (`frame.*`) and
+  `footer`/`breadcrumbs` (`variants.*`, no record of their own). The picker is wired at the
+  point each block actually renders: the twelve shortcodes get it as a wrapper inserted into
+  `RuntimeTemplateLayout.vue`'s `components` map (so a marker's own SFC is untouched), while
+  `HeaderLayout.vue` and `StickyCtaLayout.vue` — both `position: fixed` — carry it inside their
+  own root instead of an outer wrapper, because a non-fixed wrapper around a fixed element
+  drifts away from it the moment the page scrolls and `group-hover` stops firing where the
+  element actually is.
+- **Contrast report.** A fixed corner panel on `/ui` only, reading `useUiTheme().contrast`
+  (the same `contrastReport(resolveScheme(theme))` the panel gets over `ui-contrast`) and
+  colouring each pair by WCAG threshold — red under 4.5, yellow under 7.
+- **Robots, four layers, all load-bearing:** (1) no `?preview=` → `ui.vue` throws
+  `createError({ statusCode: 404 })` before anything renders — a real HTTP 404, not just the
+  error page's look; (2) `server/middleware/ui-robots-tag.ts` sets `X-Robots-Tag: noindex,
+nofollow` on any request to `/ui` or `/ui/`, with or without `?preview=`, independent of
+  what the page itself does; (3) `server/middleware/robots.ts` appends its own `User-agent: *
+/ Disallow: /ui` group after whatever `settings.robotsTXT` holds, so an operator's free-text
+  robots rules can never reopen it; (4) the sitemap is generated from the database
+  (`/api/v1/public/seo/sitemap/`) with `excludeAppSources: true` in `nuxt.config.ts`, so a
+  template route with no post behind it cannot appear there by construction — nothing to add
+  for `/ui` specifically.
+- **Keeping it current is not optional.** The rule already stated in "Shortcodes" applies
+  here literally: a new variant is three edits, and this fixture is one of them. Adding a
+  variant to a component's own `VARIANTS` array without adding its row to the matching `lib-*`
+  section in `demo-post.ts` (and, if the block should be pickable, an entry in
+  `ui-variant-options.ts`) leaves a variant nobody will ever see after a theme change until
+  someone happens to write a record that uses it.
 
 ## Known debt
 

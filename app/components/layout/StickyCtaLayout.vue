@@ -1,8 +1,9 @@
 <template>
   <div
     v-if="hasCta"
-    class="site-sticky fixed inset-x-0 bottom-0 z-30 flex items-center gap-3 border-t border-ui-panel-border bg-ui-header-bg px-3 py-2 md:hidden"
+    class="site-sticky group fixed inset-x-0 bottom-0 z-30 flex items-center gap-3 border-t border-ui-panel-border bg-ui-header-bg px-3 py-2 md:hidden"
   >
+    <VariantPicker v-bind="UI_VARIANT_PICKERS.sticky"></VariantPicker>
     <div
       v-if="variant === 'bar' && bonus"
       class="min-w-0 flex-1 text-step-9 leading-tight"
@@ -24,6 +25,8 @@
 
 <script setup lang="ts">
 import CtaButtonLayout from "#rc/components/layout/CtaButtonLayout.vue";
+import VariantPicker from "#rc/components/layout/VariantPicker.vue";
+import { UI_VARIANT_PICKERS } from "#shared/constants/ui-variant-options";
 
 // Липкая панель живёт только на телефоне: на десктопе её перекрывает сайдбар
 // и кнопки самой статьи, и место внизу экрана там не дефицит.

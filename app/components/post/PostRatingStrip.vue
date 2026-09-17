@@ -108,6 +108,13 @@
 import PostStars from "#rc/components/post/PostStars.vue";
 import { pickVariant } from "#shared/utils/block-variant";
 
+// Рейтинг — синглтон без своего uniqId, но библиотека вариантов на `/ui`
+// (5b) показывает все четыре сразу над одними и теми же фактами: проп
+// `variant` бьёт и запись, и тему — тот же приём, что у `PostBiographyWriter`.
+const { variant: forcedVariant = "" } = defineProps<{
+  variant?: string;
+}>();
+
 const { ratingStrip } = usePost();
 const { variantFor } = useUiTheme();
 
@@ -123,6 +130,7 @@ const variant = computed(() =>
   pickVariant(
     VARIANTS,
     "strip",
+    forcedVariant,
     ratingStrip.value.variant,
     variantFor("ratingStrip"),
   ),

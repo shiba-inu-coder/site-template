@@ -82,12 +82,17 @@
 <script setup lang="ts">
 import { pickVariant } from "#shared/utils/block-variant";
 
+// У контактов нет своей записи в конфиге статьи: форма одна на сайт, и
+// вариант ей в норме задаёт только тема. Проп — исключение для `/ui` (5b),
+// где библиотека вариантов показывает все три сразу, той же формой.
+const { variant: forcedVariant = "" } = defineProps<{
+  variant?: string;
+}>();
+
 const siteConfig = useSiteConfig();
 
 const { variantFor } = useUiTheme();
 
-// У контактов нет своей записи в конфиге статьи: форма одна на сайт, и
-// вариант ей задаёт только тема.
 const VARIANTS = ["card", "plain", "split"] as const;
 
 const WRAPPER_CLASSES: Record<(typeof VARIANTS)[number], string> = {
@@ -98,7 +103,7 @@ const WRAPPER_CLASSES: Record<(typeof VARIANTS)[number], string> = {
 };
 
 const variant = computed(() =>
-  pickVariant(VARIANTS, "card", variantFor("contact")),
+  pickVariant(VARIANTS, "card", forcedVariant, variantFor("contact")),
 );
 
 const form = ref({

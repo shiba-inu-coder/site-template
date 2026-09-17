@@ -107,6 +107,71 @@ export const useUiTheme = () => {
     setUiTheme(isUiThemeConfigured(next) ? next : null);
   };
 
+  // Превью-мост с панелью (5b): `?preview=` в адресе — то же самое условие,
+  // на котором уже стоит слушатель `ui-theme` в плагине, здесь оно нужно и
+  // для отправки. Без него сообщения ушли бы с обычной боевой страницы.
+  const route = useRoute();
+  const runtimeConfig = useRuntimeConfig();
+
+  const isPreview = computed(() => Boolean(route.query.preview));
+
+  const panelOrigins = computed(() =>
+    String(runtimeConfig.public.PANEL_ORIGINS || "")
+      .split(",")
+      .map((origin) => origin.trim())
+      .filter(Boolean),
+  );
+
+  const notifyPanel = (message: Record<string, unknown>) => {
+    if (import.meta.server || !isPreview.value) {
+      return;
+    }
+
+    const target = window.parent !== window ? window.parent : window.opener;
+
+    if (!target) {
+      return;
+    }
+
+    for (const origin of panelOrigins.value) {
+      target.postMessage(message, origin);
+    }
+  };
+
+  // Живо ли соединение с панелью — панель отвечает `ui-attach` на `ui-ready`
+  // (плагин ставит `true` при получении). Панелька выбора варианта проверяет
+  // это, чтобы не рисовать себя на голом `?preview=` без панели за ним.
+  const previewAttached = useState<boolean>("ui-preview-attached", () => false);
+
+  const markPreviewAttached = () => {
+    previewAttached.value = true;
+  };
+
+  // Панелька выбора варианта (5b): применяет вариант локально поверх текущей
+  // темы и уведомляет панель — та сама решает, `variants.<key>` это или
+  // `frame.<key>`, и присылает обратно полную тему. Без темы применять
+  // некуда: без неё сайт рисует дефолт образа, а не запись, которую можно
+  // патчить точечно.
+  const setVariant = (
+    group: "variants" | "frame",
+    key: string,
+    value: string,
+  ) => {
+    const current = theme.value;
+
+    // Локально патчить нечего без темы — но панель узнаёт о клике в любом
+    // случае: это она решает, `variants.<key>` это или `frame.<key>`, и может
+    // прислать первую тему сайта в ответ на самый первый клик.
+    if (current) {
+      setTheme({
+        ...current,
+        [group]: { ...current[group], [key]: value },
+      });
+    }
+
+    notifyPanel({ type: "ui-variant", key, value });
+  };
+
   return {
     theme,
     mode,
@@ -117,5 +182,11 @@ export const useUiTheme = () => {
     frame,
     frameAttrs,
     setTheme,
+    isPreview,
+    panelOrigins,
+    notifyPanel,
+    previewAttached,
+    markPreviewAttached,
+    setVariant,
   };
 };

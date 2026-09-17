@@ -1,11 +1,5 @@
 import { getCloudinaryBaseUrl } from "#rc/utils/get-cloudinary-base-url";
 
-const parseOrigins = (raw: unknown): string[] =>
-  String(raw || "")
-    .split(",")
-    .map((origin) => origin.trim())
-    .filter(Boolean);
-
 // Тема сайта приезжает из базы, а не из сборки, поэтому её некому применить
 // раньше первого рендера — отсюда `enforce: "pre"` и `await`. Плагин работает
 // и на `error.vue`: 404 рисует не `app.vue`, и заданная там тема туда не
@@ -14,12 +8,20 @@ export default defineNuxtPlugin({
   name: "ui-theme",
   enforce: "pre",
   async setup(nuxtApp) {
-    const route = useRoute();
     const runtimeConfig = useRuntimeConfig();
-    const panelOrigins = parseOrigins(runtimeConfig.public.PANEL_ORIGINS);
     const { setSettings } = useSettings();
     const siteConfig = useSiteConfig();
-    const { mode, cssVars, fontsHref, contrast, setTheme } = useUiTheme();
+    const {
+      mode,
+      cssVars,
+      fontsHref,
+      contrast,
+      setTheme,
+      isPreview,
+      panelOrigins,
+      notifyPanel,
+      markPreviewAttached,
+    } = useUiTheme();
 
     // Фавикон приезжает public id Cloudinary, а не файлом: `public/favicon.ico`
     // в шаблоне нет и панель его больше не коммитит. Пока id пуст, ссылки нет
@@ -94,25 +96,18 @@ export default defineNuxtPlugin({
       return;
     }
 
-    const postToPanel = (message: Record<string, unknown>) => {
-      const target = window.parent !== window ? window.parent : window.opener;
-
-      if (!target) {
-        return;
-      }
-
-      for (const origin of panelOrigins) {
-        target.postMessage(message, origin);
-      }
-    };
-
     // Превью-адрес — единственное место, где страница слушается кого-то
     // снаружи: без `?preview=` в URL сообщения игнорируются, иначе любое окно
     // с разрешённого домена перекрашивало бы боевую страницу.
-    const isPreview = () => Boolean(route.query.preview);
-
     window.addEventListener("message", (event: MessageEvent) => {
-      if (!isPreview() || !panelOrigins.includes(event.origin)) {
+      if (!isPreview.value || !panelOrigins.value.includes(event.origin)) {
+        return;
+      }
+
+      // Панель отвечает `ui-attach` на `ui-ready` — это и есть «живое
+      // соединение», от которого зависит панелька выбора варианта (5b).
+      if (event.data?.type === "ui-attach") {
+        markPreviewAttached();
         return;
       }
 
@@ -121,12 +116,12 @@ export default defineNuxtPlugin({
       }
 
       setTheme(event.data.theme);
-      postToPanel({ type: "ui-contrast", report: contrast.value });
+      notifyPanel({ type: "ui-contrast", report: contrast.value });
     });
 
     nuxtApp.hook("app:mounted", () => {
-      if (isPreview()) {
-        postToPanel({ type: "ui-ready" });
+      if (isPreview.value) {
+        notifyPanel({ type: "ui-ready" });
       }
     });
   },
