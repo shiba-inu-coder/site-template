@@ -50,6 +50,26 @@ export default defineNuxtConfig({
     "nuxt-svg-sprite-icon",
   ],
 
+  hooks: {
+    // @nuxtjs/sitemap и nuxt-schema-org оба объявляют moduleDependencies на
+    // nuxt-site-config, из-за чего Nuxt настраивает его дважды и он
+    // автоимпортирует свой `useSiteConfig` (с тем же именем, что и проектный
+    // из app/composables/useSiteConfig.ts) в composablesDirs двумя копиями. У
+    // обеих приоритет по умолчанию (1) выше, чем у отсканированного из
+    // app/-слоя (0) — модульный побеждает всегда, siteConfig.value становится
+    // undefined везде, где ждут проектный SiteConfig. Вырезаем обе копии, а не
+    // переименовываем ~40 мест использования.
+    "imports:extend"(autoImports) {
+      for (let i = autoImports.length - 1; i >= 0; i--) {
+        if (
+          autoImports[i].name === "useSiteConfig" &&
+          autoImports[i].from.includes("nuxt-site-config")
+        )
+          autoImports.splice(i, 1);
+      }
+    },
+  },
+
   // Одно нейтральное семейство — дефолт шаблона и фолбэк. Пару шрифтов темы
   // (`type.display`/`type.body`) подключает ссылкой `app/plugins/ui-theme.ts`:
   // @nuxt/fonts сканирует CSS на сборке и о семействе из базы не знает.
