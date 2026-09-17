@@ -811,6 +811,40 @@ nofollow` on any request to `/ui` or `/ui/`, with or without `?preview=`, indepe
   `ui-variant-options.ts`) leaves a variant nobody will ever see after a theme change until
   someone happens to write a record that uses it.
 
+## Template sync
+
+**A site repo is created "from template" on GitHub and is disconnected from
+this repo from that moment on** — there is no fork relationship, no upstream
+remote, nothing GitHub tracks. `sync_site_template.yml` (shipped in this
+template, so every new site repo gets it automatically; an existing repo has
+it added by the panel) is the only thing that reconnects the two: dispatched
+with a `template_ref` tag, it checks out that tag of `shiba-inu-coder/site-template`
+and `rsync -a --delete`s it over the site repo, committing the result only if
+something actually changed. There is no exclude list beyond `.git` and the
+checkout's own working directory — **sync overwrites everything**, on the
+premise that a site carries no code of its own (see "Site config from DB"
+above). If that ever stops being true and a site gains its own `site/`
+directory, this workflow's `--exclude` list and this paragraph both need it.
+
+**What survives a sync**: nothing in the repository — only what lives outside
+it. That is exactly the split "Site config from DB" describes: the site's
+`settings` document in Mongo (brand, layout, strings, theme) and its Vault
+record (`MONGO_URI`, `DOMAIN_NAME`, `CACHE_PURGE_SECRET`, `PANEL_ORIGINS`, …).
+A sync touches neither.
+
+Cutting a release (bumping `TEMPLATE_VERSION`/`package.json`, tagging) is
+`docs/release.md`. `sync_site_template.yml` needs `secrets.TEMPLATE_TOKEN` on
+the site repo — a read-only PAT scoped to this repo, provisioned by the panel
+(`GITHUB_TEMPLATE_TOKEN` in its own Vault record); wiring that secret up is a
+later stage, not part of what this section documents.
+
+**Checking what actually runs in production**: `/api/v1/public/settings/settings`
+answers with `templateVersion`, read from this repo's own `TEMPLATE_VERSION`
+file at build time (`nuxt.config.ts`, baked into `runtimeConfig` — the
+runtime image never carries the raw file, only `.output` and `package.json`).
+Comparing that value against the tag a site was last synced to is how the
+panel tells a stale deploy from a stale sync.
+
 ## Known debt
 
 Real, found, deliberately not fixed yet:

@@ -3,12 +3,22 @@ import tailwindcss from "@tailwindcss/vite";
 import { getCloudinaryBaseUrl } from "./app/utils/get-cloudinary-base-url";
 import { fileURLToPath } from "url";
 import { dirname, join } from "path";
+import { readFileSync } from "fs";
 import { defineNuxtConfig } from "nuxt/config";
 
 function getCurrentDirectory(p: string) {
   const currentDir = dirname(fileURLToPath(import.meta.url));
   return join(currentDir, p);
 }
+
+// Рантайм-образ (Dockerfile, stage `runner`) не копирует исходники — только
+// package.json, .output и docker/*.mjs. TEMPLATE_VERSION попадает в
+// работающий сервер только так: значение читается на сборке и печётся в
+// runtimeConfig, как CLOUDINARY_CLOUD_NAME чуть выше.
+const TEMPLATE_VERSION = readFileSync(
+  getCurrentDirectory("./TEMPLATE_VERSION"),
+  "utf-8",
+).trim();
 
 export default defineNuxtConfig({
   app: {
@@ -114,6 +124,7 @@ export default defineNuxtConfig({
     MONGO_URI: process.env.MONGO_URI,
     MONGO_DB_NAME: process.env.DB_NAME,
     CACHE_PURGE_SECRET: process.env.CACHE_PURGE_SECRET,
+    TEMPLATE_VERSION,
     site: {
       url: process.env.SITE_URL,
       name: process.env.DOMAIN_NAME,

@@ -11,5 +11,5 @@ export type ISettingUsecase = {
 };
 
 export type ISettingUsecasePublic = {
-  getPublic: () => Promise<ISettingPublic>;
+  getPublic: () => Promise<ISettingPublic & { templateVersion: string }>;
 };

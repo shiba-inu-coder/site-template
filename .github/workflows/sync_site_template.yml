@@ -1,0 +1,61 @@
+name: Sync Site Template
+run-name: Sync Site Template ${{ inputs.template_ref }} (${{ inputs.request_id }})
+
+# run-name с request_id — не украшение: appspro находит запуск именно по
+# нему, другого способа связать dispatch с run у GitHub нет (см.
+# workflow-wait.js на стороне панели).
+on:
+  workflow_dispatch:
+    inputs:
+      template_ref:
+        description: "Тег site-template для синка (например v1.2.0)"
+        required: true
+      request_id:
+        description: "Request ID (ставится appspro, вручную не заполнять)"
+        required: false
+        default: ""
+
+# Нужен contents:write — иначе шаг "Commit and push" ниже не сможет
+# запушить коммит обратно в этот же репозиторий дефолтным GITHUB_TOKEN.
+permissions:
+  contents: write
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout site repo
+        uses: actions/checkout@v4
+
+      - name: Checkout site-template
+        uses: actions/checkout@v4
+        with:
+          repository: shiba-inu-coder/site-template
+          ref: ${{ inputs.template_ref }}
+          # PAT read-only на site-template, кладёт панель (secret на стороне
+          # каждого репозитория сайта, не этого) — GITHUB_TOKEN сюда не
+          # дотягивается, репозиторий чужой.
+          token: ${{ secrets.TEMPLATE_TOKEN }}
+          path: .template
+
+      # Белого списка нет намеренно: своего кода на сайте нет, шаблон
+      # перезаписывает дерево целиком. Появится site/ — добавить сюда ещё
+      # --exclude site/ и в docs/ui.md, раздел "Template sync".
+      - name: Sync template into site
+        env:
+          TEMPLATE_REF: ${{ inputs.template_ref }}
+        run: |
+          rsync -a --delete ./.template/ ./ --exclude .git --exclude .template
+          rm -rf .template
+          git add -A
+
+          if git diff --cached --quiet; then
+            echo "already at ${TEMPLATE_REF}"
+            exit 0
+          fi
+
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git commit -m "chore: sync site-template ${TEMPLATE_REF}"
+          git push

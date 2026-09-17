@@ -19,6 +19,12 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      # Файл, не package.json: плоская строка читается без разбора JSON, той
+      # же логикой, что использует sync_site_template.yml на стороне сайта.
+      - name: Read template version
+        id: template_version
+        run: echo "value=$(cat TEMPLATE_VERSION)" >> "$GITHUB_OUTPUT"
+
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
@@ -37,6 +43,7 @@ jobs:
           tags: |
             ${{ secrets.DOCKERHUB_USERNAME }}/${{ secrets.DOCKERHUB_REPO_NAME }}:latest
             ${{ secrets.DOCKERHUB_USERNAME }}/${{ secrets.DOCKERHUB_REPO_NAME }}:${{ github.sha }}
+            ${{ secrets.DOCKERHUB_USERNAME }}/${{ secrets.DOCKERHUB_REPO_NAME }}:template-${{ steps.template_version.outputs.value }}
           # Ни build-аргументов, ни похода в Vault: конфигурация целиком
           # подставляется на ноде переменными NUXT_*. Образ одинаков для любого
           # окружения, и в его слоях нечему утечь.
