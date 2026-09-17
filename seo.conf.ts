@@ -31,6 +31,7 @@ export const seoConfig = {
       body: "",
       links: [],
       legalLogos: [],
+      paymentLogos: [],
     },
   },
   translates: {

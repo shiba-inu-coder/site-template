@@ -43,20 +43,16 @@
         v-if="legalLogos.length"
         class="flex flex-wrap items-center gap-4"
       >
-        <a
+        <NuxtImg
           v-for="(gamblingIcon, i) in legalLogos"
           :key="i"
-          :href="gamblingIcon.src"
-        >
-          <NuxtImg
-            loading="lazy"
-            width="auto"
-            provider="cloudinary"
-            height="50"
-            :src="gamblingIcon.src"
-            :alt="gamblingIcon.alt"
-          />
-        </a>
+          loading="lazy"
+          width="auto"
+          provider="cloudinary"
+          height="50"
+          :src="gamblingIcon.src"
+          :alt="gamblingIcon.alt"
+        />
       </div>
     </div>
 
@@ -92,20 +88,16 @@
         v-if="legalLogos.length"
         class="flex flex-wrap items-center justify-center gap-4"
       >
-        <a
+        <NuxtImg
           v-for="(gamblingIcon, i) in legalLogos"
           :key="i"
-          :href="gamblingIcon.src"
-        >
-          <NuxtImg
-            loading="lazy"
-            width="auto"
-            provider="cloudinary"
-            height="50"
-            :src="gamblingIcon.src"
-            :alt="gamblingIcon.alt"
-          />
-        </a>
+          loading="lazy"
+          width="auto"
+          provider="cloudinary"
+          height="50"
+          :src="gamblingIcon.src"
+          :alt="gamblingIcon.alt"
+        />
       </div>
       <p
         v-if="siteConfig.layout.footer.title"
@@ -139,6 +131,22 @@
       class="border-t border-ui-panel-bg px-5 py-6 text-step-9 leading-5 font-normal text-ui-text md:px-8"
     >
       <div v-html="siteConfig.layout.footer.body"></div>
+    </div>
+
+    <div
+      v-if="paymentLogos.length"
+      class="flex flex-wrap items-center justify-center gap-4 border-t border-ui-panel-border px-5 py-4 md:px-8"
+    >
+      <NuxtImg
+        v-for="(paymentIcon, i) in paymentLogos"
+        :key="i"
+        loading="lazy"
+        width="auto"
+        provider="cloudinary"
+        height="28"
+        :src="paymentIcon.src"
+        :alt="paymentIcon.alt"
+      />
     </div>
 
     <div
@@ -180,5 +188,8 @@ const variant = computed(() =>
 const links = computed(() => siteConfig.value.layout.footer.links || []);
 const legalLogos = computed(
   () => siteConfig.value.layout.footer.legalLogos || [],
+);
+const paymentLogos = computed(
+  () => siteConfig.value.layout.footer.paymentLogos || [],
 );
 </script>

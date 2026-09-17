@@ -71,6 +71,7 @@ export const LayoutSchema = new Schema(
           body: { type: String, default: "" },
           links: { type: [FooterLinkSchema], default: () => [] },
           legalLogos: { type: [FooterLegalLogoSchema], default: () => [] },
+          paymentLogos: { type: [FooterLegalLogoSchema], default: () => [] },
         },
         { _id: false },
       ),

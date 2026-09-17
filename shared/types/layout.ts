@@ -62,6 +62,7 @@ export interface SiteLayout {
     body: string;
     links: FooterLink[];
     legalLogos: FooterLegalLogo[];
+    paymentLogos: FooterLegalLogo[];
   };
   breadcrumbs: { homeLabel: string };
 }
