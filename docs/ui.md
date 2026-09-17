@@ -209,11 +209,11 @@ a write into Mongo plus a `settings` cache purge: no commit, no image, no deploy
 
 Three subdocuments carry it (`server/adapters/repository/mongodb/models/schemas/`):
 
-| Field              | Schema       | Holds                                                                                               |
-| ------------------ | ------------ | --------------------------------------------------------------------------------------------------- |
-| `settings.brand`   | `Brand.ts`   | `name`, `lang`, `brandSlug`, `logo {src,alt,width,height}`, `favicon {src}`, `imgRoundCorner`       |
-| `settings.layout`  | `Layout.ts`  | `header {items, topbar, cta}`, `footer {title, body, links, legalLogos}`, `breadcrumbs {homeLabel}` |
-| `settings.strings` | `Strings.ts` | the whole `seoConfig.translates` tree                                                               |
+| Field              | Schema       | Holds                                                                                                             |
+| ------------------ | ------------ | ----------------------------------------------------------------------------------------------------------------- |
+| `settings.brand`   | `Brand.ts`   | `name`, `lang`, `brandSlug`, `logo {src,alt,width,height}`, `favicon {src}`, `imgRoundCorner`                     |
+| `settings.layout`  | `Layout.ts`  | `header {items, topbar, cta}`, `footer {title, body, links, legalLogos, paymentLogos}`, `breadcrumbs {homeLabel}` |
+| `settings.strings` | `Strings.ts` | the whole `seoConfig.translates` tree                                                                             |
 
 `Strings.ts` declares **no** keys and is `strict: false` on purpose: the key set is the
 panel's (`seo-conf-defaults.js`), it grows there, and the site's image does not redeploy in
@@ -663,6 +663,16 @@ nobody checks after a theme change.
 The axes a variant does **not** read: `geometry.borders`/`shadow`, `decor.img`/`btn` and
 `accents.badge` arrive as `data-*` attributes on the page root, so a component must not
 hardcode a border, a shadow or a button shape where those are meant to reach it.
+
+**A `data-table` cell is its own second runtime-compile surface.** `row[column.name]` goes
+through `PostDataTableRuntime.vue` the same way the article body goes through
+`RuntimeTemplateLayout.vue` — same `sanitizeRuntimeTemplate`, its own small component map
+(`Image` → `PostDataTableImg.vue`, plus `RefLink`, `RefLinkBtn`). `Image`'s `inline` prop
+swaps the default centered 70px block for a 20px icon sitting in the text flow
+(`inline-flex`, `align-middle`, margin on the right), for a cell that reads as an icon next
+to a name rather than an icon above one. It has to be written as a bare attribute
+(`<div is="vue:Image" name="…" inline>`), never `:inline="true"` — `sanitizeRuntimeTemplate`
+strips only `v-*`/`:prop`/`@event`/`#slot` attributes, so a literal one survives untouched.
 
 `PostTextImage.vue` (`text-image` marker, `textImages` shortcode) is where the side/column
 modifiers do real work, under the `split` and `card` variants: two columns on desktop (image
