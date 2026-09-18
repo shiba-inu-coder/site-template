@@ -17,6 +17,7 @@ import type {
 export const useUiTheme = () => {
   const { uiTheme, setUiTheme } = useSettings();
   const siteConfig = useSiteConfig();
+  const runtimeConfig = useRuntimeConfig();
 
   const theme = computed<UiTheme | null>(() =>
     isUiThemeConfigured(uiTheme.value) ? uiTheme.value : null,
@@ -27,7 +28,12 @@ export const useUiTheme = () => {
   );
 
   const cssVars = computed(() =>
-    theme.value ? themeToCssVars(theme.value) : "",
+    theme.value
+      ? themeToCssVars(
+          theme.value,
+          runtimeConfig.public.CLOUDINARY_CLOUD_NAME as string,
+        )
+      : "",
   );
 
   const fontsHref = computed(() => {
@@ -88,6 +94,7 @@ export const useUiTheme = () => {
       "data-sticky": value.frame?.sticky,
       "data-h2": value.decor?.h2,
       "data-bg": value.decor?.bg,
+      "data-bg-image": value.decor?.bgImage?.path ? "1" : undefined,
       "data-img": value.decor?.img,
       "data-btn": value.decor?.btn?.join(" "),
       "data-badge": value.accents?.badge,
@@ -111,7 +118,6 @@ export const useUiTheme = () => {
   // на котором уже стоит слушатель `ui-theme` в плагине, здесь оно нужно и
   // для отправки. Без него сообщения ушли бы с обычной боевой страницы.
   const route = useRoute();
-  const runtimeConfig = useRuntimeConfig();
 
   const isPreview = computed(() => Boolean(route.query.preview));
 

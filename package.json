@@ -3,6 +3,9 @@
   "version": "1.1.1",
   "private": true,
   "type": "module",
+  "imports": {
+    "#rc/utils/get-cloudinary-base-url": "./app/utils/get-cloudinary-base-url.ts"
+  },
   "scripts": {
     "build": "nuxt build",
     "dev": "nuxt dev",
@@ -12,7 +15,8 @@
     "lint": "npm run lint:eslint && npm run lint:prettier",
     "lint:eslint": "eslint .",
     "lint:prettier": "prettier . --write",
-    "lintfix": "eslint . --fix && prettier --write --list-different ."
+    "lintfix": "eslint . --fix && prettier --write --list-different .",
+    "test": "node --experimental-strip-types --test tests/*.test.ts"
   },
   "dependencies": {
     "@nuxt/fonts": "0.14.0",

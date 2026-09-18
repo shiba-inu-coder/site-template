@@ -1,6 +1,7 @@
 // Чистый модуль: без импортов из Nuxt/Vue и без auto-import. Схема темы
 // читается и панелью (appspro), и этим сайтом, и превью — там, где Nuxt не
 // поднят вовсе.
+import { getCloudinaryBaseUrl } from "#rc/utils/get-cloudinary-base-url";
 
 export type UiThemeMode = "dark" | "light";
 
@@ -135,6 +136,9 @@ export interface UiDecor {
     | "number"
     | "line";
   bg?: "flat" | "radial" | "dots" | "grid" | "stripes";
+  // Побеждает над `bg`: обе оси взаимоисключающи, порядок правил в
+  // tailwind.css решает это на CSS-уровне, а не чтением здесь.
+  bgImage?: { path: string; overlay: number };
   img?: "rounded" | "framed" | "square" | "tilt";
   btn?: Array<"pill" | "skew" | "gradient">;
 }
@@ -274,9 +278,10 @@ export const resolveScheme = (theme: UiTheme): Record<UiToken, string> => {
   return result;
 };
 
-// Цвета + радиус + шрифты — оси, которые уже есть в этом этапе. Каркас и
-// декор (frame/variants/decor/accents) сюда не попадают: их рендерят 4c/4e.
-export const themeToCssVars = (theme: UiTheme): string => {
+// Цвета + радиус + шрифты + фон статьи картинкой — оси, которые уже есть в
+// этом этапе. Каркас и остальной декор (frame/variants/decor.h2|bg|img|btn/
+// accents) сюда не попадают: их рендерят 4c/4e.
+export const themeToCssVars = (theme: UiTheme, cloudName: string): string => {
   const resolved = resolveScheme(theme);
 
   const lines = UI_TOKENS.map(
@@ -293,6 +298,24 @@ export const themeToCssVars = (theme: UiTheme): string => {
   }
   if (theme.type?.display?.family) {
     lines.push(`  --font-heading: ${theme.type.display.family};`);
+  }
+
+  const bgImagePath = theme.decor?.bgImage?.path;
+  if (bgImagePath) {
+    const url = /^https?:\/\//.test(bgImagePath)
+      ? bgImagePath
+      : `${getCloudinaryBaseUrl(cloudName)}f_auto,q_auto/${bgImagePath}`;
+
+    // `decor` — Mixed в Mongo, без валидации на запись: overlay нечисловым
+    // или вне 0–100 не должен превращать весь background-image (картинка
+    // вместе с градиентом-затемнением — одно CSS-значение) в невалидный.
+    const rawOverlay = Number(theme.decor?.bgImage?.overlay);
+    const overlay = Number.isFinite(rawOverlay)
+      ? Math.min(100, Math.max(0, rawOverlay))
+      : 0;
+
+    lines.push(`  --ui-bg-image: url(${url});`);
+    lines.push(`  --ui-bg-overlay: ${overlay / 100};`);
   }
 
   return `:root {\n${lines.join("\n")}\n}`;

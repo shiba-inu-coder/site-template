@@ -630,6 +630,19 @@ button:not(:disabled),
   background-repeat: no-repeat;
 }
 
+/* Стоит после паттернов data-bg="…": оба пишут background-image на #site, и
+   картинка должна перебивать паттерн, а не наоборот. */
+#site[data-bg-image] {
+  background-image: linear-gradient(
+      rgb(0 0 0 / var(--ui-bg-overlay, 0)),
+      rgb(0 0 0 / var(--ui-bg-overlay, 0))
+    ),
+    var(--ui-bg-image);
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
+}
+
 #site[data-img="square"] #article img,
 #site[data-img="square"] #article .rounded-primary {
   border-radius: 0;
