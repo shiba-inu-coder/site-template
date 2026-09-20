@@ -9,7 +9,7 @@ export default defineNuxtPlugin({
   enforce: "pre",
   async setup(nuxtApp) {
     const runtimeConfig = useRuntimeConfig();
-    const { setSettings } = useSettings();
+    const { setSettings, setBrandSettings } = useSettings();
     const siteConfig = useSiteConfig();
     const {
       mode,
@@ -108,6 +108,13 @@ export default defineNuxtPlugin({
       // соединение», от которого зависит панелька выбора варианта (5b).
       if (event.data?.type === "ui-attach") {
         markPreviewAttached();
+        return;
+      }
+
+      // В отличие от `ui-theme`, ответа не шлёт: манифесту нечего вернуть
+      // панели — `ui-contrast` считается только от цветовой схемы темы.
+      if (event.data?.type === "ui-manifest") {
+        setBrandSettings(event.data.settings ?? {});
         return;
       }
 
