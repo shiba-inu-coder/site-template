@@ -210,7 +210,9 @@ them twice would only mean migrating twice. `setting.repository.ts` `getPublic()
 every interface string, the logo, the favicon, the brand slug and the language arrive from
 that site's `settings` document; `seo.conf.ts` is the template's neutral default underneath
 them — empty name, `lang: "en"`, English strings, empty menus. Editing a brand in the panel is
-a write into Mongo plus a `settings` cache purge: no commit, no image, no deploy.
+a write into Mongo plus a `settings` cache purge: no commit, no image, no deploy. The live
+preview (`ui-manifest`, see "Preview protocol" below) writes into that same state directly,
+bypassing the public settings route and its cache entirely.
 
 Three subdocuments carry it (`server/adapters/repository/mongodb/models/schemas/`):
 
@@ -309,13 +311,14 @@ page" below) can reuse it instead of duplicating the origin check; `previewAttac
 
 The panel previews a theme by embedding the site and talking to it over `postMessage`.
 
-| Message                              | Direction    | When                                                       |
-| ------------------------------------ | ------------ | ---------------------------------------------------------- |
-| `{ type: "ui-ready" }`               | site → panel | once, on mount                                             |
-| `{ type: "ui-attach" }`              | panel → site | reply to `ui-ready` — this is what "live connection" means |
-| `{ type: "ui-theme", theme }`        | panel → site | on every change the operator makes                         |
-| `{ type: "ui-contrast", report }`    | site → panel | after each applied theme, from `contrastReport`            |
-| `{ type: "ui-variant", key, value }` | site → panel | a `VariantPicker` click, on any page — see "`/ui` page"    |
+| Message                              | Direction    | When                                                                                                                             |
+| ------------------------------------ | ------------ | -------------------------------------------------------------------------------------------------------------------------------- |
+| `{ type: "ui-ready" }`               | site → panel | once, on mount                                                                                                                   |
+| `{ type: "ui-attach" }`              | panel → site | reply to `ui-ready` — this is what "live connection" means                                                                       |
+| `{ type: "ui-theme", theme }`        | panel → site | on every change the operator makes                                                                                               |
+| `{ type: "ui-manifest", settings }`  | panel → site | on every manifest field edit, debounced — merges `brand`/`layout`/`strings` into state, leaves `uiTheme`/`redirectsRoutes` alone |
+| `{ type: "ui-contrast", report }`    | site → panel | after each applied theme, from `contrastReport`                                                                                  |
+| `{ type: "ui-variant", key, value }` | site → panel | a `VariantPicker` click, on any page — see "`/ui` page"                                                                          |
 
 Two gates, both required: the URL carries `?preview=` (the same query the staging pass
 already uses) **and** `event.origin` is listed in `runtimeConfig.public.PANEL_ORIGINS`, a
