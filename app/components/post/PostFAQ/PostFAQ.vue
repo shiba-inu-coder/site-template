@@ -29,12 +29,12 @@ const { variantFor } = useUiTheme();
 const VARIANTS = ["list", "accordion", "numbered", "grid", "chat"] as const;
 
 const CONTAINER_CLASSES: Record<(typeof VARIANTS)[number], string> = {
-  list: "grid gap-3 max-w-[760px]",
-  accordion: "grid gap-2 max-w-[760px]",
+  list: "grid gap-3",
+  accordion: "grid gap-2",
   // Разделители рисуют сами вопросы — зазор между ними разорвал бы линию.
-  numbered: "grid max-w-[760px]",
+  numbered: "grid",
   grid: "grid gap-3 md:grid-cols-2",
-  chat: "grid gap-4 max-w-[760px]",
+  chat: "grid gap-4",
 };
 
 const variant = computed(() =>

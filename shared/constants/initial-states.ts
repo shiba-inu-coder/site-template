@@ -35,12 +35,8 @@ const baseInital: Omit<IPost, "_id" | "breadcrumbs"> = {
     },
     biographyWriters: [],
     textImages: [],
-    bonusBoxes: [],
     ratingStrip: {
       facts: [],
-    },
-    verdictBox: {
-      badges: [],
     },
   },
   isDeleted: false,

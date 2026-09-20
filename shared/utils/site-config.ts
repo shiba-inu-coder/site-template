@@ -54,7 +54,6 @@ const SITE_CONFIG_STRUCTURE: SiteConfig = {
       body: "",
       links: [],
       legalLogos: [],
-      paymentLogos: [],
     },
     breadcrumbs: { homeLabel: "" },
   },

@@ -134,22 +134,6 @@
     </div>
 
     <div
-      v-if="paymentLogos.length"
-      class="flex flex-wrap items-center justify-center gap-4 border-t border-ui-panel-border px-5 py-4 md:px-8"
-    >
-      <NuxtImg
-        v-for="(paymentIcon, i) in paymentLogos"
-        :key="i"
-        loading="lazy"
-        width="auto"
-        provider="cloudinary"
-        height="28"
-        :src="paymentIcon.src"
-        :alt="paymentIcon.alt"
-      />
-    </div>
-
-    <div
       class="flex flex-wrap items-center justify-center gap-4 bg-ui-footer-bg px-5 py-3 text-step-8 md:px-8"
     >
       <template v-if="variant === 'minimal'">
@@ -188,8 +172,5 @@ const variant = computed(() =>
 const links = computed(() => siteConfig.value.layout.footer.links || []);
 const legalLogos = computed(
   () => siteConfig.value.layout.footer.legalLogos || [],
-);
-const paymentLogos = computed(
-  () => siteConfig.value.layout.footer.paymentLogos || [],
 );
 </script>

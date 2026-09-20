@@ -2,7 +2,7 @@ export interface HeaderItem {
   kind: "ref" | "page" | "logo";
   label: string;
   link?: string;
-  style: "primary" | "active" | "link";
+  style: "primary" | "active" | "outline" | "link";
   position: "left" | "center" | "right";
   children?: HeaderItem[];
 }
@@ -62,7 +62,6 @@ export interface SiteLayout {
     body: string;
     links: FooterLink[];
     legalLogos: FooterLegalLogo[];
-    paymentLogos: FooterLegalLogo[];
   };
   breadcrumbs: { homeLabel: string };
 }

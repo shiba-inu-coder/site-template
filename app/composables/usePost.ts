@@ -24,18 +24,10 @@ export const usePost = <E>() => {
   const createdAt = computed(() => state.value.currentPost.createdAt);
   const updatedAt = computed(() => state.value.currentPost.updatedAt);
   const faq = computed(() => state.value.currentPost.shortcodesConfig.faq);
-  // Синглтоны: статья, написанная до появления блока, поля в конфиге не несёт
+  // Синглтон: статья, написанная до появления блока, поля в конфиге не несёт
   // вовсе — пустой объект вместо undefined держит шаблон от падения.
   const ratingStrip = computed(
     () => state.value.currentPost.shortcodesConfig.ratingStrip ?? {},
-  );
-  const verdictBox = computed(
-    () => state.value.currentPost.shortcodesConfig.verdictBox ?? {},
-  );
-  // Списком, а не по uniqId: сайдбару и липкому CTA нужен первый бонус
-  // страницы, а его идентификатора они не знают.
-  const bonusBoxes = computed(
-    () => state.value.currentPost.shortcodesConfig.bonusBoxes ?? [],
   );
   const breadcrumbs = computed(() => state.value.currentPost.breadcrumbs);
   const postDated = computed(
@@ -88,10 +80,6 @@ export const usePost = <E>() => {
     uniqId: string;
     shortcode: "textImages";
   }): IPostBySlug["shortcodesConfig"]["textImages"][number] | undefined;
-  function getShortcode(params: {
-    uniqId: string;
-    shortcode: "bonusBoxes";
-  }): IPostBySlug["shortcodesConfig"]["bonusBoxes"][number] | undefined;
   function getShortcode({
     uniqId,
     shortcode,
@@ -114,7 +102,6 @@ export const usePost = <E>() => {
       | "miniCasinoReviews"
       | "miniBookmakerReviews"
       | "textImages"
-      | "bonusBoxes"
     >;
   }) {
     const post = state.value.currentPost as IPostBySlug;
@@ -151,8 +138,6 @@ export const usePost = <E>() => {
     getShortcode,
     faq,
     ratingStrip,
-    verdictBox,
-    bonusBoxes,
     title,
     updatedAt,
     createdAt,

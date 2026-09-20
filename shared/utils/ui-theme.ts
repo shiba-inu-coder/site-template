@@ -116,10 +116,8 @@ export interface UiVariants {
   textImage?: string;
   dataTable?: string;
   gridCards?: string;
-  bonusBox?: string;
   prosCons?: string;
   faq?: string;
-  verdictBox?: string;
   buttonRef?: string;
   biography?: string;
   contact?: string;

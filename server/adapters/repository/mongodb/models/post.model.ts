@@ -20,8 +20,6 @@ import { MiniBookmakerReviewSchema } from "./schemas/MiniBookmakerReview";
 import { TextImageSchema } from "./schemas/TextImage";
 import { SectionSchema } from "./schemas/Section";
 import { RatingStripSchema } from "./schemas/RatingStrip";
-import { BonusBoxSchema } from "./schemas/BonusBox";
-import { VerdictBoxSchema } from "./schemas/VerdictBox";
 
 const ModelSchema = new Schema<IPostDocument, IPostModel>(
   {
@@ -125,17 +123,9 @@ const ModelSchema = new Schema<IPostDocument, IPostModel>(
         type: TextImageSchema,
         default: () => [],
       },
-      bonusBoxes: {
-        type: BonusBoxSchema,
-        default: () => [],
-      },
       ratingStrip: {
         type: RatingStripSchema,
         default: () => ({ facts: [] }),
-      },
-      verdictBox: {
-        type: VerdictBoxSchema,
-        default: () => ({ badges: [] }),
       },
     },
     isDeleted: {

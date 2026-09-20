@@ -88,14 +88,16 @@ const siteConfig = useSiteConfig();
 
 const refLink = computed(() => useFakeRefLink(siteConfig.value.site.brandSlug));
 
-// Три вида — три полных набора классов литералами: `@config` отключает скан
-// Tailwind по всему проекту, кроме глобов `tailwind.config.js`, и класс,
+// Четыре вида — четыре полных набора классов литералами: `@config` отключает
+// скан Tailwind по всему проекту, кроме глобов `tailwind.config.js`, и класс,
 // собранный из строки (`bg-${x}-200`), в сборке не появится.
 const styleClassMap: Record<HeaderItem["style"], string> = {
   primary:
     "font-bold bg-ui-panel-bg transition ease-in-out duration-500 hover:bg-ui-card-bg px-7 py-3 rounded-primary",
   active:
     "font-bold bg-ui-cta-bg text-ui-cta-text transition ease-in-out duration-500 hover:bg-ui-cta-hover px-7 py-3 rounded-primary",
+  outline:
+    "font-bold border border-ui-link text-ui-link transition ease-in-out duration-500 hover:border-ui-link-hover hover:text-ui-link-hover px-7 py-3 rounded-primary",
   link: "transition ease-in-out duration-500 hover:text-ui-link font-semibold",
 };
 

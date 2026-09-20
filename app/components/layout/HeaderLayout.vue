@@ -194,15 +194,17 @@ const logoItems = computed(() =>
   headerItems.value.filter((item) => item.kind === "logo"),
 );
 
+// active и outline — пара кнопок («Регистрация» + «Вход»), а не кнопка и
+// обычная ссылка: обе остаются снаружи бургера в compact и держатся вместе
+// в конце строки в centered/search.
+const isCta = (item: HeaderItem) =>
+  item.style === "active" || item.style === "outline";
+
 const ctaItems = computed(() =>
-  headerItems.value.filter(
-    (item) => item.kind !== "logo" && item.style === "active",
-  ),
+  headerItems.value.filter((item) => item.kind !== "logo" && isCta(item)),
 );
 
 const navItems = computed(() =>
-  headerItems.value.filter(
-    (item) => item.kind !== "logo" && item.style !== "active",
-  ),
+  headerItems.value.filter((item) => item.kind !== "logo" && !isCta(item)),
 );
 </script>

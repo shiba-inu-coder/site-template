@@ -1,6 +1,6 @@
 /**
  * Список значений и подписей для панельки выбора варианта (`VariantPicker`,
- * 5b) — один на каждый из 12 шорткодов плюс шапку, футер, крошки, хиро и
+ * 5b) — один на каждый из 10 шорткодов плюс шапку, футер, крошки, хиро и
  * sticky. Порядок и первое значение — тот же дефолт, что в компоненте блока
  * (`pickVariant`); поменял вариант компонента — поменяй и здесь, иначе
  * панелька предложит то, чего блок не умеет.
@@ -113,6 +113,7 @@ export const UI_VARIANT_PICKERS: Record<string, UiVariantPickerConfig> = {
       { value: "image-caption", label: "Фото + подпись" },
       { value: "image-title-text", label: "Фото + текст" },
       { value: "horizontal", label: "Горизонтальные" },
+      { value: "image", label: "Только фото" },
       { value: "offer", label: "Оффер" },
     ],
   },
@@ -202,31 +203,6 @@ export const UI_VARIANT_PICKERS: Record<string, UiVariantPickerConfig> = {
       { value: "outline", label: "Контур" },
       { value: "soft", label: "Мягкая" },
       { value: "block", label: "Во всю ширину" },
-    ],
-  },
-  bonusBox: {
-    label: "Бонус",
-    group: "variants",
-    optionKey: "bonusBox",
-    fallback: "stripe",
-    options: [
-      { value: "stripe", label: "Полоса" },
-      { value: "banner", label: "Баннер" },
-      { value: "ticket", label: "Купон" },
-      { value: "split", label: "Сплит" },
-      { value: "bar", label: "Строка" },
-    ],
-  },
-  verdictBox: {
-    label: "Вердикт",
-    group: "variants",
-    optionKey: "verdictBox",
-    fallback: "card",
-    options: [
-      { value: "card", label: "Карточка" },
-      { value: "split", label: "Сплит" },
-      { value: "quote", label: "Цитата" },
-      { value: "strip", label: "Полоса" },
     ],
   },
 };

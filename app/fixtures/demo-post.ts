@@ -98,12 +98,6 @@ const FAQ_LOREM: { label: string; value: string }[] = [
   },
 ];
 
-const VERDICT_TEXT = {
-  real: "<p>GoldBet подходит тем, кто ценит скорость выплат и большой каталог игр. Слабое место — вейджер выше среднего по рынку.</p>",
-  lorem:
-    "<p>Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam.</p>",
-};
-
 const marker = (
   name: string,
   attrs: Record<string, string | number | boolean> = {},
@@ -254,19 +248,6 @@ const buildProsConsEntry = (uniqId: string, variant: string) => ({
   },
 });
 
-const buildBonusBoxEntry = (uniqId: string, variant: string) => ({
-  data: {
-    uniqId,
-    variant,
-    label: "Приветственный бонус",
-    amount: "100 % до 25 000 Kč + 200 FS",
-    terms: "Вейджер ×35 · мин. депозит 500 Kč",
-    code: "GOLD200",
-    refLink: "goldbet-casino",
-    buttonText: "Забрать бонус",
-  },
-});
-
 const buildBiographyEntry = () => ({
   data: {
     uniqId: "demo-author",
@@ -333,7 +314,6 @@ export const buildDemoPost = (
   const lorem = Boolean(options.lorem);
   const text = lorem ? LOREM_TEXT : REAL_TEXT;
   const faqData = lorem ? FAQ_LOREM : FAQ_REAL;
-  const verdictText = lorem ? VERDICT_TEXT.lorem : VERDICT_TEXT.real;
 
   const leadSection = {
     uid: "bonusy",
@@ -452,7 +432,6 @@ export const buildDemoPost = (
     },
     body: [
       `<p>${text.verdictLead}</p>`,
-      marker("verdict-box", { "uniq-id": "verdict" }),
       marker("biography-writer", {
         "uniq-id": "demo-author",
         variant: "signature",
@@ -471,6 +450,7 @@ export const buildDemoPost = (
       ["image-caption", "Фото + подпись"],
       ["image-title-text", "Фото + текст"],
       ["horizontal", "Горизонтальные"],
+      ["image", "Только фото"],
       ["offer", "Оффер"],
     ]
       .map(([value, label]) =>
@@ -611,40 +591,12 @@ export const buildDemoPost = (
       .join(""),
   });
 
-  const libraryBonusBox = buildLibrarySection({
-    uid: "lib-bonus-box",
-    title: "Библиотека: бонус (bonus-box)",
-    body: [
-      ["stripe", "Полоса"],
-      ["banner", "Баннер"],
-      ["ticket", "Купон"],
-      ["split", "Сплит"],
-      ["bar", "Строка"],
-    ]
-      .map(([value, label]) =>
-        variantRow(
-          `${value} — ${label}`,
-          marker("bonus-box", { "uniq-id": `demo-bonus-${value}` }),
-        ),
-      )
-      .join(""),
-  });
-
-  const libraryVerdictBox = buildLibrarySection({
-    uid: "lib-verdict-box",
-    title: "Библиотека: вердикт (verdict-box)",
-    body: ["card", "split", "quote", "strip"]
-      .map((value) =>
-        variantRow(value, marker("verdict-box", { variant: value })),
-      )
-      .join(""),
-  });
-
   const gridCardsVariants = [
     "text",
     "image-caption",
     "image-title-text",
     "horizontal",
+    "image",
     "offer",
   ].map((variant) => buildGridCardsEntry(`demo-cards-${variant}`, variant));
 
@@ -674,10 +626,6 @@ export const buildDemoPost = (
     "table",
   ].map((variant) => buildProsConsEntry(`demo-pros-${variant}`, variant));
 
-  const bonusBoxVariants = ["stripe", "banner", "ticket", "split", "bar"].map(
-    (variant) => buildBonusBoxEntry(`demo-bonus-${variant}`, variant),
-  );
-
   return {
     _id: "demo-post",
     title: text.h1,
@@ -701,8 +649,6 @@ export const buildDemoPost = (
       libraryContact,
       libraryButtonRef,
       libraryRatingStrip,
-      libraryBonusBox,
-      libraryVerdictBox,
     ],
     isActive: true,
     breadcrumbTitle: "GoldBet Casino",
@@ -773,7 +719,6 @@ export const buildDemoPost = (
         buildTextImageEntry("demo-lead-image", "", text.intro[0] || ""),
         ...textImageVariants,
       ],
-      bonusBoxes: bonusBoxVariants,
       ratingStrip: {
         variant: "",
         score: 4.6,
@@ -783,15 +728,6 @@ export const buildDemoPost = (
           { label: "Мин. депозит", value: "200 Kč" },
           { label: "Игр", value: "3 800+" },
         ],
-      },
-      verdictBox: {
-        variant: "",
-        score: 4.6,
-        title: "Надёжное казино с быстрым выводом",
-        text: verdictText,
-        badges: ["Лицензия MGA", "Вывод 24 ч", "3 800+ игр"],
-        refLink: "goldbet-casino",
-        buttonText: "Играть в GoldBet",
       },
     },
     isDeleted: false,

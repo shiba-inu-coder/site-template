@@ -73,13 +73,11 @@ interface RawPreset {
   variants: {
     breadcrumbs: string;
     ratingStrip: string;
-    bonusBox: string;
     toc: string;
     gridCards: string;
     dataTable: string;
     prosCons: string;
     faq: string;
-    verdictBox: string;
     biography: string;
     footer: string;
   };
@@ -126,13 +124,11 @@ const RAW_PRESETS: RawPreset[] = [
     variants: {
       breadcrumbs: "slash",
       ratingStrip: "scorecard",
-      bonusBox: "ticket",
       toc: "box",
       gridCards: "offer",
       dataTable: "ranking",
       prosCons: "two-col",
       faq: "numbered",
-      verdictBox: "quote",
       biography: "card",
       footer: "disclaimer",
     },
@@ -182,13 +178,11 @@ const RAW_PRESETS: RawPreset[] = [
     variants: {
       breadcrumbs: "pills",
       ratingStrip: "chips",
-      bonusBox: "banner",
       toc: "pills",
       gridCards: "image-title-text",
       dataTable: "rows",
       prosCons: "scoreboard",
       faq: "chat",
-      verdictBox: "split",
       biography: "inline",
       footer: "centered",
     },
@@ -242,13 +236,11 @@ const RAW_PRESETS: RawPreset[] = [
     variants: {
       breadcrumbs: "back",
       ratingStrip: "bars",
-      bonusBox: "split",
       toc: "rule",
       gridCards: "horizontal",
       dataTable: "classic",
       prosCons: "table",
       faq: "list",
-      verdictBox: "strip",
       biography: "signature",
       footer: "minimal",
     },
@@ -297,13 +289,11 @@ const RAW_PRESETS: RawPreset[] = [
     variants: {
       breadcrumbs: "slash",
       ratingStrip: "strip",
-      bonusBox: "stripe",
       toc: "columns",
       gridCards: "offer",
       dataTable: "compare",
       prosCons: "two-col",
       faq: "grid",
-      verdictBox: "card",
       biography: "card",
       footer: "columns",
     },
@@ -351,13 +341,11 @@ const RAW_PRESETS: RawPreset[] = [
     variants: {
       breadcrumbs: "slash",
       ratingStrip: "scorecard",
-      bonusBox: "banner",
       toc: "steps",
       gridCards: "image-caption",
       dataTable: "rows",
       prosCons: "merged",
       faq: "accordion",
-      verdictBox: "split",
       biography: "banner",
       footer: "disclaimer",
     },
@@ -403,13 +391,11 @@ const RAW_PRESETS: RawPreset[] = [
     variants: {
       breadcrumbs: "back",
       ratingStrip: "chips",
-      bonusBox: "bar",
       toc: "pills",
       gridCards: "image-title-text",
       dataTable: "key-value",
       prosCons: "stacked",
       faq: "accordion",
-      verdictBox: "card",
       biography: "inline",
       footer: "minimal",
     },
@@ -459,13 +445,11 @@ const RAW_PRESETS: RawPreset[] = [
     variants: {
       breadcrumbs: "slash",
       ratingStrip: "strip",
-      bonusBox: "banner",
       toc: "box",
       gridCards: "text",
       dataTable: "classic",
       prosCons: "two-col",
       faq: "list",
-      verdictBox: "card",
       biography: "centered",
       footer: "disclaimer",
     },
@@ -515,13 +499,11 @@ const RAW_PRESETS: RawPreset[] = [
     variants: {
       breadcrumbs: "slash",
       ratingStrip: "strip",
-      bonusBox: "stripe",
       toc: "box",
       gridCards: "offer",
       dataTable: "ranking",
       prosCons: "two-col",
       faq: "accordion",
-      verdictBox: "card",
       biography: "inline",
       footer: "columns",
     },
@@ -572,13 +554,11 @@ const RAW_PRESETS: RawPreset[] = [
     variants: {
       breadcrumbs: "pills",
       ratingStrip: "scorecard",
-      bonusBox: "split",
       toc: "columns",
       gridCards: "image-title-text",
       dataTable: "compare",
       prosCons: "scoreboard",
       faq: "accordion",
-      verdictBox: "split",
       biography: "card",
       footer: "columns",
     },
@@ -629,13 +609,11 @@ const RAW_PRESETS: RawPreset[] = [
     variants: {
       breadcrumbs: "slash",
       ratingStrip: "scorecard",
-      bonusBox: "ticket",
       toc: "rule",
       gridCards: "text",
       dataTable: "ranking",
       prosCons: "two-col",
       faq: "numbered",
-      verdictBox: "quote",
       biography: "banner",
       footer: "disclaimer",
     },
@@ -693,13 +671,11 @@ const RAW_PRESETS: RawPreset[] = [
     variants: {
       breadcrumbs: "back",
       ratingStrip: "bars",
-      bonusBox: "split",
       toc: "pills",
       gridCards: "horizontal",
       dataTable: "classic",
       prosCons: "table",
       faq: "list",
-      verdictBox: "strip",
       biography: "signature",
       footer: "minimal",
     },
@@ -749,13 +725,11 @@ const RAW_PRESETS: RawPreset[] = [
     variants: {
       breadcrumbs: "slash",
       ratingStrip: "chips",
-      bonusBox: "stripe",
       toc: "columns",
       gridCards: "offer",
       dataTable: "key-value",
       prosCons: "stacked",
       faq: "grid",
-      verdictBox: "card",
       biography: "card",
       footer: "columns",
     },
@@ -811,13 +785,11 @@ const RAW_PRESETS: RawPreset[] = [
     variants: {
       breadcrumbs: "pills",
       ratingStrip: "chips",
-      bonusBox: "banner",
       toc: "steps",
       gridCards: "image-caption",
       dataTable: "rows",
       prosCons: "merged",
       faq: "chat",
-      verdictBox: "split",
       biography: "centered",
       footer: "centered",
     },
@@ -871,13 +843,11 @@ const RAW_PRESETS: RawPreset[] = [
     variants: {
       breadcrumbs: "slash",
       ratingStrip: "bars",
-      bonusBox: "stripe",
       toc: "box",
       gridCards: "text",
       dataTable: "ranking",
       prosCons: "two-col",
       faq: "numbered",
-      verdictBox: "quote",
       biography: "card",
       footer: "columns",
     },

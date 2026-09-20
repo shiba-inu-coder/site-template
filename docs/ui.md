@@ -397,8 +397,7 @@ Where the frame parts are drawn:
 
 The offer behind the sidebar card and the sticky bar is `usePageOffer()`: there is no "offer"
 record in an article, so it is assembled from what the page already has — the banner's casino
-(logo, title), the rating strip's score, the first bonus block's amount — and falls back to
-`layout.header.cta`.
+(logo, title, bonus text) and the rating strip's score — and falls back to `layout.header.cta`.
 
 `CtaButtonLayout.vue` is the one button those three places use. It exists because
 `PostButtonRef` is always an external affiliate link and cannot render an internal
@@ -610,22 +609,20 @@ the default variant lays the same content out in columns.
 The last two rows are the frame's, not a block's: neither breadcrumbs nor the footer has a
 record in an article, so only the theme can choose for them.
 
-| Block              | `variants.*` key | Values (default first)                                             | Modifiers, not variants                 |
-| ------------------ | ---------------- | ------------------------------------------------------------------ | --------------------------------------- |
-| `grid-cards`       | `gridCards`      | `text`, `image-caption`, `image-title-text`, `horizontal`, `offer` | `cardsPerRowDesktop`                    |
-| `data-table`       | `dataTable`      | `classic`, `ranking`, `rows`, `compare`, `key-value`               | `density`, `head`, `striped`            |
-| `text-image`       | `textImage`      | `split`, `overlay`, `card`, `caption`, `banner`                    | `imgSide`, `imgColumn`, `imgMobileSide` |
-| `faq`              | `faq`            | `list`, `accordion`, `numbered`, `grid`, `chat`                    | —                                       |
-| `pros-cons`        | `prosCons`       | `two-col`, `stacked`, `merged`, `scoreboard`, `table`              | —                                       |
-| `table-content`    | `toc`            | `box`, `rule`, `pills`, `columns`, `steps`                         | —                                       |
-| `biography-writer` | `biography`      | `card`, `inline`, `banner`, `centered`, `signature`                | a `variant` **prop** forces one         |
-| `contact-us`       | `contact`        | `card`, `plain`, `split`                                           | — (theme only, no record)               |
-| `button-ref`       | `buttonRef`      | `solid`, `outline`, `soft`, `block`                                | `size`                                  |
-| `rating-strip`     | `ratingStrip`    | `strip`, `scorecard`, `bars`, `chips`                              | —                                       |
-| `bonus-box`        | `bonusBox`       | `stripe`, `banner`, `ticket`, `split`, `bar`                       | —                                       |
-| `verdict-box`      | `verdictBox`     | `card`, `split`, `quote`, `strip`                                  | —                                       |
-| `breadcrumbs`      | `breadcrumbs`    | `slash`, `pills`, `back`                                           | — (frame, no record)                    |
-| footer             | `footer`         | `columns`, `minimal`, `centered`, `disclaimer`                     | — (frame, no record)                    |
+| Block              | `variants.*` key | Values (default first)                                                      | Modifiers, not variants                 |
+| ------------------ | ---------------- | --------------------------------------------------------------------------- | --------------------------------------- |
+| `grid-cards`       | `gridCards`      | `text`, `image-caption`, `image-title-text`, `horizontal`, `image`, `offer` | `cardsPerRowDesktop`                    |
+| `data-table`       | `dataTable`      | `classic`, `ranking`, `rows`, `compare`, `key-value`                        | `density`, `head`, `striped`            |
+| `text-image`       | `textImage`      | `split`, `overlay`, `card`, `caption`, `banner`                             | `imgSide`, `imgColumn`, `imgMobileSide` |
+| `faq`              | `faq`            | `list`, `accordion`, `numbered`, `grid`, `chat`                             | —                                       |
+| `pros-cons`        | `prosCons`       | `two-col`, `stacked`, `merged`, `scoreboard`, `table`                       | —                                       |
+| `table-content`    | `toc`            | `box`, `rule`, `pills`, `columns`, `steps`                                  | —                                       |
+| `biography-writer` | `biography`      | `card`, `inline`, `banner`, `centered`, `signature`                         | a `variant` **prop** forces one         |
+| `contact-us`       | `contact`        | `card`, `plain`, `split`                                                    | — (theme only, no record)               |
+| `button-ref`       | `buttonRef`      | `solid`, `outline`, `soft`, `block`                                         | `size`                                  |
+| `rating-strip`     | `ratingStrip`    | `strip`, `scorecard`, `bars`, `chips`                                       | —                                       |
+| `breadcrumbs`      | `breadcrumbs`    | `slash`, `pills`, `back`                                                    | — (frame, no record)                    |
+| footer             | `footer`         | `columns`, `minimal`, `centered`, `disclaimer`                              | — (frame, no record)                    |
 
 A modifier is not a variant: it stacks on top of whichever one is chosen, and it lives on the
 record rather than in the theme, because two tables in the same article legitimately want
@@ -642,15 +639,13 @@ the panel wrote for years, and they are still in every live post.
 Mongoose schemas default them to `""`/`true` rather than requiring them, and why the
 components fall back rather than branch on presence.
 
-**Shapes.** `rating-strip` and `verdict-box` are **singletons** — one per article, stored
-next to `faq` and `tableContent` as an object rather than an array, and read straight from
-`usePost()` instead of by `uniqId`. `bonus-box` is an array keyed by `uniqId` like the rest.
+**Shapes.** `rating-strip` is a **singleton** — one per article, stored next to `faq` and
+`tableContent` as an object rather than an array, and read straight from `usePost()` instead
+of by `uniqId`.
 
 | Shortcode      | Data                                                                                           |
 | -------------- | ---------------------------------------------------------------------------------------------- |
 | `rating-strip` | `score` (0–5), `facts: [{ label, value }]` — at most 4; for `bars` the `value` is a number 0–5 |
-| `bonus-box`    | `label`, `amount`, `terms`, `code` (the `ticket` stub), `refLink`, `buttonText`                |
-| `verdict-box`  | `score`, `title`, `text` (HTML), `badges: [string]` — at most 5, `refLink`, `buttonText`       |
 
 The caps are enforced in the component (`slice`), not in the panel: a record written by an
 older panel, or by hand, must not be able to break the row.
@@ -766,14 +761,14 @@ a fetch.
   `vue:pros-cons`, even though the "Shortcodes" table above calls the block `pros-cons` for
   readability. Get this wrong and the block silently fails to resolve — Vue warns to the
   console and renders nothing, there is no build-time check for it.
-- **Five singleton blocks — `rating-strip`, `verdict-box`, `table-content`, `faq`,
-  `contact-us`** — had no way to force a variant before this page: they read the theme and
-  their own (singleton, not `uniqId`-keyed) record only. Showing all of a singleton's variants
-  side by side needed the same escape hatch `PostBiographyWriter` already had for its `inline`
-  hero placement, so each of those five components now also takes an optional `variant` prop
-  that wins over both the record and the theme (`pickVariant(VARIANTS, default, forcedVariant,
-ownRecordVariant, variantFor(key))`). It is additive — every existing call site that does not
-  pass the prop behaves exactly as before.
+- **Four singleton blocks — `rating-strip`, `table-content`, `faq`, `contact-us`** — had no
+  way to force a variant before this page: they read the theme and their own (singleton, not
+  `uniqId`-keyed) record only. Showing all of a singleton's variants side by side needed the
+  same escape hatch `PostBiographyWriter` already had for its `inline` hero placement, so each
+  of those four components now also takes an optional `variant` prop that wins over both the
+  record and the theme (`pickVariant(VARIANTS, default, forcedVariant, ownRecordVariant,
+variantFor(key))`). It is additive — every existing call site that does not pass the prop
+  behaves exactly as before.
 - **`?preview=`** is the same query the staging pass and the runtime-theme plugin already
   gate on — presence is enough, the value is never checked. **`?preset=<id>`** looks `id` up in
   `shared/constants/ui-presets.ts` (`UI_PRESETS`, 14 entries, `findUiPreset`) and applies it
@@ -795,7 +790,7 @@ ownRecordVariant, variantFor(key))`). It is additive — every existing call sit
   real page. `shared/constants/ui-variant-options.ts` (`UI_VARIANT_PICKERS`) is the label/option
   table it reads from — one entry per shortcode plus `header`/`hero`/`sticky` (`frame.*`) and
   `footer`/`breadcrumbs` (`variants.*`, no record of their own). The picker is wired at the
-  point each block actually renders: the twelve shortcodes get it as a wrapper inserted into
+  point each block actually renders: the ten shortcodes get it as a wrapper inserted into
   `RuntimeTemplateLayout.vue`'s `components` map (so a marker's own SFC is untouched), while
   `HeaderLayout.vue` and `StickyCtaLayout.vue` — both `position: fixed` — carry it inside their
   own root instead of an outer wrapper, because a non-fixed wrapper around a fixed element

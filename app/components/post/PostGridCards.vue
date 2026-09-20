@@ -67,6 +67,32 @@
         ></span>
       </component>
 
+      <component
+        :is="item.refLink || globalRefLink ? 'a' : 'div'"
+        v-else-if="variant === 'image'"
+        :href="
+          item.refLink || globalRefLink
+            ? useFakeRefLink(item.refLink || globalRefLink)
+            : undefined
+        "
+        :target="item.refLink || globalRefLink ? '_blank' : undefined"
+        :rel="item.refLink || globalRefLink ? 'nofollow noopener' : undefined"
+        :data-id="item.refLink || globalRefLink ? 'ref_link' : undefined"
+        class="block overflow-hidden rounded-primary border border-ui-card-border"
+      >
+        <NuxtImg
+          v-if="item.img"
+          loading="lazy"
+          provider="cloudinary"
+          :width="imgWidth"
+          :height="imgHeight"
+          class="w-full h-full object-cover"
+          :alt="item.img.alt"
+          :src="item.img.path"
+          :modifiers="{ roundCorner: roundCorner }"
+        />
+      </component>
+
       <div
         v-else-if="variant === 'image-title-text'"
         class="flex flex-col overflow-hidden bg-ui-card-bg rounded-primary border border-ui-card-border"
@@ -236,6 +262,7 @@ const VARIANTS = [
   "image-caption",
   "image-title-text",
   "horizontal",
+  "image",
   "offer",
 ] as const;
 
@@ -261,20 +288,22 @@ const variant = computed(() => {
 
 const items = computed(() => list.value?.data.data ?? []);
 
+// md — та же граница мобильного/десктопа, что и везде в шаблоне: ниже неё
+// карточки всегда в одну колонку, сколько бы ни задал оператор.
 const cardsPerRowDesktop = computed(() => {
   const data: Record<string, string> = {
-    "1": "lg:grid-cols-1",
-    "2": "lg:grid-cols-2",
-    "3": "lg:grid-cols-3",
-    "4": "lg:grid-cols-4",
-    "5": "lg:grid-cols-5",
-    "6": "lg:grid-cols-6",
-    "7": "lg:grid-cols-7",
-    "8": "lg:grid-cols-8",
-    "9": "lg:grid-cols-9",
-    "10": "lg:grid-cols-10",
-    "11": "lg:grid-cols-11",
-    "12": "lg:grid-cols-12",
+    "1": "md:grid-cols-1",
+    "2": "md:grid-cols-2",
+    "3": "md:grid-cols-3",
+    "4": "md:grid-cols-4",
+    "5": "md:grid-cols-5",
+    "6": "md:grid-cols-6",
+    "7": "md:grid-cols-7",
+    "8": "md:grid-cols-8",
+    "9": "md:grid-cols-9",
+    "10": "md:grid-cols-10",
+    "11": "md:grid-cols-11",
+    "12": "md:grid-cols-12",
   };
   return data[list.value?.data.cardsPerRowDesktop ?? "1"];
 });

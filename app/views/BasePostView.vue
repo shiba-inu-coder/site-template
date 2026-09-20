@@ -27,12 +27,6 @@
             v-if="breadcrumbs.length"
             :breadcrumbs="breadcrumbs"
           ></BreadcrumbsLayout>
-          <PostButtonRef
-            v-if="isAllow"
-            :size="'big'"
-            position="left"
-            >{{ siteConfig.translates.playNow }}</PostButtonRef
-          >
         </div>
         <div
           :class="
@@ -75,7 +69,6 @@ import HeroLayout from "#rc/components/layout/HeroLayout.vue";
 import RuntimeTemplateLayout from "#rc/components/layout/RuntimeTemplateLayout.vue";
 import StickyCtaLayout from "#rc/components/layout/StickyCtaLayout.vue";
 import PostSections from "#rc/components/post/PostSections.vue";
-import PostButtonRef from "#rc/components/post/PostButtonRef.vue";
 import ButtonFastUpLayout from "#rc/components/layout/ButtonFastUpLayout.vue";
 import { getCloudinaryBaseUrl } from "#rc/utils/get-cloudinary-base-url";
 import { logoSize } from "#rc/utils/logo-size";
@@ -96,8 +89,6 @@ const {
 const siteConfig = useSiteConfig();
 const { frame } = useUiTheme();
 const { enabled: heroEnabled } = useHeroContent();
-
-const isAllow = computed(() => breadcrumbs.value.length === 0);
 
 const hasSidebar = computed(() => (frame.value.sidebar || "none") !== "none");
 

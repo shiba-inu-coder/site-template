@@ -198,30 +198,6 @@ export interface PostRatingStrip {
   facts?: PostRatingStripFact[];
 }
 
-export interface PostBonusBox {
-  data: {
-    uniqId: string;
-    variant?: string;
-    label?: string;
-    amount?: string;
-    terms?: string;
-    code?: string;
-    refLink?: string;
-    buttonText?: string;
-  };
-}
-
-// Синглтон: вердикт редакции в статье один, в конце.
-export interface PostVerdictBox {
-  variant?: string;
-  score?: number;
-  title?: string;
-  text?: string;
-  badges?: string[];
-  refLink?: string;
-  buttonText?: string;
-}
-
 export interface PostBanner {
   ribbon: string;
   text: string;
@@ -402,9 +378,7 @@ export interface IPost<
     biographyWriters: PostBiographyWriter<BiographyWriter>[];
     tableContent: PostTableContent;
     textImages: PostTextImage[];
-    bonusBoxes: PostBonusBox[];
     ratingStrip: PostRatingStrip;
-    verdictBox: PostVerdictBox;
   };
   isDeleted: boolean;
   createdAt?: Date;
