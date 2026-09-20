@@ -4,7 +4,8 @@
   "private": true,
   "type": "module",
   "imports": {
-    "#rc/utils/get-cloudinary-base-url": "./app/utils/get-cloudinary-base-url.ts"
+    "#rc/utils/get-cloudinary-base-url": "./app/utils/get-cloudinary-base-url.ts",
+    "#shared/utils/ui-theme": "./shared/utils/ui-theme.ts"
   },
   "scripts": {
     "build": "nuxt build",

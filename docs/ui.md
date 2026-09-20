@@ -75,6 +75,11 @@ The stock Tailwind palette — `text-blue-500`, `text-slate-200`, `border-slate-
 **not allowed**: it moves with neither the brand nor the theme. The repo is currently free
 of it, and of raw `rgb()`/hex inside components.
 
+The template's own preset gallery (`shared/constants/ui-presets.ts`, see "`/ui` page" below)
+mirrors this split: every family ships as a light/dark twin. Picking which twin a real site
+gets is the operator's call in the appspro panel's template editor — this repo has no
+switcher of its own beyond `/ui?preset=<id>`.
+
 ## UI tokens
 
 **A component is coloured only by a `ui-*` token — never `bg-primary-200`, never
@@ -771,14 +776,16 @@ variantFor(key))`). It is additive — every existing call site that does not pa
   behaves exactly as before.
 - **`?preview=`** is the same query the staging pass and the runtime-theme plugin already
   gate on — presence is enough, the value is never checked. **`?preset=<id>`** looks `id` up in
-  `shared/constants/ui-presets.ts` (`UI_PRESETS`, 14 entries, `findUiPreset`) and applies it
+  `shared/constants/ui-presets.ts` (`UI_PRESETS`, 10 entries, `findUiPreset`) and applies it
   with `setTheme()`, overriding whatever `settings.uiTheme` loaded; drop the param and the
   page shows the site's real theme (or the template default, if it has none yet) — that is
   what makes `/ui` with no query the site's UI library rather than just a preset gallery.
-  `shared/constants/ui-presets.ts` is a straight port of the approved mockup's `PRESETS` array
-  (`plans/…/1e.макеты-14-пресетов.html`) into the real `UiTheme` shape — same 14 themes, same
-  keys, `resolveScheme`'s own `DEFAULT_UI_SCHEME` filling in every token a preset does not
-  override. **`?lorem=1`** swaps the fixture's Russian copy for standard (Latin) lorem ipsum —
+  `shared/constants/ui-presets.ts` is a straight port of the approved mockup's `FAMILIES` array
+  (`plans/…/1.макеты-5-семейств.html`) into the real `UiTheme` shape — 5 families, each a
+  dark/light twin (`?preset=neon-violet` vs `?preset=neon-violet-light`) sharing every axis
+  except `colors`/`scheme`/`headerInverted`, `resolveScheme`'s own `DEFAULT_UI_SCHEME` filling
+  in every token a preset does not override. **`?lorem=1`** swaps the fixture's Russian copy for
+  standard (Latin) lorem ipsum —
   same structure, longer paragraphs — to check line length and rhythm independent of language.
 - **The panelling picker.** `app/components/layout/VariantPicker.vue` renders a small fixed-style
   chip (deliberately outside the theme — always dark, always legible, the same reasoning as
