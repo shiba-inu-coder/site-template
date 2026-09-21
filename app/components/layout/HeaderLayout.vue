@@ -1,8 +1,5 @@
 <template>
-  <nav
-    class="site-header group bg-ui-header-bg fixed left-0 right-0 top-0 z-50"
-  >
-    <VariantPicker v-bind="UI_VARIANT_PICKERS.header"></VariantPicker>
+  <nav class="site-header bg-ui-header-bg fixed left-0 right-0 top-0 z-50">
     <div
       v-if="variant === 'two-row' && hasTopbar"
       class="flex flex-wrap items-center gap-x-4 gap-y-1 border-b border-ui-panel-border px-3 py-1.5 text-step-9 text-ui-muted md:px-8"
@@ -146,8 +143,6 @@
 <script setup lang="ts">
 import type { HeaderItem } from "#shared/types";
 import { pickVariant } from "#shared/utils/block-variant";
-import { UI_VARIANT_PICKERS } from "#shared/constants/ui-variant-options";
-import VariantPicker from "#rc/components/layout/VariantPicker.vue";
 import HeaderNavItem from "./HeaderNavItem.vue";
 
 const siteConfig = useSiteConfig();

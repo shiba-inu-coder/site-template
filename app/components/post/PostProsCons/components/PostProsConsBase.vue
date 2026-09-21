@@ -57,7 +57,7 @@
     v-else-if="variant === 'table'"
     class="overflow-hidden rounded-primary border-2 border-ui-table-row-border"
   >
-    <div class="grid grid-cols-2">
+    <div class="grid grid-cols-1 md:grid-cols-2">
       <div
         class="px-4 py-2.5 font-bold text-step-8 uppercase tracking-wide bg-ui-table-head-bg text-ui-table-head-text"
       >
@@ -69,7 +69,7 @@
         {{ siteConfig.translates.shortcodes.prosAndCons.cons }}
       </div>
     </div>
-    <div class="grid grid-cols-2 bg-ui-table-row">
+    <div class="grid grid-cols-1 md:grid-cols-2 bg-ui-table-row">
       <PostProsConsItem
         class="px-4"
         type="pros"

@@ -10,21 +10,10 @@ import { contrastRatio, CONTRAST_PAIRS } from "../shared/utils/contrast.ts";
 
 const REQUIRED_PAIRS = CONTRAST_PAIRS.filter((pair) => pair.required);
 
-test("UI_PRESETS: 5 семей по два близнеца, оригинал первым", () => {
+test("UI_PRESETS: единственный пресет — blank", () => {
   assert.deepEqual(
     UI_PRESETS.map((preset) => preset.templateId),
-    [
-      "neon-violet",
-      "neon-violet-light",
-      "acid-charcoal",
-      "sport-light",
-      "navy-mint",
-      "teal-pay",
-      "ember",
-      "ember-light",
-      "guru-red",
-      "guru-red-dark",
-    ],
+    ["blank"],
   );
 });
 
@@ -35,8 +24,8 @@ test("findUiPreset: каждый id из UI_PRESETS находится и сов
 });
 
 // Гейт пресета (см. `shared/utils/contrast.ts`): семь обязательных пар не
-// опускаются ниже WCAG AA (4.5), чтобы новый hex в семье не проскочил мимо
-// проверки, которую иначе делают только руками на `/ui?preset=<id>`.
+// опускаются ниже WCAG AA (4.5) — у шаблона больше нет страницы, где это
+// проверяют глазами.
 test("контраст: все обязательные пары ≥ 4.5 на каждом пресете", () => {
   const failures: string[] = [];
 

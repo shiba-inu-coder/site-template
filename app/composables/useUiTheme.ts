@@ -144,40 +144,6 @@ export const useUiTheme = () => {
     }
   };
 
-  // Живо ли соединение с панелью — панель отвечает `ui-attach` на `ui-ready`
-  // (плагин ставит `true` при получении). Панелька выбора варианта проверяет
-  // это, чтобы не рисовать себя на голом `?preview=` без панели за ним.
-  const previewAttached = useState<boolean>("ui-preview-attached", () => false);
-
-  const markPreviewAttached = () => {
-    previewAttached.value = true;
-  };
-
-  // Панелька выбора варианта (5b): применяет вариант локально поверх текущей
-  // темы и уведомляет панель — та сама решает, `variants.<key>` это или
-  // `frame.<key>`, и присылает обратно полную тему. Без темы применять
-  // некуда: без неё сайт рисует дефолт образа, а не запись, которую можно
-  // патчить точечно.
-  const setVariant = (
-    group: "variants" | "frame",
-    key: string,
-    value: string,
-  ) => {
-    const current = theme.value;
-
-    // Локально патчить нечего без темы — но панель узнаёт о клике в любом
-    // случае: это она решает, `variants.<key>` это или `frame.<key>`, и может
-    // прислать первую тему сайта в ответ на самый первый клик.
-    if (current) {
-      setTheme({
-        ...current,
-        [group]: { ...current[group], [key]: value },
-      });
-    }
-
-    notifyPanel({ type: "ui-variant", key, value });
-  };
-
   return {
     theme,
     mode,
@@ -191,8 +157,5 @@ export const useUiTheme = () => {
     isPreview,
     panelOrigins,
     notifyPanel,
-    previewAttached,
-    markPreviewAttached,
-    setVariant,
   };
 };

@@ -1,5 +1,5 @@
 <template>
-  <div class="max-w-340 mx-auto flex flex-col items-center my-5 px-5">
+  <div class="max-w-340 mx-auto flex flex-col items-center my-5">
     <div
       class="contact-form max-w-[850px] w-full"
       :class="WRAPPER_CLASSES[variant]"

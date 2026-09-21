@@ -1,11 +1,8 @@
 <script setup lang="ts">
 import { computed } from "#imports";
-import type { Component } from "vue";
-import { compile, defineComponent, h } from "vue";
+import { compile } from "vue";
 import ButtonRef from "#rc/components/post/PostButtonRef.vue";
-import VariantPicker from "#rc/components/layout/VariantPicker.vue";
 import { sanitizeRuntimeTemplate } from "#shared/utils/sanitize-runtime-template";
-import { UI_VARIANT_PICKERS } from "#shared/constants/ui-variant-options";
 
 // const MiniCasinoReview = defineLazyHydrationComponent(
 //   "visible",
@@ -75,37 +72,17 @@ const RatingStrip = defineLazyHydrationComponent(
 //   () => import("#rc/components/post/PostBonuses/PostBookmakerBonuses.vue"),
 // );
 
-// Панелька выбора варианта (5b) садится на каждый шорткод-маркер этой же
-// оберткой, а не правкой 12 компонентов по отдельности: `components` ниже —
-// единственное место, которое видит все маркеры разом. Она не трогает
-// использование тех же компонентов ВНУТРИ других (кнопка внутри вердикта или
-// бонуса) — тот рендерится обычным SFC-импортом, а не через эту карту.
-const withVariantPicker = (
-  component: Component,
-  pickerKey: keyof typeof UI_VARIANT_PICKERS,
-) =>
-  defineComponent({
-    inheritAttrs: false,
-    setup:
-      (_, { attrs }) =>
-      () =>
-        h("div", { class: "group relative" }, [
-          h(VariantPicker, UI_VARIANT_PICKERS[pickerKey]),
-          h(component, attrs),
-        ]),
-  });
-
 const components = {
-  ButtonRef: withVariantPicker(ButtonRef, "buttonRef"),
-  BiographyWriter: withVariantPicker(BiographyWriter, "biography"),
-  TableContent: withVariantPicker(TableContent, "toc"),
-  Faq: withVariantPicker(Faq, "faq"),
-  GridCards: withVariantPicker(GridCards, "gridCards"),
-  ProsConsPost: withVariantPicker(ProsConsPost, "prosCons"),
-  DataTable: withVariantPicker(DataTable, "dataTable"),
-  ContactUs: withVariantPicker(ContactUs, "contact"),
-  TextImage: withVariantPicker(TextImage, "textImage"),
-  RatingStrip: withVariantPicker(RatingStrip, "ratingStrip"),
+  ButtonRef,
+  BiographyWriter,
+  TableContent,
+  Faq,
+  GridCards,
+  ProsConsPost,
+  DataTable,
+  ContactUs,
+  TextImage,
+  RatingStrip,
   // CasinoRatings,
   // BookmakerRatings,
   // MiniCasinoReview,

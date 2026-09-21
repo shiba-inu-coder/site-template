@@ -16,7 +16,7 @@
           :score="score"
         />
       </div>
-      <div class="grid grid-cols-2 gap-x-6 gap-y-2 grow">
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-2 grow">
         <div
           v-for="(fact, index) in facts"
           :key="index"

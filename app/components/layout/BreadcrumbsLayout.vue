@@ -1,7 +1,5 @@
 <template>
-  <div class="group relative">
-    <VariantPicker v-bind="UI_VARIANT_PICKERS.breadcrumbs"></VariantPicker>
-
+  <div>
     <nav
       v-if="variant === 'back'"
       class="mt-4 flex w-full text-step-8"
@@ -68,8 +66,6 @@
 </template>
 <script setup lang="ts">
 import { pickVariant } from "#shared/utils/block-variant";
-import VariantPicker from "#rc/components/layout/VariantPicker.vue";
-import { UI_VARIANT_PICKERS } from "#shared/constants/ui-variant-options";
 
 const { breadcrumbs } = defineProps<{
   breadcrumbs: PostBreadcrumb[];

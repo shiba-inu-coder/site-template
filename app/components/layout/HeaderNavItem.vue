@@ -70,6 +70,15 @@
       :src="siteConfig.logo.src"
     />
   </nuxt-link>
+
+  <nuxt-link
+    v-else-if="item.kind === 'logo'"
+    to="/"
+    data-id="ref_link"
+    class="logo font-bold text-step-3 text-ui-heading whitespace-nowrap"
+  >
+    {{ siteConfig.site.name }}
+  </nuxt-link>
 </template>
 
 <script setup lang="ts">

@@ -1,8 +1,7 @@
 <template>
   <section
-    class="site-hero group relative overflow-hidden px-3 py-5 md:px-8 md:py-10"
+    class="site-hero relative overflow-hidden px-3 py-5 md:px-8 md:py-10"
   >
-    <VariantPicker v-bind="UI_VARIANT_PICKERS.hero"></VariantPicker>
     <div
       class="site-hero-inner relative z-20 mx-auto grid w-full max-w-7xl gap-4"
       :class="photo ? 'md:grid-cols-[1.2fr_1fr] md:items-center md:gap-7' : ''"
@@ -69,10 +68,8 @@
 import BreadcrumbsLayout from "#rc/components/layout/BreadcrumbsLayout.vue";
 import CtaButtonLayout from "#rc/components/layout/CtaButtonLayout.vue";
 import RuntimeTemplateLayout from "#rc/components/layout/RuntimeTemplateLayout.vue";
-import VariantPicker from "#rc/components/layout/VariantPicker.vue";
 import PostBiographyWriter from "#rc/components/post/PostBiographyWriter.vue";
 import PostRatingStrip from "#rc/components/post/PostRatingStrip.vue";
-import { UI_VARIANT_PICKERS } from "#shared/constants/ui-variant-options";
 
 const siteConfig = useSiteConfig();
 const { breadcrumbs, postDated } = usePost();

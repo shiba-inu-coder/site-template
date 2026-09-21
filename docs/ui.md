@@ -75,10 +75,11 @@ The stock Tailwind palette — `text-blue-500`, `text-slate-200`, `border-slate-
 **not allowed**: it moves with neither the brand nor the theme. The repo is currently free
 of it, and of raw `rgb()`/hex inside components.
 
-The template's own preset gallery (`shared/constants/ui-presets.ts`) mirrors this split:
-every family ships as a light/dark twin. Picking which twin a real site gets is the
-operator's call in the appspro panel's template editor — this repo has no switcher of its
-own.
+`shared/constants/ui-presets.ts` exports a single neutral entry, `blank` — the same colours
+a site with no theme record falls back to (`DEFAULT_UI_THEME_DARK`), just carrying its own
+`templateId`/`templateName`. Every real look comes from the operator painting the brand by
+hand in the panel's template editor; this repo ships no gallery of ready-made looks and no
+switcher of its own.
 
 ## UI tokens
 
@@ -302,23 +303,18 @@ the sidebar column exists at all) and `frameAttrs` (the `data-*` attributes for 
 root, see "Frame"). `setTheme()` replaces the theme in state; the head is described as a
 getter, so the style tag, `data-theme`, the font link and the attributes all repaint without
 a reload. `isPreview`, `panelOrigins` and `notifyPanel(message)` are the same preview-bridge
-plumbing the plugin uses for `ui-ready`/`ui-contrast`, exposed so `VariantPicker` (below)
-can reuse it instead of duplicating the origin check; `previewAttached` and
-`markPreviewAttached()` track whether the panel answered `ui-ready` with `ui-attach`, and
-`setVariant(group, key, value)` is what a picker click actually calls.
+plumbing the plugin uses for `ui-ready`/`ui-contrast`.
 
 ### Preview protocol
 
 The panel previews a theme by embedding the site and talking to it over `postMessage`.
 
-| Message                              | Direction    | When                                                                                                                             |
-| ------------------------------------ | ------------ | -------------------------------------------------------------------------------------------------------------------------------- |
-| `{ type: "ui-ready" }`               | site → panel | once, on mount                                                                                                                   |
-| `{ type: "ui-attach" }`              | panel → site | reply to `ui-ready` — this is what "live connection" means                                                                       |
-| `{ type: "ui-theme", theme }`        | panel → site | on every change the operator makes                                                                                               |
-| `{ type: "ui-manifest", settings }`  | panel → site | on every manifest field edit, debounced — merges `brand`/`layout`/`strings` into state, leaves `uiTheme`/`redirectsRoutes` alone |
-| `{ type: "ui-contrast", report }`    | site → panel | after each applied theme, from `contrastReport`                                                                                  |
-| `{ type: "ui-variant", key, value }` | site → panel | a `VariantPicker` click, on any page                                                                                             |
+| Message                             | Direction    | When                                                                                                                             |
+| ----------------------------------- | ------------ | -------------------------------------------------------------------------------------------------------------------------------- |
+| `{ type: "ui-ready" }`              | site → panel | once, on mount                                                                                                                   |
+| `{ type: "ui-theme", theme }`       | panel → site | on every change the operator makes                                                                                               |
+| `{ type: "ui-manifest", settings }` | panel → site | on every manifest field edit, debounced — merges `brand`/`layout`/`strings` into state, leaves `uiTheme`/`redirectsRoutes` alone |
+| `{ type: "ui-contrast", report }`   | site → panel | after each applied theme, from `contrastReport`                                                                                  |
 
 Two gates, both required: the URL carries `?preview=` (the same query the staging pass
 already uses) **and** `event.origin` is listed in `runtimeConfig.public.PANEL_ORIGINS`, a
@@ -326,25 +322,6 @@ comma-separated env value (`.env` locally, the site's Vault record in production
 a panel domain needs no rebuild). Without them a message is dropped: an unlisted origin —
 or the live URL of the same page — must not be able to repaint a production site. An empty
 `PANEL_ORIGINS` accepts nothing, which is the right default for a site nobody previews.
-`ui-variant` carries no `group` (`variants.*` vs `frame.*`) — the panel already knows which
-axis each `key` belongs to from its own theme editor (6a), and the site's own local apply
-(`setVariant`) gets it from the picker's own config instead of guessing from the key name.
-
-**The panelling picker.** `app/components/layout/VariantPicker.vue` renders a small
-fixed-style chip (deliberately outside the theme — always dark, always legible, the same
-reasoning as "status colours are neither brand nor theme") over a block on hover, one dot
-per option, with the current one filled; a click calls `useUiTheme().setVariant(group, key,
-value)`, which patches the theme locally and sends `{ type: "ui-variant", key, value }` to
-the panel. It only draws when `previewAttached` is true — a bare `?preview=` with nothing on
-the other end of the `postMessage` channel shows no chip, on any page. `shared/constants/
-ui-variant-options.ts` (`UI_VARIANT_PICKERS`) is the label/option table it reads from — one
-entry per shortcode plus `header`/`hero`/`sticky` (`frame.*`) and `footer`/`breadcrumbs`
-(`variants.*`, no record of their own). The picker is wired at the point each block actually
-renders: the ten shortcodes get it as a wrapper inserted into `RuntimeTemplateLayout.vue`'s
-`components` map (so a marker's own SFC is untouched), while `HeaderLayout.vue` and
-`StickyCtaLayout.vue` — both `position: fixed` — carry it inside their own root instead of an
-outer wrapper, because a non-fixed wrapper around a fixed element drifts away from it the
-moment the page scrolls and `group-hover` stops firing where the element actually is.
 
 ## Frame
 
@@ -729,15 +706,13 @@ single `RuntimeTemplateLayout` over `content`. Both fields are always populated 
 also assembles the sections into flat HTML — so a site that has not been rebuilt yet keeps
 rendering the same article from `content` and notices nothing.
 
-Because there is no outer container, `layout.width` means what it says: a `container` section
-gets a wrapping `<div>` with the container classes around the whole `<section>` (background
-included), a `full` one leaves that wrapper off and puts the same container classes on the
-`<section>`'s _inside_ instead, so the background goes edge-to-edge while the text stays in the
-column. No `100vw`, no negative margin, no sideways scroll — those exist only in the panel's
-fallback HTML, where the markup lives inside the shared container and has to fight its way out.
-The container classes themselves carry no horizontal padding any more — a section's own
-`padding.left`/`right` (px, operator-set) is what insets it, and inline `style="padding:…"`
-would silently win over a `px-*` class sitting on the same element regardless of source order.
+Every section renders inside the same `CONTAINER` wrapper no matter what `layout.width` says —
+`PostSections.vue` stopped reading `section.layout` altogether, and with it went the
+`container`/`full` branch and the inline `style="padding:…"`. `CONTAINER` carries its own
+horizontal padding again (`px-2.5 md:px-4 xl:px-0`), the same values `BasePostView.vue`'s
+legacy `content` path has always used. The old full-bleed trick (`100vw`, negative margins)
+still exists only in the panel's fallback HTML, where the markup lives inside the shared
+container and has to fight its way out — not on this path.
 
 Section bodies go through the same `RuntimeTemplateLayout`, so shortcodes work untouched:
 `shortcodesConfig` sits on the post as a whole and `uniqId` addresses a block across the

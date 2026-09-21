@@ -20,7 +20,6 @@ export default defineNuxtPlugin({
       isPreview,
       panelOrigins,
       notifyPanel,
-      markPreviewAttached,
     } = useUiTheme();
 
     // Фавикон приезжает public id Cloudinary, а не файлом: `public/favicon.ico`
@@ -101,13 +100,6 @@ export default defineNuxtPlugin({
     // с разрешённого домена перекрашивало бы боевую страницу.
     window.addEventListener("message", (event: MessageEvent) => {
       if (!isPreview.value || !panelOrigins.value.includes(event.origin)) {
-        return;
-      }
-
-      // Панель отвечает `ui-attach` на `ui-ready` — это и есть «живое
-      // соединение», от которого зависит панелька выбора варианта (5b).
-      if (event.data?.type === "ui-attach") {
-        markPreviewAttached();
         return;
       }
 
