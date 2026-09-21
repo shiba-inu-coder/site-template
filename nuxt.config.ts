@@ -153,7 +153,6 @@ export default defineNuxtConfig({
       CLOUDINARY_CLOUD_NAME,
       SITE_URL: process.env.SITE_URL,
       DOMAIN_NAME: process.env.DOMAIN_NAME,
-      PANEL_ORIGINS: process.env.PANEL_ORIGINS,
     },
   },
 

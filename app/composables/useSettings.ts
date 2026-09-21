@@ -25,21 +25,6 @@ export const useSettings = () => {
     settings.value = { ...emptySettings(), ...(data || {}) };
   };
 
-  // Не `setSettings`: тот подменяет объект целиком и обнулил бы `uiTheme` и
-  // `redirectsRoutes`, которых манифест-превью не касается.
-  const setBrandSettings = ({
-    brand,
-    layout,
-    strings,
-  }: Partial<Pick<ISettingPublic, "brand" | "layout" | "strings">> = {}) => {
-    settings.value = {
-      ...settings.value,
-      brand: brand ?? null,
-      layout: layout ?? null,
-      strings: strings ?? null,
-    };
-  };
-
   const setUiTheme = (theme: UiTheme | null) => {
     settings.value = { ...settings.value, uiTheme: theme };
   };
@@ -49,7 +34,6 @@ export const useSettings = () => {
     redirectsRoutes,
     uiTheme,
     setSettings,
-    setBrandSettings,
     setUiTheme,
   };
 };
