@@ -1,8 +1,7 @@
 // Значения, которые нужны браузеру: приложение читает их из public-части
 // конфига (`useRuntimeConfig().public`), и без второй, публичной копии клиент
-// останется без адреса сайта, его имени и разрешённых origin'ов панели
-// (плагин `ui-theme.ts` сверяет с ними `event.origin` входящего postMessage).
-export const PUBLIC_KEYS = ["SITE_URL", "DOMAIN_NAME", "PANEL_ORIGINS"];
+// останется без адреса сайта и его имени.
+export const PUBLIC_KEYS = ["SITE_URL", "DOMAIN_NAME"];
 
 // Второе имя для тех же значений. nuxt-site-config собирает site.url/site.name
 // из `runtimeConfig.site`, и sitemap со schema-org берут домен именно оттуда —

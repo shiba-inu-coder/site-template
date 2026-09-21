@@ -114,36 +114,6 @@ export const useUiTheme = () => {
     setUiTheme(isUiThemeConfigured(next) ? next : null);
   };
 
-  // Превью-мост с панелью (5b): `?preview=` в адресе — то же самое условие,
-  // на котором уже стоит слушатель `ui-theme` в плагине, здесь оно нужно и
-  // для отправки. Без него сообщения ушли бы с обычной боевой страницы.
-  const route = useRoute();
-
-  const isPreview = computed(() => Boolean(route.query.preview));
-
-  const panelOrigins = computed(() =>
-    String(runtimeConfig.public.PANEL_ORIGINS || "")
-      .split(",")
-      .map((origin) => origin.trim())
-      .filter(Boolean),
-  );
-
-  const notifyPanel = (message: Record<string, unknown>) => {
-    if (import.meta.server || !isPreview.value) {
-      return;
-    }
-
-    const target = window.parent !== window ? window.parent : window.opener;
-
-    if (!target) {
-      return;
-    }
-
-    for (const origin of panelOrigins.value) {
-      target.postMessage(message, origin);
-    }
-  };
-
   return {
     theme,
     mode,
@@ -154,8 +124,5 @@ export const useUiTheme = () => {
     frame,
     frameAttrs,
     setTheme,
-    isPreview,
-    panelOrigins,
-    notifyPanel,
   };
 };

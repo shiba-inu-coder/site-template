@@ -7,20 +7,11 @@ import { getCloudinaryBaseUrl } from "#rc/utils/get-cloudinary-base-url";
 export default defineNuxtPlugin({
   name: "ui-theme",
   enforce: "pre",
-  async setup(nuxtApp) {
+  async setup() {
     const runtimeConfig = useRuntimeConfig();
-    const { setSettings, setBrandSettings } = useSettings();
+    const { setSettings } = useSettings();
     const siteConfig = useSiteConfig();
-    const {
-      mode,
-      cssVars,
-      fontsHref,
-      contrast,
-      setTheme,
-      isPreview,
-      panelOrigins,
-      notifyPanel,
-    } = useUiTheme();
+    const { mode, cssVars, fontsHref } = useUiTheme();
 
     // Фавикон приезжает public id Cloudinary, а не файлом: `public/favicon.ico`
     // в шаблоне нет и панель его больше не коммитит. Пока id пуст, ссылки нет
@@ -90,38 +81,5 @@ export default defineNuxtPlugin({
     if (data.value) {
       setSettings(data.value);
     }
-
-    if (import.meta.server) {
-      return;
-    }
-
-    // Превью-адрес — единственное место, где страница слушается кого-то
-    // снаружи: без `?preview=` в URL сообщения игнорируются, иначе любое окно
-    // с разрешённого домена перекрашивало бы боевую страницу.
-    window.addEventListener("message", (event: MessageEvent) => {
-      if (!isPreview.value || !panelOrigins.value.includes(event.origin)) {
-        return;
-      }
-
-      // В отличие от `ui-theme`, ответа не шлёт: манифесту нечего вернуть
-      // панели — `ui-contrast` считается только от цветовой схемы темы.
-      if (event.data?.type === "ui-manifest") {
-        setBrandSettings(event.data.settings ?? {});
-        return;
-      }
-
-      if (event.data?.type !== "ui-theme") {
-        return;
-      }
-
-      setTheme(event.data.theme);
-      notifyPanel({ type: "ui-contrast", report: contrast.value });
-    });
-
-    nuxtApp.hook("app:mounted", () => {
-      if (isPreview.value) {
-        notifyPanel({ type: "ui-ready" });
-      }
-    });
   },
 });
