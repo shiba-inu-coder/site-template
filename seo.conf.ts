@@ -39,8 +39,6 @@ export const seoConfig = {
     lastUpdated: "Last updated",
     btnMoreInfo: "Learn more",
     playNow: "Play now",
-    menu: "Menu",
-    search: "Search",
 
     gdprBanner: {
       btnAgree: "I agree",

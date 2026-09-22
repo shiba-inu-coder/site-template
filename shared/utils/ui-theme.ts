@@ -99,7 +99,6 @@ export interface UiGeometry {
 // (см. `V 1e.макеты-пресетов-и-вариантов.md`). Этот этап их не читает и не
 // пишет в `resolveScheme`/`themeToCssVars`, только держит место в типе.
 export interface UiFrame {
-  header?: "classic" | "centered" | "compact" | "two-row" | "search";
   headerInverted?: boolean;
   hero?: "none" | "band" | "photo";
   heroStyle?: "radial" | "blobs" | "skew" | "warm" | "pale" | "solid" | "flat";
@@ -110,7 +109,6 @@ export interface UiFrame {
 }
 
 export interface UiVariants {
-  breadcrumbs?: string;
   ratingStrip?: string;
   toc?: string;
   textImage?: string;
@@ -121,7 +119,6 @@ export interface UiVariants {
   buttonRef?: string;
   biography?: string;
   contact?: string;
-  footer?: string;
 }
 
 export interface UiDecor {

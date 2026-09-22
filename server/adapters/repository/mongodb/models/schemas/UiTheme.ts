@@ -17,7 +17,6 @@ const SchemeSchema = new Schema(
 );
 
 const VARIANT_BLOCKS = [
-  "breadcrumbs",
   "ratingStrip",
   "toc",
   "textImage",
@@ -28,7 +27,6 @@ const VARIANT_BLOCKS = [
   "buttonRef",
   "biography",
   "contact",
-  "footer",
 ] as const;
 
 // Та же логика, что у SchemeSchema: блоки известны, strict: false тем не

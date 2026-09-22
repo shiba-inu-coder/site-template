@@ -7,13 +7,6 @@ export interface HeaderItem {
   children?: HeaderItem[];
 }
 
-// Служебная полоса шапки `two-row`: перечисление слева (18+, лицензия,
-// ответственная игра) и одна заметка, прижатая вправо — язык в макете.
-export interface HeaderTopbar {
-  items: string[];
-  note: string;
-}
-
 // Кнопка шапки; она же запасной CTA для хиро и липкой панели, когда на
 // странице нет своей. Пустой `link` означает реф-ссылку бренда, а не
 // внутренний адрес.
@@ -54,7 +47,6 @@ export interface SiteBrand {
 export interface SiteLayout {
   header: {
     items: HeaderItem[];
-    topbar: HeaderTopbar;
     cta: HeaderCta;
   };
   footer: {
@@ -74,8 +66,6 @@ export interface SiteStrings {
   lastUpdated: string;
   btnMoreInfo: string;
   playNow: string;
-  menu: string;
-  search: string;
 
   gdprBanner: {
     btnAgree: string;

@@ -46,7 +46,6 @@ const SITE_CONFIG_STRUCTURE: SiteConfig = {
   layout: {
     header: {
       items: [],
-      topbar: { items: [], note: "" },
       cta: { label: "", link: "", note: "" },
     },
     footer: {

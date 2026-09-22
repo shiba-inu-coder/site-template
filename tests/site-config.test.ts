@@ -14,7 +14,6 @@ const template: DeepPartial<SiteConfig> = {
   layout: {
     header: {
       items: [],
-      topbar: { items: [], note: "" },
       cta: { label: "", link: "", note: "" },
     },
     footer: { title: "", body: "", links: [], legalLogos: [] },
@@ -44,7 +43,6 @@ const buildMessageSettings = (): ISettingPublic => ({
           position: "left",
         },
       ],
-      topbar: { items: ["18+"], note: "RU" },
       cta: { label: "Play", link: "https://example.com/go", note: "" },
     },
     footer: {

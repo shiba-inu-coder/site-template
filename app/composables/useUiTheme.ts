@@ -84,7 +84,6 @@ export const useUiTheme = () => {
       "data-borders": value.geometry?.borders,
       "data-shadow": value.geometry?.shadow,
       "data-density": value.geometry?.density,
-      "data-header": value.frame?.header,
       "data-header-inverted": value.frame?.headerInverted,
       "data-hero": value.frame?.hero,
       "data-hero-style": value.frame?.heroStyle,
