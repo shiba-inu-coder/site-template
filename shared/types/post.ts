@@ -3,10 +3,11 @@ import type { Document, Model, ObjectId } from "mongoose";
 export interface PostGridCard {
   data: {
     uniqId: string;
-    // Варианты вёрстки: text | image-caption | image-title-text | horizontal |
-    // offer. "1" и "2" — значения дошорткодовой эпохи, компонент переводит их
-    // в image-caption и image-title-text.
+    // Состав карточки: image | image-caption | image-title-text. Старые
+    // значения ("1", "2", text, offer, horizontal) компонент переводит сам.
     variant: string;
+    // Картинка слева от текста, а не над ним — у любого состава с текстом.
+    horizontal?: boolean;
     refLink: string;
     refLinkType: RefLinkType;
     cardsPerRowDesktop: string;
@@ -19,11 +20,6 @@ export interface PostGridCard {
       buttonText: string;
       refLink: string;
       refLinkType: RefLinkType;
-      // Только вариант offer: лого текстом (иначе рисуется img), оценка 0–5 и
-      // строка бонуса.
-      logo?: string;
-      score?: string;
-      bonus?: string;
       img: {
         path: string;
         alt: string;
@@ -35,16 +31,14 @@ export interface PostGridCard {
 export interface PostTextImage {
   data: {
     uniqId: string;
-    variant?: string;
     text: string;
     img: {
       path: string;
       alt: string;
     } | null;
     imgHint: string;
-    imgSide: "left" | "right" | "full";
-    imgMobileSide: "top" | "bottom";
-    imgColumn: "33" | "50";
+    // full — значение старой записи, компонент читает его как top.
+    imgSide: "left" | "right" | "top" | "bottom" | "full";
     imgRoundCorner: string;
     // Из дошорткодовой эпохи: кнопка была отдельным полем записи, пока
     // текст не поглотил её в шорткоде 2a. Старые записи ещё несут оба поля.
@@ -56,7 +50,6 @@ export interface PostTextImage {
 export interface PostProsCons {
   data: {
     uniqId: string;
-    variant?: string;
     data: {
       prosList: string[];
       consList: string[];
@@ -166,9 +159,6 @@ export interface Column {
 export interface PostDataTable {
   data: {
     uniqId: string;
-    variant?: string;
-    // Модификаторы поверх варианта, а не варианты: любой из них применим к
-    // classic и ranking одинаково.
     density?: string;
     head?: string;
     striped?: boolean;
@@ -184,18 +174,6 @@ export interface PostDataTable {
 export interface PostFaq {
   variant?: string;
   data: { label: string; value: string }[];
-}
-
-export interface PostRatingStripFact {
-  label: string;
-  value: string;
-}
-
-// Синглтон: полоса оценки идёт под H1 и в статье одна.
-export interface PostRatingStrip {
-  variant?: string;
-  score?: number;
-  facts?: PostRatingStripFact[];
 }
 
 export interface PostBanner {
@@ -316,7 +294,6 @@ export interface PostMiniBookmakerReview<E = ObjectId, B = ObjectId> {
 export interface PostBiographyWriter<W> {
   data: {
     uniqId: string;
-    variant?: string;
     data: {
       writer: W;
     };
@@ -378,7 +355,6 @@ export interface IPost<
     biographyWriters: PostBiographyWriter<BiographyWriter>[];
     tableContent: PostTableContent;
     textImages: PostTextImage[];
-    ratingStrip: PostRatingStrip;
   };
   isDeleted: boolean;
   createdAt?: Date;

@@ -93,6 +93,8 @@ export interface SiteStrings {
   };
 
   contacts: {
+    title: string;
+    subtitle: string;
     nameLabel: string;
     emailLabel: string;
     messageLabel: string;

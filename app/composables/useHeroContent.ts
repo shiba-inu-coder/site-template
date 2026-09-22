@@ -3,18 +3,13 @@ import {
   removeShortcodeMarkers,
 } from "#shared/utils/shortcode-markers";
 
-const HERO_MARKERS = [
-  "rating-strip",
-  "biography-writer",
-  "text-image",
-  "button-ref",
-] as const;
+const HERO_MARKERS = ["biography-writer", "text-image", "button-ref"] as const;
 
 /**
  * Что из лида статьи уезжает в хиро-полосу. Решение принимается один раз и
  * читается двумя: `HeroLayout` рисует перенесённое, `PostSections` рисует лид
- * уже без этого и без своего H1 — иначе заголовок и полоса оценки оказались бы
- * на странице дважды.
+ * уже без этого и без своего H1 — иначе заголовок и автор оказались бы на
+ * странице дважды.
  */
 export const useHeroContent = () => {
   const { sections, getShortcode } = usePost();
@@ -40,7 +35,6 @@ export const useHeroContent = () => {
   const markerOf = (name: (typeof HERO_MARKERS)[number]) =>
     markers.value.find((marker) => marker.name === name) || null;
 
-  const rating = computed(() => markerOf("rating-strip"));
   const biography = computed(() => markerOf("biography-writer"));
 
   // Блок «картинка + текст» уезжает в хиро только вместе с картинкой: в
@@ -70,7 +64,6 @@ export const useHeroContent = () => {
 
   const movedNames = computed(() =>
     [
-      rating.value,
       biography.value,
       photo.value ? photoMarker.value : null,
       button.value,
@@ -88,7 +81,6 @@ export const useHeroContent = () => {
     style,
     leadTitle,
     leadBody,
-    rating,
     biography,
     photo,
     button,

@@ -1,30 +1,8 @@
 <template>
   <div>
-    <PostDataTableRows
-      v-if="variant === 'rows'"
-      :columns="data.columns"
-      :rows="formatedRows"
-      :density="density"
-    />
-    <PostDataTableCompare
-      v-else-if="variant === 'compare'"
-      :columns="data.columns"
-      :rows="formatedRows"
-      :btn-name="data.btnName"
-      :ref-link="data.refLink"
-    />
-    <PostDataTableKeyValue
-      v-else-if="variant === 'key-value'"
-      :columns="data.columns"
-      :rows="formatedRows"
-      :density="density"
-      :striped="striped"
-    />
     <PostDataTableGrid
-      v-else
       :columns="data.columns"
       :rows="formatedRows"
-      :variant="variant"
       :density="density"
       :head="head"
       :striped="striped"
@@ -57,10 +35,6 @@
 
 <script setup lang="ts">
 import PostDataTableGrid from "./components/PostDataTableGrid.vue";
-import PostDataTableRows from "./components/PostDataTableRows.vue";
-import PostDataTableCompare from "./components/PostDataTableCompare.vue";
-import PostDataTableKeyValue from "./components/PostDataTableKeyValue.vue";
-import { pickVariant } from "#shared/utils/block-variant";
 
 const siteConfig = useSiteConfig();
 
@@ -72,15 +46,6 @@ const { uniqId } = defineProps({
 });
 
 const { getShortcode } = usePost();
-const { variantFor } = useUiTheme();
-
-const VARIANTS = [
-  "classic",
-  "ranking",
-  "rows",
-  "compare",
-  "key-value",
-] as const;
 
 // Маркер в статье может пережить свою запись в конфиге.
 const FALLBACK: PostDataTable = {
@@ -97,10 +62,6 @@ const FALLBACK: PostDataTable = {
 
 const data = computed(
   () => (getShortcode({ uniqId, shortcode: "dataTables" }) || FALLBACK).data,
-);
-
-const variant = computed(() =>
-  pickVariant(VARIANTS, "classic", data.value.variant, variantFor("dataTable")),
 );
 
 // Модификаторы живут на записи, а не в теме: одна таблица в статье бывает

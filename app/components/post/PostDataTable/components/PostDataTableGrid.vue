@@ -8,14 +8,6 @@
       <thead v-if="showHead">
         <tr>
           <th
-            v-if="isRanking"
-            scope="col"
-            class="w-px text-center text-step-6"
-            :class="[headClasses, headPadding]"
-          >
-            #
-          </th>
-          <th
             v-for="(column, columnIndex) in columns"
             :key="columnIndex"
             scope="col"
@@ -33,24 +25,10 @@
           :class="rowClasses(i)"
         >
           <td
-            v-if="isRanking"
-            class="w-px text-center font-bold text-step-4 text-ui-heading"
-            :class="[cellPadding, highlightClass(i), borderClass(i)]"
-          >
-            {{ i + 1 }}
-          </td>
-          <td
             v-for="(column, columnIndex) in columns"
             :key="columnIndex"
             class="break-words text-step-6"
-            :class="[
-              cellPadding,
-              highlightClass(i),
-              borderClass(i),
-              isRanking && columnIndex === 0
-                ? 'font-bold text-ui-heading'
-                : undefined,
-            ]"
+            :class="[cellPadding, borderClass(i)]"
           >
             <PostDataTableRuntime :template="row[column.name]" />
           </td>
@@ -66,7 +44,6 @@ import PostDataTableRuntime from "../PostDataTableRuntime/PostDataTableRuntime.v
 const {
   columns,
   rows,
-  variant,
   density = "regular",
   head = "solid",
   striped = true,
@@ -74,7 +51,6 @@ const {
 } = defineProps<{
   columns: Column[];
   rows: Row[];
-  variant: string;
   density?: string;
   head?: string;
   striped?: boolean;
@@ -98,10 +74,8 @@ const CELL_PADDING: Record<string, string> = {
   compact: "px-2 py-1",
 };
 
-const isRanking = computed(() => variant === "ranking");
-
-// Два выключателя шапки живут рядом: showTableHead — поле записи с той эпохи,
-// когда вариантов не было, head: none — модификатор варианта. Гасит любой.
+// Два выключателя шапки живут рядом: showTableHead — поле записи старше
+// модификаторов, head: none — модификатор. Гасит любой.
 const showHead = computed(() => showTableHead && head !== "none");
 
 const headClasses = computed(() => HEAD_CLASSES[head] ?? HEAD_CLASSES.solid);
@@ -114,11 +88,6 @@ const cellPadding = computed(
 
 const rowClasses = (index: number) =>
   striped && index % 2 !== 0 ? "bg-ui-table-row-alt" : "bg-ui-table-row";
-
-// Подсветка топа — заливка поверх фона строки, а не вместо него: 16 % маркера
-// на том же ряду, что и остальные, иначе первая строка выпала бы из полос.
-const highlightClass = (index: number) =>
-  isRanking.value && index === 0 ? "bg-ui-marker/16" : undefined;
 
 const borderClass = (index: number) =>
   rows.length - 1 !== index ? "border-b border-ui-table-row-alt" : undefined;

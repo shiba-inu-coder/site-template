@@ -16,23 +16,11 @@ const SchemeSchema = new Schema(
   { _id: false, strict: false },
 );
 
-const VARIANT_BLOCKS = [
-  "breadcrumbs",
-  "ratingStrip",
-  "toc",
-  "textImage",
-  "dataTable",
-  "gridCards",
-  "prosCons",
-  "faq",
-  "buttonRef",
-  "biography",
-  "contact",
-  "footer",
-] as const;
+const VARIANT_BLOCKS = ["toc", "gridCards", "faq", "buttonRef"] as const;
 
 // Та же логика, что у SchemeSchema: блоки известны, strict: false тем не
-// менее не роняет вариант нового блока, добавленного позже 4c/4e.
+// менее не роняет ни вариант блока, добавленного позже, ни ключ блока,
+// который вариантов больше не имеет, а в старой теме ещё лежит.
 const VariantsSchema = new Schema(
   Object.fromEntries(VARIANT_BLOCKS.map((block) => [block, { type: String }])),
   { _id: false, strict: false },

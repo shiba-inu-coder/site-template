@@ -109,19 +109,13 @@ export interface UiFrame {
   sticky?: "none" | "bar" | "button";
 }
 
+// Вариант темы остался у четырёх блоков; остальные рисуются одним видом, и
+// их старые ключи в базе просто не читаются.
 export interface UiVariants {
-  breadcrumbs?: string;
-  ratingStrip?: string;
   toc?: string;
-  textImage?: string;
-  dataTable?: string;
   gridCards?: string;
-  prosCons?: string;
   faq?: string;
   buttonRef?: string;
-  biography?: string;
-  contact?: string;
-  footer?: string;
 }
 
 export interface UiDecor {

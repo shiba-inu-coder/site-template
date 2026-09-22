@@ -52,7 +52,7 @@
             size="medium"
             full-width
             container-class
-            variant="soft"
+            variant="solid"
             :padding="false"
             component-name="CasinosRatingShortcode"
             context="Casino Rating card in Post"

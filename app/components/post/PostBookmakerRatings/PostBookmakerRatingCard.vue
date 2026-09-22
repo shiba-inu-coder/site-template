@@ -54,7 +54,7 @@
             size="medium"
             full-width
             container-class
-            variant="soft"
+            variant="solid"
             :padding="false"
             component-name="BookmakersRatingShortcode"
             context="Bookmaker Rating card in Post"

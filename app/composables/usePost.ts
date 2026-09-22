@@ -24,11 +24,6 @@ export const usePost = <E>() => {
   const createdAt = computed(() => state.value.currentPost.createdAt);
   const updatedAt = computed(() => state.value.currentPost.updatedAt);
   const faq = computed(() => state.value.currentPost.shortcodesConfig.faq);
-  // Синглтон: статья, написанная до появления блока, поля в конфиге не несёт
-  // вовсе — пустой объект вместо undefined держит шаблон от падения.
-  const ratingStrip = computed(
-    () => state.value.currentPost.shortcodesConfig.ratingStrip ?? {},
-  );
   const breadcrumbs = computed(() => state.value.currentPost.breadcrumbs);
   const postDated = computed(
     () =>
@@ -137,7 +132,6 @@ export const usePost = <E>() => {
     breadcrumbs,
     getShortcode,
     faq,
-    ratingStrip,
     title,
     updatedAt,
     createdAt,

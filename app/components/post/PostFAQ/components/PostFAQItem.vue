@@ -32,37 +32,6 @@
   </div>
 
   <div
-    v-else-if="variant === 'numbered'"
-    class="relative py-3.5 pl-11 border-b border-ui-panel-border last:border-b-0"
-  >
-    <span class="absolute left-0 top-3.5 font-bold text-step-6 text-ui-marker">
-      {{ number }}
-    </span>
-    <h3 class="my-0! text-left! text-step-6">
-      {{ faqItem.label }}
-    </h3>
-    <div
-      class="mt-1.5 text-step-7"
-      v-html="safeHTMLWrap(html)"
-    ></div>
-  </div>
-
-  <div
-    v-else-if="variant === 'chat'"
-    class="grid gap-1.5"
-  >
-    <h3
-      class="my-0! text-left! justify-self-end max-w-[80%] px-3.5 py-2 text-step-7 bg-ui-cta-bg text-ui-cta-text rounded-primary rounded-br-none"
-    >
-      {{ faqItem.label }}
-    </h3>
-    <div
-      class="max-w-[80%] px-3.5 py-2.5 text-step-7 bg-ui-panel-bg border border-ui-panel-border rounded-primary rounded-bl-none"
-      v-html="safeHTMLWrap(html)"
-    ></div>
-  </div>
-
-  <div
     v-else
     class="p-4 bg-ui-panel-bg border border-ui-panel-border rounded-primary"
   >
@@ -105,8 +74,6 @@ const html = computed(() =>
     ? faqItem.value
     : `<p class="m-0! text-step-7">${faqItem.value}</p>`,
 );
-
-const number = computed(() => String(index + 1).padStart(2, "0"));
 
 // Первый вопрос раскрыт: свёрнутый целиком аккордеон не показывает, что он
 // вообще раскрывается. Остальные держат ответ в DOM (v-show), а не выкидывают

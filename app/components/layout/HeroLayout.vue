@@ -41,12 +41,10 @@
           {{ leadTitle }}
         </h1>
 
-        <PostRatingStrip v-if="rating" />
-
         <PostBiographyWriter
           v-if="biography"
           :uniq-id="biography.uniqId"
-          variant="inline"
+          compact
         />
 
         <div v-if="button">
@@ -69,14 +67,13 @@ import BreadcrumbsLayout from "#rc/components/layout/BreadcrumbsLayout.vue";
 import CtaButtonLayout from "#rc/components/layout/CtaButtonLayout.vue";
 import RuntimeTemplateLayout from "#rc/components/layout/RuntimeTemplateLayout.vue";
 import PostBiographyWriter from "#rc/components/post/PostBiographyWriter.vue";
-import PostRatingStrip from "#rc/components/post/PostRatingStrip.vue";
 
 const siteConfig = useSiteConfig();
 const { breadcrumbs, postDated } = usePost();
 // Картинка хиро — не своя, а та, что редактор поставил в лид блоком
 // «картинка + текст»: отдельного поля под обложку в шаблоне нет. На телефоне
 // она идёт сверху, на десктопе уходит во вторую колонку.
-const { leadTitle, rating, biography, photo, button } = useHeroContent();
+const { leadTitle, biography, photo, button } = useHeroContent();
 
 const cta = computed(() => siteConfig.value.layout.header.cta);
 </script>
