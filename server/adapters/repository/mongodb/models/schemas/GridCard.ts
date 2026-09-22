@@ -23,6 +23,10 @@ export const GridCardSchema = [
         enum: ["casino", "bookmaker"],
         default: "casino",
       },
+      horizontal: {
+        type: Boolean,
+        default: false,
+      },
       cardsPerRowDesktop: {
         type: String,
         default: "1",
@@ -67,8 +71,8 @@ export const GridCardSchema = [
             enum: ["casino", "bookmaker"],
             default: "casino",
           },
-          // Вариант offer: лого текстом (иначе рисуется img), оценка 0–5,
-          // строка бонуса.
+          // Поля бывшего варианта offer: сайт их больше не читает, а панель
+          // пишет, пока не обновлена, — база у них общая.
           logo: {
             type: String,
             trim: true,

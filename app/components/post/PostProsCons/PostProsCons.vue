@@ -3,7 +3,6 @@
     v-if="entry"
     :pros-list="entry.data.data.prosList"
     :cons-list="entry.data.data.consList"
-    :variant="entry.data.variant"
   />
 </template>
 <script lang="ts" setup>

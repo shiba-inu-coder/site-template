@@ -8,8 +8,8 @@ export const TextImageSchema = [
         required: true,
         trim: true,
       },
-      // Вариант вёрстки: split | overlay | card | caption | banner. Пусто —
-      // берётся из темы сайта.
+      // Блок теперь одного вида, и сайт поле не читает; панель пишет его,
+      // пока не обновлена, а база у них общая.
       variant: {
         type: String,
         default: "",
@@ -43,14 +43,15 @@ export const TextImageSchema = [
         trim: true,
         default: "",
       },
-      // Сторона и ширина колонки на десктопе (33/50 %), либо full — одна
-      // колонка на всю ширину и imgColumn не участвует. На мобиле только
-      // порядок (imgMobileSide), колонка всегда одна.
+      // full — значение старой записи, сайт читает его как top.
       imgSide: {
         type: String,
-        enum: ["left", "right", "full"],
+        enum: ["left", "right", "top", "bottom", "full"],
         default: "right",
       },
+      // Мобильная сторона и ширина колонки ушли вместе с вариантами: сбоку
+      // картинка всегда половина, на телефоне всегда сверху. Сайт их не
+      // читает, панель пишет, пока не обновлена.
       imgMobileSide: {
         type: String,
         enum: ["top", "bottom"],

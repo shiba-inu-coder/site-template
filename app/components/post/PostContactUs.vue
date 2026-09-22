@@ -1,25 +1,30 @@
 <template>
   <div class="max-w-340 mx-auto flex flex-col items-center my-5">
-    <div
-      class="contact-form max-w-[850px] w-full"
-      :class="WRAPPER_CLASSES[variant]"
+    <h3
+      v-if="strings.title"
+      class="mt-0! mb-2! text-center text-step-3"
     >
-      <div
-        v-if="variant === 'split' && siteConfig.site.name"
-        class="content-start"
-      >
-        <h3 class="mt-0! text-step-4">{{ siteConfig.site.name }}</h3>
-      </div>
+      {{ strings.title }}
+    </h3>
+    <p
+      v-if="strings.subtitle"
+      class="mt-0 mb-5 text-center text-step-7 text-ui-muted"
+    >
+      {{ strings.subtitle }}
+    </p>
 
+    <div
+      class="contact-form max-w-[850px] w-full flex flex-col border-2 border-ui-input-border p-4 rounded-primary bg-ui-panel-bg sm:p-6 lg:p-8"
+    >
       <form
         class="w-full space-y-4"
         @submit.prevent
       >
         <div>
           <label
-            for="firstname-contacts-1"
+            for="name-contacts-1"
             class="block mb-2 text-step-8 font-medium"
-            >{{ siteConfig.translates.contacts.nameLabel }}</label
+            >{{ strings.nameLabel }}</label
           >
           <input
             id="name-contacts-1"
@@ -34,7 +39,7 @@
           <label
             for="email-contacts-1"
             class="block mb-2 text-step-8 font-medium"
-            >{{ siteConfig.translates.contacts.emailLabel }}</label
+            >{{ strings.emailLabel }}</label
           >
           <input
             id="email-contacts-1"
@@ -47,7 +52,7 @@
           <span
             v-if="!isValidEmail"
             class="text-step-9 mt-1 text-status-negative"
-            >{{ siteConfig.translates.contacts.invalidEmail }}</span
+            >{{ strings.invalidEmail }}</span
           >
         </div>
 
@@ -55,7 +60,7 @@
           <label
             for="message-contacts-1"
             class="block mb-2 text-step-8 font-medium"
-            >{{ siteConfig.translates.contacts.messageLabel }}</label
+            >{{ strings.messageLabel }}</label
           >
           <textarea
             id="message-contacts-1"
@@ -72,7 +77,7 @@
             type="submit"
             class="rounded-primary px-3 py-2.5 justify-center font-medium inline-flex items-center gap-x-2 whitespace-pre-wrap focus:outline-none focus:ring-2 text-center border border-transparent bg-ui-cta-bg text-ui-cta-text hover:bg-ui-cta-hover disabled:opacity-50 disabled:pointer-events-none"
           >
-            {{ siteConfig.translates.contacts.submit }}
+            {{ strings.submit }}
           </button>
         </div>
       </form>
@@ -80,31 +85,9 @@
   </div>
 </template>
 <script setup lang="ts">
-import { pickVariant } from "#shared/utils/block-variant";
-
-// У контактов нет своей записи в конфиге статьи: форма одна на сайт, и
-// вариант ей в норме задаёт только тема. Проп — исключение для `/ui` (5b),
-// где библиотека вариантов показывает все три сразу, той же формой.
-const { variant: forcedVariant = "" } = defineProps<{
-  variant?: string;
-}>();
-
 const siteConfig = useSiteConfig();
 
-const { variantFor } = useUiTheme();
-
-const VARIANTS = ["card", "plain", "split"] as const;
-
-const WRAPPER_CLASSES: Record<(typeof VARIANTS)[number], string> = {
-  card: "flex flex-col border-2 border-ui-input-border p-4 rounded-primary bg-ui-panel-bg sm:p-6 lg:p-8",
-  plain: "flex flex-col",
-  split:
-    "grid gap-6 p-5 bg-ui-card-bg border border-ui-card-border rounded-primary md:grid-cols-[1fr_1.2fr]",
-};
-
-const variant = computed(() =>
-  pickVariant(VARIANTS, "card", forcedVariant, variantFor("contact")),
-);
+const strings = computed(() => siteConfig.value.translates.contacts);
 
 const form = ref({
   name: "",

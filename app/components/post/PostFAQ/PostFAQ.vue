@@ -16,35 +16,18 @@
 import PostFAQItem from "./components/PostFAQItem.vue";
 import { pickVariant } from "#shared/utils/block-variant";
 
-// FAQ — синглтон без своего uniqId, но `/ui` (5b) должен показать все пять
-// вариантов сразу поверх одних и тех же вопросов: проп `variant` бьёт и
-// запись, и тему — тот же приём, что у `PostBiographyWriter`.
-const { variant: forcedVariant = "" } = defineProps<{
-  variant?: string;
-}>();
-
 const { faq } = usePost();
 const { variantFor } = useUiTheme();
 
-const VARIANTS = ["list", "accordion", "numbered", "grid", "chat"] as const;
+const VARIANTS = ["list", "accordion"] as const;
 
 const CONTAINER_CLASSES: Record<(typeof VARIANTS)[number], string> = {
   list: "grid gap-3",
   accordion: "grid gap-2",
-  // Разделители рисуют сами вопросы — зазор между ними разорвал бы линию.
-  numbered: "grid",
-  grid: "grid gap-3 md:grid-cols-2",
-  chat: "grid gap-4",
 };
 
 const variant = computed(() =>
-  pickVariant(
-    VARIANTS,
-    "list",
-    forcedVariant,
-    faq.value.variant,
-    variantFor("faq"),
-  ),
+  pickVariant(VARIANTS, "list", faq.value.variant, variantFor("faq")),
 );
 
 const containerClasses = computed(() => CONTAINER_CLASSES[variant.value]);

@@ -8,13 +8,13 @@ export const DataTableSchema = [
         required: true,
         trim: true,
       },
-      // Вариант вёрстки: classic | ranking | rows | compare | key-value.
+      // Блок теперь одного вида, и сайт поле не читает; панель пишет его,
+      // пока не обновлена, а база у них общая.
       variant: {
         type: String,
         default: "",
         trim: true,
       },
-      // Модификаторы поверх варианта, а не варианты.
       density: {
         type: String,
         enum: ["compact", "regular", ""],

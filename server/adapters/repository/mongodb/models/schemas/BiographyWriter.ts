@@ -10,6 +10,8 @@ export const BiographyWriterSchema = [
         type: String,
         required: true,
       },
+      // Блок теперь одного вида, и сайт поле не читает; панель пишет его,
+      // пока не обновлена, а база у них общая.
       variant: {
         type: String,
         default: "",

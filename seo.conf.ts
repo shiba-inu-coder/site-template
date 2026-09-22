@@ -58,6 +58,10 @@ export const seoConfig = {
     },
 
     contacts: {
+      // Пусто нарочно: над формой это необязательные строки, и английский
+      // дефолт на сайте с другим языком хуже, чем никакого.
+      title: "",
+      subtitle: "",
       nameLabel: "Full name *",
       emailLabel: "E-mail *",
       messageLabel: "Message *",

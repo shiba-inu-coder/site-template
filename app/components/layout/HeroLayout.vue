@@ -44,7 +44,7 @@
         <PostBiographyWriter
           v-if="biography"
           :uniq-id="biography.uniqId"
-          variant="inline"
+          compact
         />
 
         <div v-if="button">

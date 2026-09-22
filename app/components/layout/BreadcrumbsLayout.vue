@@ -72,13 +72,10 @@ const { breadcrumbs } = defineProps<{
 }>();
 
 const siteConfig = useSiteConfig();
-const { variantFor } = useUiTheme();
 
 const VARIANTS = ["slash", "pills", "back"] as const;
 
-const variant = computed(() =>
-  pickVariant(VARIANTS, "slash", variantFor("breadcrumbs")),
-);
+const variant = computed(() => pickVariant(VARIANTS, "slash"));
 
 // Первую крошку строит сервер из `breadcrumbTitle` главной страницы, а его
 // там может не быть вовсе — тогда подпись даёт конфиг сайта.

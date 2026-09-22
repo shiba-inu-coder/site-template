@@ -161,13 +161,10 @@ import { logoSize } from "#rc/utils/logo-size";
 import { pickVariant } from "#shared/utils/block-variant";
 
 const siteConfig = useSiteConfig();
-const { variantFor } = useUiTheme();
 
 const VARIANTS = ["columns", "minimal", "centered", "disclaimer"] as const;
 
-const variant = computed(() =>
-  pickVariant(VARIANTS, "columns", variantFor("footer")),
-);
+const variant = computed(() => pickVariant(VARIANTS, "columns"));
 
 const links = computed(() => siteConfig.value.layout.footer.links || []);
 const legalLogos = computed(
