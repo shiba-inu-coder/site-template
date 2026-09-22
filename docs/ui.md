@@ -101,8 +101,8 @@ brand or surface ref it resolves to, the same string `shared/utils/ui-theme.ts` 
 | ------------------ | ------------- | ---------------------------------- |
 | `ui-page-bg`       | `primary-300` | page/layout background             |
 | `ui-header-bg`     | `primary-300` | `HeaderLayout`, its dropdown panel |
-| `ui-footer-bg`     | `primary-200` | footer links row                   |
-| `ui-footer-bg-alt` | `primary-300` | footer bottom row (title + logo)   |
+| `ui-footer-bg`     | `primary-200` | footer background                  |
+| `ui-footer-bg-alt` | `primary-300` | footer copyright line              |
 
 | Token               | Default       | Role                                              |
 | ------------------- | ------------- | ------------------------------------------------- |
@@ -178,7 +178,7 @@ UiTheme = {
   type: { display: { family, weight?, case?, tracking? }, body: { family }, scale?, h1Align? },
   geometry: { radius, borders?, shadow?, density? },
   variants: { toc?, gridCards?, faq?, buttonRef? }, // see "Shortcodes"
-  frame: { header?, headerInverted?, hero?, heroStyle?, sidebar?, bands?, width?, sticky? },
+  frame: { headerInverted?, hero?, heroStyle?, sidebar?, bands?, width?, sticky? },
   decor: { h2?, bg?, img?, btn? }, accents: { badge?, big? }, // see "Frame"
   updatedAt,
 }
@@ -218,11 +218,11 @@ bypassing the public settings route and its cache entirely.
 
 Three subdocuments carry it (`server/adapters/repository/mongodb/models/schemas/`):
 
-| Field              | Schema       | Holds                                                                                                             |
-| ------------------ | ------------ | ----------------------------------------------------------------------------------------------------------------- |
-| `settings.brand`   | `Brand.ts`   | `name`, `lang`, `brandSlug`, `logo {src,alt,width,height}`, `favicon {src}`, `imgRoundCorner`                     |
-| `settings.layout`  | `Layout.ts`  | `header {items, topbar, cta}`, `footer {title, body, links, legalLogos, paymentLogos}`, `breadcrumbs {homeLabel}` |
-| `settings.strings` | `Strings.ts` | the whole `seoConfig.translates` tree                                                                             |
+| Field              | Schema       | Holds                                                                                                     |
+| ------------------ | ------------ | --------------------------------------------------------------------------------------------------------- |
+| `settings.brand`   | `Brand.ts`   | `name`, `lang`, `brandSlug`, `logo {src,alt,width,height}`, `favicon {src}`, `imgRoundCorner`             |
+| `settings.layout`  | `Layout.ts`  | `header {items, cta}`, `footer {title, body, links, legalLogos, paymentLogos}`, `breadcrumbs {homeLabel}` |
+| `settings.strings` | `Strings.ts` | the whole `seoConfig.translates` tree                                                                     |
 
 `Strings.ts` declares **no** keys and is `strict: false` on purpose: the key set is the
 panel's (`seo-conf-defaults.js`), it grows there, and the site's image does not redeploy in
@@ -326,11 +326,13 @@ or the live URL of the same page — must not be able to repaint a production si
 
 ## Frame
 
-**The page around the article is a set of variants, not a fixed layout.** Which one a site
-draws comes from `uiTheme.frame`/`decor`/`type`/`geometry`, and it reaches the CSS as
-`data-*` attributes on the page root — `<div id="site">` in `layouts/default.vue` **and in
-`error.vue`**, because a 404 is not drawn by the layout and would otherwise lose the frame.
-`useUiTheme().frameAttrs` builds the object; the template just `v-bind`s it.
+**The page around the article is a set of variants, not a fixed layout** — except for the
+header, the breadcrumbs and the footer, which have one look each and no theme key (see below).
+Which variant a site draws comes from `uiTheme.frame`/`decor`/`type`/`geometry`, and it
+reaches the CSS as `data-*` attributes on the page root — `<div id="site">` in
+`layouts/default.vue` **and in `error.vue`**, because a 404 is not drawn by the layout and
+would otherwise lose the frame. `useUiTheme().frameAttrs` builds the object; the template
+just `v-bind`s it.
 
 | Attribute                       | Axis                            | Values                                                          | Without a theme |
 | ------------------------------- | ------------------------------- | --------------------------------------------------------------- | --------------- |
@@ -340,7 +342,6 @@ draws comes from `uiTheme.frame`/`decor`/`type`/`geometry`, and it reaches the C
 | `data-borders`                  | `geometry.borders`              | `0` / `1` / `2`                                                 | `1`             |
 | `data-shadow`                   | `geometry.shadow`               | `none` / `soft` / `glow`                                        | `none`          |
 | `data-width`                    | `frame.width`                   | `narrow` / `wide`                                               | `wide`          |
-| `data-header`                   | `frame.header`                  | `classic` / `centered` / `compact` / `two-row` / `search`       | `classic`       |
 | `data-header-inverted`          | `frame.headerInverted`          | `true` / `false`                                                | `false`         |
 | `data-hero` / `data-hero-style` | `frame.hero`, `frame.heroStyle` | `none`/`band`/`photo`; `radial`…`flat`                          | `none`          |
 | `data-sidebar`                  | `frame.sidebar`                 | `none` / `toc` / `toc-offer`                                    | `none`          |
@@ -366,12 +367,12 @@ using one of those classes silently drops out of the axis instead of breaking.
 
 Where the frame parts are drawn:
 
-- **Header** — `HeaderLayout.vue`, five literal branches. `classic` is what the header always
-  was (three groups by `position`); the other four regroup the same items by role
-  (logo / CTA / the rest), because "logo above the menu" is not something `position` can say.
-  `two-row` shows `layout.header.topbar`, `search` posts a GET form to `/search/` — the
-  template ships no such page, so that variant is for a site that has one. `HeaderNavItem.vue`
-  is untouched by any of it.
+- **Header** — `HeaderLayout.vue`, one look: `layout.header.items` in three groups by
+  `position` (left / centre / right), each item drawn by `HeaderNavItem.vue`. "Logo on the
+  left, login and register on the right" is what the items say, not a variant — another page
+  or button is an edit in the panel's header constructor. `frame.headerInverted` stays: it is
+  a colour (white neutral over a brand surface), not a layout. A `frame.header` still stored
+  in an older theme record is not read.
 - **Hero** — `HeroLayout.vue`, rendered by `BasePostView.vue` above the sections when
   `frame.hero !== "none"`. Breadcrumbs, the date line, the first section's H1, the author
   line (`PostBiographyWriter` with `compact`) and a CTA move into it; with `hero: "photo"`
@@ -393,9 +394,18 @@ Where the frame parts are drawn:
 - **Sticky CTA** — `StickyCtaLayout.vue`, phone only, `bar` (bonus line plus button) or
   `button`. It **replaced `BonusLayout.vue`**, the floating gift that used to sit in the
   corner of every page; a site with no theme now shows nothing there.
-- **Breadcrumbs** — `BreadcrumbsLayout.vue`: `slash` (what it always drew), `pills`, `back`
-  (one link to the parent section). The BreadcrumbList schema.org is emitted by all three.
-- **Footer** — `FooterLayout.vue`: `columns`, `minimal`, `centered`, `disclaimer`.
+- **Breadcrumbs** — `BreadcrumbsLayout.vue`, one look: text links (`ui-link`) separated by a
+  chevron, the current page as plain `ui-text` with no link. The first crumb is always the
+  home page labelled with the brand name, `site.name`: the server takes that label from the
+  home page's `breadcrumbTitle`, and the panel leaves it empty there. `breadcrumbTitle` and
+  `layout.breadcrumbs.homeLabel` only answer on a template no brand has been applied to. The
+  BreadcrumbList schema.org carries the same labels.
+- **Footer** — `FooterLayout.vue`, one look, no logo: a text column (`layout.footer.body`, the
+  disclaimer HTML the brand run generates) beside a links column (`layout.footer.links`), a
+  row of badges under them (`layout.footer.legalLogos` — 18+, GamCare, the licence; Cloudinary
+  public ids through `NuxtImg`), and the copyright line. That line is `layout.footer.title`,
+  which the panel assembles as "domain © year rights" when a brand is applied, so its year is
+  the year of the last apply; a site with no brand record gets `© <year> <DOMAIN_NAME>`.
 
 The offer behind the sidebar card and the sticky bar is `usePageOffer()`: there is no "offer"
 record in an article, so it is assembled from what the page already has — the banner's casino
@@ -479,9 +489,8 @@ folding a 2rem → 1.3rem sequence into the nine steps would either distort it o
 scale to grow again. They do take `--font-heading`.
 
 `BasePostView.vue` opens with `mt-18` — an offset for the fixed header in
-`HeaderLayout.vue`. Changing the header's padding silently breaks the gap under it, and the
-two taller header variants have to say so by hand: `#site[data-header="two-row"] #article`
-and `[data-header="centered"]` push that margin further down in the axes block.
+`HeaderLayout.vue`, and the only one: the header has a single height. Changing the header's
+padding silently breaks the gap under it.
 
 Z-index has no scale yet; the values in use are `z-20` (the hero's content over its
 decorations, the back-to-top button), `z-30` (the sticky CTA), `z-50` (the fixed header) and
@@ -636,6 +645,8 @@ none of them is migrated.
 **`horizontal` is a modifier on the record** (`data.horizontal`), not a variant: it puts the
 picture in a 36 % column to the left of the text, for `image-caption` and
 `image-title-text`. `image` has no text to put beside the picture and ignores it.
+
+The header, the breadcrumbs and the footer have no key here: each has one look, see "Frame".
 
 **The table of contents' accordion is `<details>`/`<summary>`** — no script, closed until
 clicked, and the links are in the HTML either way. The sidebar (`AsideLayout.vue`) renders

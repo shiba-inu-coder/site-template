@@ -18,14 +18,6 @@ HeaderItemSchema.add({
   children: { type: [HeaderItemSchema], default: () => [] },
 });
 
-const HeaderTopbarSchema = new Schema(
-  {
-    items: { type: [String], default: () => [] },
-    note: { type: String, default: "", trim: true },
-  },
-  { _id: false },
-);
-
 const HeaderCtaSchema = new Schema(
   {
     label: { type: String, default: "", trim: true },
@@ -57,7 +49,6 @@ export const LayoutSchema = new Schema(
       type: new Schema(
         {
           items: { type: [HeaderItemSchema], default: () => [] },
-          topbar: { type: HeaderTopbarSchema, default: () => ({}) },
           cta: { type: HeaderCtaSchema, default: () => ({}) },
         },
         { _id: false },

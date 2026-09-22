@@ -824,16 +824,6 @@ button:not(:disabled),
   --color-ui-input-bg: rgb(255 255 255 / 0.1);
 }
 
-/* Шапка в две строки и шапка по центру выше обычной, а отступ под фиксированной
-   шапкой задан на `#article` числом. */
-#site[data-header="two-row"] #article {
-  margin-top: 6.25rem;
-}
-
-#site[data-header="centered"] #article {
-  margin-top: 7rem;
-}
-
 #site[data-bands="true"] .band {
   background-color: var(--color-ui-panel-bg);
   border-top: 1px solid var(--color-ui-panel-border);
