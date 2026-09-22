@@ -44,11 +44,6 @@
         class="font-semibold text-ui-heading"
         >{{ entity.title }}</span
       >
-      <PostStars
-        v-if="score"
-        class="justify-center"
-        :score="score"
-      />
       <span
         v-if="bonus"
         class="font-bold text-step-6 text-ui-accent-soft"
@@ -66,7 +61,6 @@
 
 <script setup lang="ts">
 import CtaButtonLayout from "#rc/components/layout/CtaButtonLayout.vue";
-import PostStars from "#rc/components/post/PostStars.vue";
 import PostTableContent from "#rc/components/post/PostTableContent.vue";
 
 const { showOffer = false } = defineProps<{
@@ -77,7 +71,7 @@ const { showOffer = false } = defineProps<{
 
 const siteConfig = useSiteConfig();
 const { sections, tableContent } = usePost();
-const { entity, bonus, score, buttonLabel, buttonLink, hasCta, hasOffer } =
+const { entity, bonus, buttonLabel, buttonLink, hasCta, hasOffer } =
   usePageOffer();
 
 const hasOwnToc = computed(() => tableContent.value.length > 0);

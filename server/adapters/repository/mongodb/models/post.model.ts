@@ -19,7 +19,6 @@ import { MiniCasinoReviewSchema } from "./schemas/MiniCasinoReview";
 import { MiniBookmakerReviewSchema } from "./schemas/MiniBookmakerReview";
 import { TextImageSchema } from "./schemas/TextImage";
 import { SectionSchema } from "./schemas/Section";
-import { RatingStripSchema } from "./schemas/RatingStrip";
 
 const ModelSchema = new Schema<IPostDocument, IPostModel>(
   {
@@ -122,10 +121,6 @@ const ModelSchema = new Schema<IPostDocument, IPostModel>(
       textImages: {
         type: TextImageSchema,
         default: () => [],
-      },
-      ratingStrip: {
-        type: RatingStripSchema,
-        default: () => ({ facts: [] }),
       },
     },
     isDeleted: {

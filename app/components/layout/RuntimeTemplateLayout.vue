@@ -48,11 +48,6 @@ const TextImage = defineLazyHydrationComponent(
   "visible",
   () => import("#rc/components/post/PostTextImage.vue"),
 );
-
-const RatingStrip = defineLazyHydrationComponent(
-  "visible",
-  () => import("#rc/components/post/PostRatingStrip.vue"),
-);
 // const CasinoRatings = defineLazyHydrationComponent(
 //   "visible",
 //   () => import("#rc/components/post/PostCasinoRatings/PostCasinoRatings.vue"),
@@ -82,7 +77,6 @@ const components = {
   DataTable,
   ContactUs,
   TextImage,
-  RatingStrip,
   // CasinoRatings,
   // BookmakerRatings,
   // MiniCasinoReview,

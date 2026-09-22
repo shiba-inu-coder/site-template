@@ -186,18 +186,6 @@ export interface PostFaq {
   data: { label: string; value: string }[];
 }
 
-export interface PostRatingStripFact {
-  label: string;
-  value: string;
-}
-
-// Синглтон: полоса оценки идёт под H1 и в статье одна.
-export interface PostRatingStrip {
-  variant?: string;
-  score?: number;
-  facts?: PostRatingStripFact[];
-}
-
 export interface PostBanner {
   ribbon: string;
   text: string;
@@ -378,7 +366,6 @@ export interface IPost<
     biographyWriters: PostBiographyWriter<BiographyWriter>[];
     tableContent: PostTableContent;
     textImages: PostTextImage[];
-    ratingStrip: PostRatingStrip;
   };
   isDeleted: boolean;
   createdAt?: Date;

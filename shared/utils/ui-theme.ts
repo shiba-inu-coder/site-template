@@ -111,7 +111,6 @@ export interface UiFrame {
 
 export interface UiVariants {
   breadcrumbs?: string;
-  ratingStrip?: string;
   toc?: string;
   textImage?: string;
   dataTable?: string;

@@ -18,7 +18,6 @@ const SchemeSchema = new Schema(
 
 const VARIANT_BLOCKS = [
   "breadcrumbs",
-  "ratingStrip",
   "toc",
   "textImage",
   "dataTable",

@@ -1,12 +1,12 @@
 /**
  * Оффер страницы — то, что сайдбар показывает карточкой, а липкая панель
- * строкой: казино, о котором статья, его оценка и бонус. Отдельной записи под
- * это в статье нет, поэтому собирается из того, что на странице уже есть:
- * баннер (лого, название и текст казино) и полоса оценки. Запасной вариант —
- * кнопка шапки из конфига сайта.
+ * строкой: казино, о котором статья, и его бонус. Отдельной записи под это в
+ * статье нет, поэтому собирается из того, что на странице уже есть: баннер
+ * (лого, название и текст казино). Запасной вариант — кнопка шапки из конфига
+ * сайта.
  */
 export const usePageOffer = () => {
-  const { banner, ratingStrip } = usePost();
+  const { banner } = usePost();
   const siteConfig = useSiteConfig();
 
   const cta = computed(() => siteConfig.value.layout.header.cta);
@@ -23,8 +23,6 @@ export const usePageOffer = () => {
 
   const buttonLink = computed(() => cta.value.link);
 
-  const score = computed(() => ratingStrip.value.score || 0);
-
   // Кнопка в никуда хуже отсутствующей: без слага бренда `useFakeRefLink`
   // отдаёт корень сайта, и липкая панель вела бы на ту же страницу.
   const hasCta = computed(() =>
@@ -32,14 +30,13 @@ export const usePageOffer = () => {
   );
 
   const hasOffer = computed(() =>
-    Boolean(entity.value || bonus.value || score.value),
+    Boolean(entity.value || bonus.value),
   );
 
   return {
     entity,
     bonus,
     terms,
-    score,
     buttonLabel,
     buttonLink,
     hasCta,
