@@ -4,6 +4,7 @@ import {
   GOOGLE_FONT_WEIGHTS,
   googleFontsHref,
   isUiThemeConfigured,
+  resolvePageFrame,
   resolveScheme,
   themeToCssVars,
 } from "#shared/utils/ui-theme";
@@ -18,6 +19,7 @@ export const useUiTheme = () => {
   const { uiTheme, setUiTheme } = useSettings();
   const siteConfig = useSiteConfig();
   const runtimeConfig = useRuntimeConfig();
+  const { frame: postFrame } = usePost();
 
   const theme = computed<UiTheme | null>(() =>
     isUiThemeConfigured(uiTheme.value) ? uiTheme.value : null,
@@ -55,7 +57,11 @@ export const useUiTheme = () => {
 
   // Каркас читают компоненты, а не только CSS: от `frame.hero` зависит, кто
   // рисует H1, а от `frame.sidebar` — рендерится ли колонка вообще.
-  const frame = computed<UiFrame>(() => theme.value?.frame ?? {});
+  // `resolvePageFrame` берёт `hero`/`sidebar`/`width`/`sticky` с поста, а
+  // `heroStyle`/`headerInverted`/`bands` — из темы.
+  const frame = computed<UiFrame>(() =>
+    resolvePageFrame(theme.value, postFrame.value),
+  );
 
   const contrast = computed<ContrastReportEntry[]>(() =>
     theme.value ? contrastReport(resolveScheme(theme.value)) : [],
@@ -70,34 +76,33 @@ export const useUiTheme = () => {
   // Оси каркаса, декора и акцентов корень страницы получает атрибутами, а не
   // переменными: по ним блок `/* UI axes */` в `tailwind.css` разводит вёрстку
   // через `[data-*]`-селекторы. Оси, которой в записи нет, нет и в атрибутах —
-  // без атрибута сайт рисует свой дефолт, а не пустое значение.
+  // без атрибута сайт рисует свой дефолт, а не пустое значение. Каркас
+  // (`data-hero`, `data-sidebar`, `data-width`, `data-sticky`) идёт из
+  // `frame.value`, а не из `theme.value` напрямую — с поста он есть и без
+  // настроенной темы.
   const frameAttrs = computed<Record<string, string>>(() => {
     const value = theme.value;
-
-    if (!value) {
-      return {};
-    }
+    const frameValue = frame.value;
 
     const attrs: Record<string, unknown> = {
-      "data-scale": value.type?.scale,
-      "data-h1": value.type?.h1Align,
-      "data-borders": value.geometry?.borders,
-      "data-shadow": value.geometry?.shadow,
-      "data-density": value.geometry?.density,
-      "data-header-inverted": value.frame?.headerInverted,
-      "data-hero": value.frame?.hero,
-      "data-hero-style": value.frame?.heroStyle,
-      "data-sidebar": value.frame?.sidebar,
-      "data-bands": value.frame?.bands,
-      "data-width": value.frame?.width,
-      "data-sticky": value.frame?.sticky,
-      "data-h2": value.decor?.h2,
-      "data-bg": value.decor?.bg,
-      "data-bg-image": value.decor?.bgImage?.path ? "1" : undefined,
-      "data-img": value.decor?.img,
-      "data-btn": value.decor?.btn?.join(" "),
-      "data-badge": value.accents?.badge,
-      "data-big": value.accents?.big,
+      "data-scale": value?.type?.scale,
+      "data-h1": value?.type?.h1Align,
+      "data-borders": value?.geometry?.borders,
+      "data-shadow": value?.geometry?.shadow,
+      "data-density": value?.geometry?.density,
+      "data-header-inverted": frameValue.headerInverted,
+      "data-hero": frameValue.hero,
+      "data-hero-style": frameValue.heroStyle,
+      "data-sidebar": frameValue.sidebar,
+      "data-bands": frameValue.bands,
+      "data-width": frameValue.width,
+      "data-sticky": frameValue.sticky,
+      "data-h2": value?.decor?.h2,
+      "data-bg": value?.decor?.bg,
+      "data-bg-image": value?.decor?.bgImage?.path ? "1" : undefined,
+      "data-img": value?.decor?.img,
+      "data-btn": value?.decor?.btn?.join(" "),
+      "data-badge": value?.accents?.badge,
     };
 
     return Object.fromEntries(

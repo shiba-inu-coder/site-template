@@ -95,9 +95,12 @@ export interface UiGeometry {
   density?: "tight" | "regular" | "airy";
 }
 
-// Каркас, варианты блоков, декор и акценты — форма зарезервирована под 4c/4e
-// (см. `V 1e.макеты-пресетов-и-вариантов.md`). Этот этап их не читает и не
-// пишет в `resolveScheme`/`themeToCssVars`, только держит место в типе.
+// `headerInverted`/`heroStyle`/`bands` — оформление бренда, одно на сайт,
+// живёт в теме. `hero`/`sidebar`/`width`/`sticky` тема тоже типизирует (та же
+// форма нужна посту, см. `PostFrame` ниже), но не читает: у каждой страницы
+// свой каркас, и `resolvePageFrame` берёт эти четыре оси с поста. Варианты
+// блоков, декор и акценты в `resolveScheme`/`themeToCssVars` по-прежнему не
+// попадают, только держат место в типе.
 export interface UiFrame {
   headerInverted?: boolean;
   hero?: "none" | "band" | "photo";
@@ -107,6 +110,10 @@ export interface UiFrame {
   width?: "narrow" | "wide";
   sticky?: "none" | "bar" | "button";
 }
+
+// Каркас страницы: `IPost.frame` в `shared/types/post.ts` берёт этот тип
+// напрямую, чтобы набор значений не разъехался с `UiFrame`.
+export type PostFrame = Pick<UiFrame, "hero" | "sidebar" | "width" | "sticky">;
 
 // Вариант темы остался у четырёх блоков; остальные рисуются одним видом, и
 // их старые ключи в базе просто не читаются.
@@ -136,7 +143,6 @@ export interface UiDecor {
 
 export interface UiAccents {
   badge?: "pill" | "square";
-  big?: "score" | "bonus" | "logo" | "none";
 }
 
 export interface UiTheme {
@@ -255,6 +261,38 @@ export const isUiThemeConfigured = (
   BRAND_FAMILIES.every((family) =>
     RAMP_SHADES.every((shade) => Boolean(theme.colors[family]?.[shade])),
   );
+
+const HERO_VALUES = ["none", "band", "photo"] as const;
+const SIDEBAR_VALUES = ["none", "toc", "toc-offer"] as const;
+const WIDTH_VALUES = ["narrow", "wide"] as const;
+const STICKY_VALUES = ["none", "bar", "button"] as const;
+
+const knownOrUndefined = <T extends string>(
+  allowed: readonly T[],
+  value: T | undefined,
+): T | undefined =>
+  value !== undefined && (allowed as readonly string[]).includes(value)
+    ? value
+    : undefined;
+
+// Хиро/сайдбар/ширина/sticky читаются только с поста — старое значение той
+// же оси в теме молча игнорируется, а не служит откатом. Мусор или значение
+// из другой эпохи (`toc-offer` после того, как панель перестала его
+// предлагать, всё ещё валиден и здесь пропускается как есть) схлопывается в
+// `undefined`, а не протекает в `data-*`: без атрибута сайт рисует свой
+// дефолт (см. `frameAttrs`), а не рисует мусор.
+export const resolvePageFrame = (
+  theme: UiTheme | null | undefined,
+  postFrame: PostFrame | null | undefined,
+): UiFrame => ({
+  headerInverted: theme?.frame?.headerInverted,
+  heroStyle: theme?.frame?.heroStyle,
+  bands: theme?.frame?.bands,
+  hero: knownOrUndefined(HERO_VALUES, postFrame?.hero),
+  sidebar: knownOrUndefined(SIDEBAR_VALUES, postFrame?.sidebar),
+  width: knownOrUndefined(WIDTH_VALUES, postFrame?.width),
+  sticky: knownOrUndefined(STICKY_VALUES, postFrame?.sticky),
+});
 
 // `scheme` может не покрывать все токены (старая запись до добавления нового
 // токена) — недостающие достраиваются дефолтом, а не роняют резолв.

@@ -1,4 +1,5 @@
 import type { Document, Model, ObjectId } from "mongoose";
+import type { PostFrame } from "#shared/utils/ui-theme";
 
 export interface PostGridCard {
   data: {
@@ -322,6 +323,7 @@ export interface IPost<
   _id: ObjectId;
   title: string;
   banner?: PostBanner;
+  frame?: PostFrame;
   slug: string;
   content: string;
   sections: PostSection[];

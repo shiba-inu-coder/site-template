@@ -12,6 +12,7 @@ import { FaqSchema } from "./schemas/Faq";
 import { GridCardSchema } from "./schemas/GridCard";
 import { TableContentSchema } from "./schemas/TableContent";
 import { BannerSchema } from "./schemas/Banner";
+import { FrameSchema } from "./schemas/Frame";
 import { ProsConsPostSchema } from "./schemas/ProsConsPost";
 import { BiographyWriterSchema } from "./schemas/BiographyWriter";
 import { DataTableSchema } from "./schemas/DataTable";
@@ -29,6 +30,10 @@ const ModelSchema = new Schema<IPostDocument, IPostModel>(
     },
     banner: {
       type: BannerSchema,
+      required: false,
+    },
+    frame: {
+      type: FrameSchema,
       required: false,
     },
     slug: {

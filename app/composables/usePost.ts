@@ -21,6 +21,7 @@ export const usePost = <E>() => {
     tableContentEntry.value.data.filter((item) => item.isActive),
   );
   const banner = computed(() => state.value.currentPost.banner);
+  const frame = computed(() => state.value.currentPost.frame);
   const createdAt = computed(() => state.value.currentPost.createdAt);
   const updatedAt = computed(() => state.value.currentPost.updatedAt);
   const faq = computed(() => state.value.currentPost.shortcodesConfig.faq);
@@ -136,6 +137,7 @@ export const usePost = <E>() => {
     updatedAt,
     createdAt,
     banner,
+    frame,
     tableContent,
     tableContentEntry,
     slug,

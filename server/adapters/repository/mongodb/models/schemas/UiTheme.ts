@@ -27,8 +27,8 @@ const VariantsSchema = new Schema(
 );
 
 // Форма зеркалит `UiTheme` из `shared/utils/ui-theme.ts`. `frame`/`decor`/
-// `accents` — Mixed: 4c/4e ещё не решили точный набор полей, и додумывать
-// его здесь означает мигрировать схему второй раз.
+// `accents` — Mixed: их поля читает CSS через `data-*` (см. `useUiTheme`),
+// не эта схема, и описывать их здесь означало бы мигрировать её второй раз.
 export const UiThemeSchema = new Schema(
   {
     templateId: { type: String },

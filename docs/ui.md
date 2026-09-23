@@ -178,8 +178,8 @@ UiTheme = {
   type: { display: { family, weight?, case?, tracking? }, body: { family }, scale?, h1Align? },
   geometry: { radius, borders?, shadow?, density? },
   variants: { toc?, gridCards?, faq?, buttonRef? }, // see "Shortcodes"
-  frame: { headerInverted?, hero?, heroStyle?, sidebar?, bands?, width?, sticky? },
-  decor: { h2?, bg?, img?, btn? }, accents: { badge?, big? }, // see "Frame"
+  frame: { headerInverted?, heroStyle?, bands? }, // hero/sidebar/width/sticky moved to the post's own `frame`, see "Frame"
+  decor: { h2?, bg?, img?, btn? }, accents: { badge? }, // see "Frame"
   updatedAt,
 }
 ```
@@ -328,35 +328,41 @@ or the live URL of the same page — must not be able to repaint a production si
 
 **The page around the article is a set of variants, not a fixed layout** — except for the
 header, the breadcrumbs and the footer, which have one look each and no theme key (see below).
-Which variant a site draws comes from `uiTheme.frame`/`decor`/`type`/`geometry`, and it
-reaches the CSS as `data-*` attributes on the page root — `<div id="site">` in
-`layouts/default.vue` **and in `error.vue`**, because a 404 is not drawn by the layout and
-would otherwise lose the frame. `useUiTheme().frameAttrs` builds the object; the template
-just `v-bind`s it.
+Four of the frame axes — `hero`, `sidebar`, `width`, `sticky` — live on the **post**
+(`IPost.frame`, `shared/types/post.ts`), not the theme: every page picks its own, and a post
+with no `frame` at all gets the same defaults the site drew before this existed.
+`heroStyle`/`headerInverted`/`bands` stay in `uiTheme.frame` — brand-level, one per site, like
+`decor`/`type`/`geometry`. `resolvePageFrame(theme, postFrame)`
+(`shared/utils/ui-theme.ts`) merges the two sources into one `UiFrame`, dropping a value that
+isn't one of the axis's own — old data from another era, a typo — rather than let it reach the
+CSS; `useUiTheme().frameAttrs` then turns the merged result into `data-*` attributes on the
+page root — `<div id="site">` in `layouts/default.vue` **and in `error.vue`**, because a 404 is
+not drawn by the layout and would otherwise lose the frame.
 
-| Attribute                       | Axis                            | Values                                                          | Without a theme |
-| ------------------------------- | ------------------------------- | --------------------------------------------------------------- | --------------- |
-| `data-scale`                    | `type.scale`                    | `compact` / `regular` / `display`                               | `regular`       |
-| `data-h1`                       | `type.h1Align`                  | `left` / `center`                                               | `left`          |
-| `data-density`                  | `geometry.density`              | `tight` / `regular` / `airy`                                    | `regular`       |
-| `data-borders`                  | `geometry.borders`              | `0` / `1` / `2`                                                 | `1`             |
-| `data-shadow`                   | `geometry.shadow`               | `none` / `soft` / `glow`                                        | `none`          |
-| `data-width`                    | `frame.width`                   | `narrow` / `wide`                                               | `wide`          |
-| `data-header-inverted`          | `frame.headerInverted`          | `true` / `false`                                                | `false`         |
-| `data-hero` / `data-hero-style` | `frame.hero`, `frame.heroStyle` | `none`/`band`/`photo`; `radial`…`flat`                          | `none`          |
-| `data-sidebar`                  | `frame.sidebar`                 | `none` / `toc` / `toc-offer`                                    | `none`          |
-| `data-bands`                    | `frame.bands`                   | `true` / `false`                                                | `false`         |
-| `data-sticky`                   | `frame.sticky`                  | `none` / `bar` / `button`                                       | `none`          |
-| `data-h2`                       | `decor.h2`                      | `none`/`underline`/`left-rule`/`dot`/`gradient`/`number`/`line` | `none`          |
-| `data-bg`                       | `decor.bg`                      | `flat` / `radial` / `dots` / `grid` / `stripes`                 | `flat`          |
-| `data-img`                      | `decor.img`                     | `rounded` / `framed` / `square` / `tilt`                        | `rounded`       |
-| `data-btn`                      | `decor.btn[]`                   | space-joined subset of `pill skew gradient`                     | none            |
-| `data-badge`                    | `accents.badge`                 | `pill` / `square`                                               | `pill`          |
+| Attribute              | Axis                           | Values                                                          | Without a value |
+| ---------------------- | ------------------------------ | --------------------------------------------------------------- | --------------- |
+| `data-scale`           | `uiTheme.type.scale`           | `compact` / `regular` / `display`                               | `regular`       |
+| `data-h1`              | `uiTheme.type.h1Align`         | `left` / `center`                                               | `left`          |
+| `data-density`         | `uiTheme.geometry.density`     | `tight` / `regular` / `airy`                                    | `regular`       |
+| `data-borders`         | `uiTheme.geometry.borders`     | `0` / `1` / `2`                                                 | `1`             |
+| `data-shadow`          | `uiTheme.geometry.shadow`      | `none` / `soft` / `glow`                                        | `none`          |
+| `data-width`           | **post** `frame.width`         | `narrow` / `wide`                                               | `wide`          |
+| `data-header-inverted` | `uiTheme.frame.headerInverted` | `true` / `false`                                                | `false`         |
+| `data-hero`            | **post** `frame.hero`          | `none` / `band` / `photo`                                       | `none`          |
+| `data-hero-style`      | `uiTheme.frame.heroStyle`      | `radial`…`flat` (seven, see below)                              | `none`          |
+| `data-sidebar`         | **post** `frame.sidebar`       | `none` / `toc` / `toc-offer`                                    | `none`          |
+| `data-bands`           | `uiTheme.frame.bands`          | `true` / `false`                                                | `false`         |
+| `data-sticky`          | **post** `frame.sticky`        | `none` / `bar` / `button`                                       | `none`          |
+| `data-h2`              | `uiTheme.decor.h2`             | `none`/`underline`/`left-rule`/`dot`/`gradient`/`number`/`line` | `none`          |
+| `data-bg`              | `uiTheme.decor.bg`             | `flat` / `radial` / `dots` / `grid` / `stripes`                 | `flat`          |
+| `data-img`             | `uiTheme.decor.img`            | `rounded` / `framed` / `square` / `tilt`                        | `rounded`       |
+| `data-btn`             | `uiTheme.decor.btn[]`          | space-joined subset of `pill skew gradient`                     | none            |
+| `data-badge`           | `uiTheme.accents.badge`        | `pill` / `square`                                               | `pill`          |
 
-**An axis the record does not carry is not written as an attribute at all**, and the
-`/* UI axes */` block in `tailwind.css` only ever styles a _deviation_ — so a site with no
-theme renders exactly what it rendered before this existed. That is the rule to keep when
-adding a value: never write the default branch.
+**An axis nothing carries is not written as an attribute at all**, and the `/* UI axes */`
+block in `tailwind.css` only ever styles a _deviation_ — so a page with no frame and a site
+with no theme render exactly what they rendered before this existed. That is the rule to keep
+when adding a value: never write the default branch.
 
 That block is plain CSS on purpose. `@config` turns off Tailwind's source scanning, so a
 class assembled at runtime is never compiled — an attribute selector is not a class and is
@@ -373,8 +379,8 @@ Where the frame parts are drawn:
   or button is an edit in the panel's header constructor. `frame.headerInverted` stays: it is
   a colour (white neutral over a brand surface), not a layout. A `frame.header` still stored
   in an older theme record is not read.
-- **Hero** — `HeroLayout.vue`, rendered by `BasePostView.vue` above the sections when
-  `frame.hero !== "none"`. Breadcrumbs, the date line, the first section's H1, the author
+- **Hero** — `HeroLayout.vue`, rendered by `BasePostView.vue` above the sections when the
+  post's own `frame.hero !== "none"`. Breadcrumbs, the date line, the first section's H1, the author
   line (`PostBiographyWriter` with `compact`) and a CTA move into it; with `hero: "photo"`
   the lead's `text-image` picture moves too. **What moves is decided once**, in
   `useHeroContent()`, and `PostSections.vue` reads the same decision — it drops the first
@@ -382,7 +388,8 @@ Where the frame parts are drawn:
   (`shared/utils/shortcode-markers.ts`), or the author and the picture would appear twice.
   `heroStyle` is seven branches of background in CSS; `skew` lays its ribbon with a
   pseudo-element, and `solid` is the one branch that redefines `--color-ui-*` locally.
-- **Sidebar** — `AsideLayout.vue`, `md+` only. The article's own table of contents, or one
+- **Sidebar** — `AsideLayout.vue`, `md+` only, from the post's own `frame.sidebar`. The
+  article's own table of contents, or one
   assembled from the section titles when the article has no `table-content` block, plus the
   offer card under `toc-offer`. The in-flow table of contents is hidden on desktop when a
   sidebar exists (`.toc-block` in the axes block) and stays in the page on a phone, where
@@ -392,8 +399,9 @@ Where the frame parts are drawn:
   band is an ordinary block around the centred column. Bands and a sidebar are not meant to
   be combined, and no preset does.
 - **Sticky CTA** — `StickyCtaLayout.vue`, phone only, `bar` (bonus line plus button) or
-  `button`. It **replaced `BonusLayout.vue`**, the floating gift that used to sit in the
-  corner of every page; a site with no theme now shows nothing there.
+  `button`, from the post's own `frame.sticky`. It **replaced `BonusLayout.vue`**, the
+  floating gift that used to sit in the corner of every page; a page with no `frame.sticky`
+  now shows nothing there.
 - **Breadcrumbs** — `BreadcrumbsLayout.vue`, one look: text links (`ui-link`) separated by a
   chevron, the current page as plain `ui-text` with no link. The first crumb is always the
   home page labelled with the brand name, `site.name`: the server takes that label from the
