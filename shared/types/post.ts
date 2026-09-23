@@ -40,9 +40,13 @@ export interface PostTextImage {
     // full — значение старой записи, компонент читает его как top.
     imgSide: "left" | "right" | "top" | "bottom" | "full";
     imgRoundCorner: string;
-    // Из дошорткодовой эпохи: кнопка была отдельным полем записи, пока
-    // текст не поглотил её в шорткоде 2a. Старые записи ещё несут оба поля.
     buttonText: string;
+    buttonPosition: "left" | "center" | "right";
+    buttonSize: "small" | "small-medium" | "medium" | "medium-big" | "big";
+    buttonVariant: "solid" | "outline" | "link";
+    // Легаси-поле из дошорткодовой эпохи, когда кнопка была отдельной от
+    // текста записью. Новые записи его не пишут — PostButtonRef без него
+    // берёт brandSlug сайта.
     refLink: string;
   };
 }

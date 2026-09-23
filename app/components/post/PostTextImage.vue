@@ -1,37 +1,37 @@
 <template>
-  <div>
+  <div
+    class="grid grid-cols-1 gap-4 md:gap-6 items-center"
+    :class="gridColsClass"
+  >
     <div
-      class="grid grid-cols-1 gap-4 md:gap-6 items-center"
-      :class="gridColsClass"
+      v-if="data.img"
+      :class="IMAGE_ORDER[side]"
     >
-      <div
-        v-if="data.img"
-        :class="IMAGE_ORDER[side]"
-      >
-        <NuxtImg
-          loading="lazy"
-          provider="cloudinary"
-          class="w-full h-auto"
-          :src="data.img.path"
-          :alt="data.img.alt"
-          :sizes="SIZES[side]"
-          :modifiers="{ roundCorner: data.imgRoundCorner }"
-        />
-      </div>
+      <NuxtImg
+        loading="lazy"
+        provider="cloudinary"
+        class="w-full h-auto"
+        :src="data.img.path"
+        :alt="data.img.alt"
+        :sizes="SIZES[side]"
+        :modifiers="{ roundCorner: data.imgRoundCorner }"
+      />
+    </div>
 
+    <div v-if="data.text || data.buttonText">
       <div
         v-if="data.text"
         v-html="safeHTMLWrap(data.text, TEXT_TAGS)"
       ></div>
-    </div>
 
-    <div
-      v-if="data.buttonText"
-      class="mt-4"
-    >
       <PostButtonRef
+        v-if="data.buttonText"
         :name="data.buttonText"
+        :position="data.buttonPosition"
+        :size="data.buttonSize"
+        :variant="data.buttonVariant || undefined"
         :slug="data.refLink || undefined"
+        class="mt-4"
       />
     </div>
   </div>
@@ -87,6 +87,9 @@ const FALLBACK: PostTextImage = {
     imgSide: "right",
     imgRoundCorner: "0",
     buttonText: "",
+    buttonPosition: "left",
+    buttonSize: "small",
+    buttonVariant: "outline",
     refLink: "",
   },
 };
