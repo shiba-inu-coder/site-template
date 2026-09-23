@@ -29,6 +29,7 @@
      токен стоит за каждым, решает блок "UI scheme" в :root ниже. */
   --color-ui-page-bg: var(--color-ui-page-bg);
   --color-ui-header-bg: var(--color-ui-header-bg);
+  --color-ui-header-text: var(--color-ui-header-text);
   --color-ui-footer-bg: var(--color-ui-footer-bg);
   --color-ui-footer-bg-alt: var(--color-ui-footer-bg-alt);
 
@@ -150,6 +151,9 @@
      text/cta-text остаются тем, что переворачивается вместе с темой. */
   --color-ui-page-bg: var(--color-primary-300);
   --color-ui-header-bg: var(--color-primary-300);
+  /* Сайт без темы (или тема без явной ссылки — resolveRef решает "auto" сам)
+     выглядит как раньше: текст шапки — просто текст страницы. */
+  --color-ui-header-text: var(--color-surface-text);
   --color-ui-footer-bg: var(--color-primary-200);
   --color-ui-footer-bg-alt: var(--color-primary-300);
 
@@ -702,132 +706,41 @@ button:not(:disabled),
   );
 }
 
-#site[data-badge="square"] .bg-ui-badge-bg.rounded-full {
-  border-radius: var(--radius-primary);
-}
-
-/* Хиро. Сама полоса рисуется всегда одинаково, `heroStyle` меняет только
-   подложку; `skew` кладёт ленту псевдоэлементом, а не отдельным блоком в
-   разметке. */
+/* Подложка хиро — всегда дефолтная (panel-bg + нижняя рамка), без осей. */
 .site-hero {
   background: var(--color-ui-panel-bg);
   border-bottom: 1px solid var(--color-ui-card-border);
 }
 
-#site[data-hero-style="flat"] .site-hero {
-  background: var(--color-ui-page-bg);
-}
-
-#site[data-hero-style="radial"] .site-hero {
-  background: radial-gradient(
-    120% 80% at 50% 0%,
-    color-mix(in srgb, var(--color-ui-marker) 22%, var(--color-ui-page-bg)) 0%,
-    var(--color-ui-page-bg) 70%
+/* Текст шапки — всегда header-text (сама схема решает, «инвертирован» он
+   или нет: resolveRef подбирает контрастный цвет к header-bg). muted/
+   card-border/panel-border/input-bg — те же доли, что раньше давал
+   rgb(255 255 255 / …) поверх гарантированно тёмной подложки; color-mix
+   держит их верными и на светлом header-text. */
+.site-header {
+  --color-ui-text: var(--color-ui-header-text);
+  --color-ui-heading: var(--color-ui-header-text);
+  --color-ui-link: var(--color-ui-header-text);
+  --color-ui-muted: color-mix(
+    in srgb,
+    var(--color-ui-header-text) 72%,
+    transparent
   );
-  border-top: 1px solid var(--color-ui-marker);
-  border-bottom: 1px solid
-    color-mix(in srgb, var(--color-ui-marker) 40%, transparent);
-}
-
-#site[data-hero-style="blobs"] .site-hero::before,
-#site[data-hero-style="blobs"] .site-hero::after {
-  content: "";
-  position: absolute;
-  border-radius: 50%;
-  filter: blur(70px);
-  opacity: 0.6;
-  pointer-events: none;
-}
-
-#site[data-hero-style="blobs"] .site-hero::before {
-  width: 260px;
-  height: 260px;
-  right: -80px;
-  top: -90px;
-  background: var(--color-ui-cta-bg);
-}
-
-#site[data-hero-style="blobs"] .site-hero::after {
-  width: 220px;
-  height: 220px;
-  left: -90px;
-  bottom: -120px;
-  opacity: 0.45;
-  background: var(--color-ui-marker);
-}
-
-#site[data-hero-style="skew"] .site-hero {
-  border-bottom: 0;
-  padding-bottom: 34px;
-}
-
-#site[data-hero-style="skew"] .site-hero::after {
-  content: "";
-  position: absolute;
-  left: -6%;
-  right: -6%;
-  bottom: -10px;
-  height: 26px;
-  background: var(--color-ui-cta-bg);
-  transform: skewY(-2.5deg);
-}
-
-#site[data-hero-style="skew"] .site-hero h1 {
-  padding-left: 12px;
-  border-left: 6px solid var(--color-ui-cta-bg);
-}
-
-#site[data-hero-style="warm"] .site-hero {
-  background: radial-gradient(
-      90% 70% at 85% 0%,
-      color-mix(in srgb, var(--color-ui-cta-bg) 55%, transparent) 0%,
-      transparent 60%
-    ),
-    radial-gradient(
-      70% 60% at 10% 100%,
-      color-mix(in srgb, var(--color-ui-marker) 30%, transparent) 0%,
-      transparent 60%
-    ),
-    var(--color-ui-page-bg);
-}
-
-#site[data-hero-style="pale"] .site-hero {
-  background: linear-gradient(
-    135deg,
-    color-mix(in srgb, var(--color-ui-cta-bg) 12%, var(--color-ui-page-bg)),
-    color-mix(in srgb, var(--color-ui-marker) 10%, var(--color-ui-page-bg))
+  --color-ui-card-border: color-mix(
+    in srgb,
+    var(--color-ui-header-text) 18%,
+    transparent
   );
-}
-
-/* Единственная ветка, где токены переопределяются локально: подложка хиро
-   становится цветом футера, и нейтраль страницы на ней не читается. */
-#site[data-hero-style="solid"] .site-hero {
-  background: var(--color-ui-footer-bg);
-  border-bottom: 6px solid var(--color-ui-cta-bg);
-  --color-ui-heading: #ffffff;
-  --color-ui-text: #ffffff;
-  --color-ui-muted: rgb(255 255 255 / 0.75);
-  --color-ui-link: #ffffff;
-  --color-ui-panel-bg: rgb(255 255 255 / 0.08);
-  --color-ui-panel-border: rgb(255 255 255 / 0.2);
-  --color-ui-card-border: rgb(255 255 255 / 0.2);
-}
-
-/* Шапка на цветной подложке: белая нейтраль поверх брендового фона. */
-#site[data-header-inverted="true"] .site-header {
-  --color-ui-text: #ffffff;
-  --color-ui-heading: #ffffff;
-  --color-ui-muted: rgb(255 255 255 / 0.72);
-  --color-ui-link: #ffffff;
-  --color-ui-card-border: rgb(255 255 255 / 0.18);
-  --color-ui-panel-border: rgb(255 255 255 / 0.22);
-  --color-ui-input-bg: rgb(255 255 255 / 0.1);
-}
-
-#site[data-bands="true"] .band {
-  background-color: var(--color-ui-panel-bg);
-  border-top: 1px solid var(--color-ui-panel-border);
-  border-bottom: 1px solid var(--color-ui-panel-border);
+  --color-ui-panel-border: color-mix(
+    in srgb,
+    var(--color-ui-header-text) 22%,
+    transparent
+  );
+  --color-ui-input-bg: color-mix(
+    in srgb,
+    var(--color-ui-header-text) 10%,
+    transparent
+  );
 }
 
 @media (min-width: 48rem) {

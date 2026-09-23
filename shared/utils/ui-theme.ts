@@ -2,6 +2,7 @@
 // читается и панелью (appspro), и этим сайтом, и превью — там, где Nuxt не
 // поднят вовсе.
 import { getCloudinaryBaseUrl } from "#rc/utils/get-cloudinary-base-url";
+import { contrastRatio } from "./contrast.ts";
 
 export type UiThemeMode = "dark" | "light";
 
@@ -25,6 +26,7 @@ export type UiSurfaceToken = "text" | "muted" | "raised" | "on-brand";
 export const UI_TOKENS = [
   "page-bg",
   "header-bg",
+  "header-text",
   "footer-bg",
   "footer-bg-alt",
 
@@ -95,18 +97,12 @@ export interface UiGeometry {
   density?: "tight" | "regular" | "airy";
 }
 
-// `headerInverted`/`heroStyle`/`bands` — оформление бренда, одно на сайт,
-// живёт в теме. `hero`/`sidebar`/`width`/`sticky` тема тоже типизирует (та же
-// форма нужна посту, см. `PostFrame` ниже), но не читает: у каждой страницы
-// свой каркас, и `resolvePageFrame` берёт эти четыре оси с поста. Варианты
-// блоков, декор и акценты в `resolveScheme`/`themeToCssVars` по-прежнему не
-// попадают, только держат место в типе.
+// Поля страницы, не темы — у каждой страницы свой каркас, и
+// `resolvePageFrame` берёт эти четыре оси с поста, не с темы (`UiTheme`
+// больше не несёт `frame` вовсе).
 export interface UiFrame {
-  headerInverted?: boolean;
   hero?: "none" | "band" | "photo";
-  heroStyle?: "radial" | "blobs" | "skew" | "warm" | "pale" | "solid" | "flat";
   sidebar?: "none" | "toc" | "toc-offer";
-  bands?: boolean;
   width?: "narrow" | "wide";
   sticky?: "none" | "bar" | "button";
 }
@@ -141,10 +137,6 @@ export interface UiDecor {
   btn?: Array<"pill" | "skew" | "gradient">;
 }
 
-export interface UiAccents {
-  badge?: "pill" | "square";
-}
-
 export interface UiTheme {
   templateId: string;
   templateName: string;
@@ -153,10 +145,8 @@ export interface UiTheme {
   scheme: UiScheme;
   type: UiTypeAxis;
   geometry: UiGeometry;
-  frame: UiFrame;
   variants: UiVariants;
   decor: UiDecor;
-  accents: UiAccents;
   updatedAt: Date;
 }
 
@@ -166,6 +156,7 @@ export interface UiTheme {
 export const DEFAULT_UI_SCHEME: UiScheme = {
   "page-bg": "primary-300",
   "header-bg": "primary-300",
+  "header-text": "auto",
   "footer-bg": "primary-200",
   "footer-bg-alt": "primary-300",
 
@@ -226,7 +217,20 @@ const SURFACE_BY_MODE: Record<UiThemeMode, Record<UiSurfaceToken, string>> = {
 
 const BRAND_FAMILIES = ["primary", "active", "accent"] as const;
 
-const resolveRef = (ref: UiSchemeRef, theme: UiTheme): string => {
+// header-text: "auto" сравнивает контраст с уже резолвленным header-bg —
+// порядок в UI_TOKENS (header-bg раньше header-text) это гарантирует.
+const resolveRef = (
+  ref: UiSchemeRef,
+  theme: UiTheme,
+  resolved: Partial<Record<UiToken, string>>,
+): string => {
+  if (ref === "auto") {
+    const bg = resolved["header-bg"] as string;
+    return contrastRatio("#ffffff", bg) >= contrastRatio("#0f172a", bg)
+      ? "#ffffff"
+      : "#0f172a";
+  }
+
   if (ref.startsWith("#")) {
     return ref;
   }
@@ -275,19 +279,14 @@ const knownOrUndefined = <T extends string>(
     ? value
     : undefined;
 
-// Хиро/сайдбар/ширина/sticky читаются только с поста — старое значение той
-// же оси в теме молча игнорируется, а не служит откатом. Мусор или значение
-// из другой эпохи (`toc-offer` после того, как панель перестала его
-// предлагать, всё ещё валиден и здесь пропускается как есть) схлопывается в
-// `undefined`, а не протекает в `data-*`: без атрибута сайт рисует свой
-// дефолт (см. `frameAttrs`), а не рисует мусор.
+// Хиро/сайдбар/ширина/sticky читаются только с поста — тема каркас больше не
+// несёт вовсе. Мусор или значение из другой эпохи (`toc-offer` после того,
+// как панель перестала его предлагать, всё ещё валиден и здесь пропускается
+// как есть) схлопывается в `undefined`, а не протекает в `data-*`: без
+// атрибута сайт рисует свой дефолт (см. `frameAttrs`), а не рисует мусор.
 export const resolvePageFrame = (
-  theme: UiTheme | null | undefined,
   postFrame: PostFrame | null | undefined,
 ): UiFrame => ({
-  headerInverted: theme?.frame?.headerInverted,
-  heroStyle: theme?.frame?.heroStyle,
-  bands: theme?.frame?.bands,
   hero: knownOrUndefined(HERO_VALUES, postFrame?.hero),
   sidebar: knownOrUndefined(SIDEBAR_VALUES, postFrame?.sidebar),
   width: knownOrUndefined(WIDTH_VALUES, postFrame?.width),
@@ -301,15 +300,15 @@ export const resolveScheme = (theme: UiTheme): Record<UiToken, string> => {
 
   for (const token of UI_TOKENS) {
     const ref = theme.scheme[token] ?? DEFAULT_UI_SCHEME[token];
-    result[token] = resolveRef(ref, theme);
+    result[token] = resolveRef(ref, theme, result);
   }
 
   return result;
 };
 
 // Цвета + радиус + шрифты + фон статьи картинкой — оси, которые уже есть в
-// этом этапе. Каркас и остальной декор (frame/variants/decor.h2|bg|img|btn/
-// accents) сюда не попадают: их рендерят 4c/4e.
+// этом этапе. Остальной декор (variants/decor.h2|bg|img|btn) сюда не
+// попадает: его рендерят 4c/4e.
 export const themeToCssVars = (theme: UiTheme, cloudName: string): string => {
   const resolved = resolveScheme(theme);
 
@@ -401,10 +400,8 @@ const buildDefaultTheme = (mode: UiThemeMode): UiTheme => ({
   scheme: DEFAULT_UI_SCHEME,
   type: TEMPLATE_DEFAULT_TYPE,
   geometry: TEMPLATE_DEFAULT_GEOMETRY,
-  frame: {},
   variants: {},
   decor: {},
-  accents: {},
   updatedAt: new Date(0),
 });
 

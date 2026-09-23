@@ -26,9 +26,9 @@ const VariantsSchema = new Schema(
   { _id: false, strict: false },
 );
 
-// Форма зеркалит `UiTheme` из `shared/utils/ui-theme.ts`. `frame`/`decor`/
-// `accents` — Mixed: их поля читает CSS через `data-*` (см. `useUiTheme`),
-// не эта схема, и описывать их здесь означало бы мигрировать её второй раз.
+// Форма зеркалит `UiTheme` из `shared/utils/ui-theme.ts`. `decor` — Mixed:
+// его поля читает CSS через `data-*` (см. `useUiTheme`), не эта схема, и
+// описывать их здесь означало бы мигрировать её второй раз.
 export const UiThemeSchema = new Schema(
   {
     templateId: { type: String },
@@ -64,10 +64,8 @@ export const UiThemeSchema = new Schema(
       density: { type: String, enum: ["tight", "regular", "airy"] },
     },
 
-    frame: { type: Schema.Types.Mixed, default: () => ({}) },
     variants: { type: VariantsSchema, default: () => ({}) },
     decor: { type: Schema.Types.Mixed, default: () => ({}) },
-    accents: { type: Schema.Types.Mixed, default: () => ({}) },
 
     updatedAt: { type: Date, default: () => new Date() },
   },

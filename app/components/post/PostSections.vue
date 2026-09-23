@@ -1,12 +1,8 @@
 <template>
   <div>
-    <!-- Полоса фона — своей обёрткой, а не отрицательными полями на
-         контейнере: `#article` и так во всю ширину, и фону хватает обычного
-         блока вокруг центрированной колонки. -->
     <div
       v-for="(section, index) in sections"
       :key="section.uid || index"
-      :class="isBand(index) ? 'band' : ''"
     >
       <div :class="CONTAINER">
         <section class="w-full">
@@ -38,12 +34,7 @@ defineProps<{
   slug?: string;
 }>();
 
-const { frame } = useUiTheme();
 const { enabled: heroEnabled, leadBody } = useHeroContent();
 
 const CONTAINER = "px-2.5 md:px-4 xl:px-0 w-full max-w-7xl mx-auto";
-
-// Полосу получает каждая вторая секция, начиная со второй: первая — лид, и
-// подложка под ним спорила бы с хиро.
-const isBand = (index: number) => Boolean(frame.value.bands) && index % 2 === 1;
 </script>

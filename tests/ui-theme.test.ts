@@ -6,6 +6,7 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 import {
   themeToCssVars,
+  resolveScheme,
   DEFAULT_UI_THEME_DARK,
 } from "../shared/utils/ui-theme.ts";
 
@@ -68,4 +69,28 @@ test("themeToCssVars: overlay вне 0–100 клампится, а не лом�
 
   assert.match(tooHigh, /--ui-bg-overlay: 1;/);
   assert.match(negative, /--ui-bg-overlay: 0;/);
+});
+
+const withHeaderBg = (headerBg: string, overrides: Record<string, string> = {}) => ({
+  ...DEFAULT_UI_THEME_DARK,
+  scheme: { ...DEFAULT_UI_THEME_DARK.scheme, "header-bg": headerBg, ...overrides },
+});
+
+test("header-text: auto даёт белый на тёмном header-bg", () => {
+  const resolved = resolveScheme(withHeaderBg("#0f172a"));
+
+  assert.equal(resolved["header-text"], "#ffffff");
+});
+
+test("header-text: auto даёт #0f172a на светлом header-bg", () => {
+  const resolved = resolveScheme(withHeaderBg("#ffffff"));
+
+  assert.equal(resolved["header-text"], "#0f172a");
+});
+
+test("header-text: явный primary-100 резолвится в свой цвет", () => {
+  const theme = withHeaderBg("#0f172a", { "header-text": "primary-100" });
+  const resolved = resolveScheme(theme);
+
+  assert.equal(resolved["header-text"], theme.colors.primary[100]);
 });
