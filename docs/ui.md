@@ -165,10 +165,13 @@ flips with the theme.
 ### `settings.uiTheme`
 
 The full per-site theme form (`shared/utils/ui-theme.ts`, mirrored by the admin panel) has
-twelve axes, and all of them are read now: `colors`, `scheme`, `type`, `geometry` and
-`variants` (see "Shortcodes") by the components and the runtime `:root`, `frame`, `decor`,
-`accents` and the non-family parts of `type`/`geometry` as `data-*` attributes on the page
-root (see "Frame"):
+ten axes, and all of them are read now: `colors`, `scheme`, `type`, `geometry` and
+`variants` (see "Shortcodes") by the components and the runtime `:root`, and `decor` plus
+the non-family parts of `type`/`geometry` as `data-*` attributes on the page root (see
+"Frame"). There is no theme-level `frame`/`accents` axis any more: page framing
+(`hero`/`sidebar`/`width`/`sticky`) lives on the **post**, not the theme, and header
+inversion, hero background style, section bands and the badge shape variant were removed
+outright, not moved anywhere else (see "Frame"):
 
 ```ts
 UiTheme = {
@@ -178,8 +181,7 @@ UiTheme = {
   type: { display: { family, weight?, tracking? }, body: { family } },
   geometry: { radius, borders?, shadow?, blockGap?, paragraphGap? },
   variants: { toc?, gridCards?, faq?, buttonRef? }, // see "Shortcodes"
-  frame: { headerInverted?, heroStyle?, bands? }, // hero/sidebar/width/sticky moved to the post's own `frame`, see "Frame"
-  decor: { h2?, sectionBg? }, accents: { badge? }, // see "Frame"
+  decor: { h2?, sectionBg? }, // see "Frame"
   updatedAt,
 }
 ```
@@ -203,10 +205,11 @@ theme").
 Storage: `models/schemas/UiTheme.ts`, embedded as `Setting.uiTheme`. `scheme` and `variants`
 are their own sub-schemas with `strict: false` — the known keys are declared (so a real typo
 still shows up in review), but an unrecognised one is kept rather than silently dropped,
-because the panel and this image don't always deploy in the same breath. `frame`, `decor`
-and `accents` are `Mixed` — their fields are read by CSS, not by the schema, and declaring
-them twice would only mean migrating twice. `setting.repository.ts` `getPublic()` returns
-`uiTheme` alongside `redirectsRoutes`, `brand`, `layout` and `strings`.
+because the panel and this image don't always deploy in the same breath. `decor` is
+`Mixed` — its fields are read by CSS, not by the schema, and declaring them twice would
+only mean migrating twice. `frame` and `accents` used to be `Mixed` sub-documents here too;
+both were dropped from the schema outright, not just left unused. `setting.repository.ts`
+`getPublic()` returns `uiTheme` alongside `redirectsRoutes`, `brand`, `layout` and `strings`.
 
 ## Site config from DB
 
@@ -330,31 +333,35 @@ or the live URL of the same page — must not be able to repaint a production si
 
 **The page around the article is a set of variants, not a fixed layout** — except for the
 header, the breadcrumbs and the footer, which have one look each and no theme key (see below).
-Four of the frame axes — `hero`, `sidebar`, `width`, `sticky` — live on the **post**
+All four frame axes — `hero`, `sidebar`, `width`, `sticky` — live on the **post**
 (`IPost.frame`, `shared/types/post.ts`), not the theme: every page picks its own, and a post
-with no `frame` at all gets the same defaults the site drew before this existed.
-`heroStyle`/`headerInverted`/`bands` stay in `uiTheme.frame` — brand-level, one per site, like
-`decor`/`type`/`geometry`. `resolvePageFrame(theme, postFrame)`
-(`shared/utils/ui-theme.ts`) merges the two sources into one `UiFrame`, dropping a value that
-isn't one of the axis's own — old data from another era, a typo — rather than let it reach the
-CSS; `useUiTheme().frameAttrs` then turns the merged result into `data-*` attributes on the
-page root — `<div id="site">` in `layouts/default.vue` **and in `error.vue`**, because a 404 is
-not drawn by the layout and would otherwise lose the frame.
+with no `frame` at all gets the same defaults the site drew before this existed. `UiTheme`
+carries no `frame` axis at all any more — `headerInverted`, `heroStyle` and `bands` were
+removed outright, not moved anywhere else: header text now always resolves through the
+`header-text` scheme token (`resolveRef` picks a colour that contrasts with `header-bg` on
+its own, so an "inverted" header falls out of the scheme instead of a separate flag), the
+hero background is always the same default surface, and sections are never banded.
+`resolvePageFrame(postFrame)` (`shared/utils/ui-theme.ts`) reads only the post now — there is
+no theme argument any more — dropping a value that isn't one of the axis's own — old data
+from another era, a typo — rather than let it reach the CSS; `useUiTheme().frameAttrs` then
+turns the result into `data-*` attributes on the page root — `<div id="site">` in
+`layouts/default.vue` **and in `error.vue`**, because a 404 is not drawn by the layout and
+would otherwise lose the frame.
 
 | Attribute                 | Axis                            | Values                                                          | Without a value |
 | ------------------------- | -------------------------------- | --------------------------------------------------------------- | --------------- |
 | `data-borders`            | `uiTheme.geometry.borders`      | `0` / `1` / `2`                                                 | `1`             |
 | `data-shadow`             | `uiTheme.geometry.shadow`       | `none` / `soft` / `glow`                                        | `none`          |
 | `data-width`              | **post** `frame.width`          | `narrow` / `wide`                                               | `wide`          |
-| `data-header-inverted`    | `uiTheme.frame.headerInverted`  | `true` / `false`                                                | `false`         |
 | `data-hero`               | **post** `frame.hero`           | `none` / `band` / `photo`                                       | `none`          |
-| `data-hero-style`         | `uiTheme.frame.heroStyle`       | `radial`…`flat` (seven, see below)                              | `none`          |
 | `data-sidebar`            | **post** `frame.sidebar`        | `none` / `toc` / `toc-offer`                                    | `none`          |
-| `data-bands`              | `uiTheme.frame.bands`           | `true` / `false`                                                | `false`         |
 | `data-sticky`             | **post** `frame.sticky`         | `none` / `bar` / `button`                                       | `none`          |
 | `data-h2`                 | `uiTheme.decor.h2`              | `none`/`underline`/`left-rule`/`dot`/`gradient`/`number`/`line` | `none`          |
 | `data-section-bg-width`   | `uiTheme.decor.sectionBg.width` | `container` / `full`                                            | none            |
-| `data-badge`              | `uiTheme.accents.badge`         | `pill` / `square`                                               | `pill`          |
+
+There is no `data-header-inverted`, `data-hero-style`, `data-bands` or `data-badge`
+attribute any more — the theme-level `frame`/`accents` axis they used to read is gone from
+`UiTheme`, not just unused, and nothing in `tailwind.css` selects on them.
 
 **An axis nothing carries is not written as an attribute at all**, and the `/* UI axes */`
 block in `tailwind.css` only ever styles a _deviation_ — so a page with no frame and a site
@@ -381,8 +388,11 @@ Where the frame parts are drawn:
 - **Header** — `HeaderLayout.vue`, one look: `layout.header.items` in three groups by
   `position` (left / centre / right), each item drawn by `HeaderNavItem.vue`. "Logo on the
   left, login and register on the right" is what the items say, not a variant — another page
-  or button is an edit in the panel's header constructor. `frame.headerInverted` stays: it is
-  a colour (white neutral over a brand surface), not a layout. A `frame.header` still stored
+  or button is an edit in the panel's header constructor. There is no `headerInverted` axis
+  any more: `.site-header` always sets its text/heading/link colour from the `header-text`
+  scheme token, and `resolveRef` picks that token's colour to contrast with `header-bg` on
+  its own — the white-over-brand-surface look an inverted header used to force by hand now
+  falls out of the scheme automatically. A `frame.header`/`frame.headerInverted` still stored
   in an older theme record is not read.
 - **Hero** — `HeroLayout.vue`, rendered by `BasePostView.vue` above the sections when the
   post's own `frame.hero !== "none"`. Breadcrumbs, the date line, the first section's H1, the author
@@ -391,18 +401,15 @@ Where the frame parts are drawn:
   `useHeroContent()`, and `PostSections.vue` reads the same decision — it drops the first
   section's H1 and renders its body with the moved markers removed
   (`shared/utils/shortcode-markers.ts`), or the author and the picture would appear twice.
-  `heroStyle` is seven branches of background in CSS; `skew` lays its ribbon with a
-  pseudo-element, and `solid` is the one branch that redefines `--color-ui-*` locally.
+  The hero background itself has no variant any more: `.site-hero` in `tailwind.css` is
+  always the same default surface (`panel-bg` plus a bottom border) — there is no
+  `heroStyle` axis left to switch it.
 - **Sidebar** — `AsideLayout.vue`, `md+` only, from the post's own `frame.sidebar`. The
   article's own table of contents, or one
   assembled from the section titles when the article has no `table-content` block, plus the
   offer card under `toc-offer`. The in-flow table of contents is hidden on desktop when a
   sidebar exists (`.toc-block` in the axes block) and stays in the page on a phone, where
   there is no sidebar at all.
-- **Bands** — `PostSections.vue` puts `band` on every second section (the lead is never
-  banded). No `calc(50% - 50cqw)` is needed here: sections already sit at full width and the
-  band is an ordinary block around the centred column. Bands and a sidebar are not meant to
-  be combined, and no preset does.
 - **Sticky CTA** — `StickyCtaLayout.vue`, phone only, `bar` (bonus line plus button) or
   `button`, from the post's own `frame.sticky`. It **replaced `BonusLayout.vue`**, the
   floating gift that used to sit in the corner of every page; a page with no `frame.sticky`
@@ -498,8 +505,8 @@ The size scale is called `step` and not `primary` on purpose: `text-primary-3` (
 `text-primary-300` (a colour) differed by one character and both were valid.
 
 Two radii are deliberately off the scale and should stay: `rounded-full` (a circle, not a
-brand corner, and what `accents.badge` toggles) and `rounded-*-none` (a corner squared off
-where a panel meets its header).
+brand corner — the writer avatar, the back-to-top button, the pagination dots) and
+`rounded-*-none` (a corner squared off where a panel meets its header).
 
 Article headings — `#article h1…h6` — keep their own ramp of hardcoded rem values, because
 folding a 2rem → 1.3rem sequence into the nine steps would either distort it or force the
@@ -696,9 +703,9 @@ and the models have to stay compatible with the panel's.
 enum the panel offers the operator — a variant the panel cannot write is a variant nobody
 will ever see.
 
-The axes a variant does **not** read: `geometry.borders`/`shadow` and `accents.badge` arrive
-as `data-*` attributes on the page root, so a component must not hardcode a border or a
-shadow where those are meant to reach it.
+The axes a variant does **not** read: `geometry.borders`/`shadow` arrive as `data-*`
+attributes on the page root, so a component must not hardcode a border or a shadow where
+those are meant to reach it.
 
 **A `data-table` cell is its own second runtime-compile surface.** `row[column.name]` goes
 through `PostDataTableRuntime.vue` the same way the article body goes through
