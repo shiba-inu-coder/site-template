@@ -42,7 +42,7 @@
             provider="cloudinary"
             :width="imgWidth"
             :height="imgHeight"
-            class="w-full h-full object-contain"
+            :class="imgFitClass"
             :alt="item.img.alt"
             :src="item.img.path"
             :modifiers="{ roundCorner: roundCorner }"
@@ -69,7 +69,7 @@
             provider="cloudinary"
             :width="imgWidth"
             :height="imgHeight"
-            class="w-full h-full object-contain"
+            :class="imgFitClass"
             :alt="item.img.alt"
             :src="item.img.path"
             :modifiers="{ roundCorner: roundCorner }"
@@ -132,6 +132,16 @@ const horizontal = computed(() => layout.value.horizontal);
 
 const imgBoxClass = computed(() =>
   horizontal.value ? "w-[36%] shrink-0" : "aspect-video overflow-hidden",
+);
+
+// Вертикальная обложка стоит в боксе 16:9 и вписывается целиком (обложки
+// игр почти квадратные — cover резал их пополам). У горизонтальной бокса
+// с пропорцией нет, колонка тянется по высоте текста, и contain оставил бы
+// в ней полосы — там картинка заполняет колонку.
+const imgFitClass = computed(() =>
+  horizontal.value
+    ? "w-full h-full object-cover"
+    : "w-full h-full object-contain",
 );
 
 const items = computed(() => list.value?.data.data ?? []);

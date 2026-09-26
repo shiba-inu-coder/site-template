@@ -678,7 +678,9 @@ picture in a 36 % column to the left of the text, for `image-caption` and
 with `object-contain`, not `object-cover`.** Every card in a row lands the same height
 regardless of the source image's own ratio, and a near-square cover (a game thumbnail) is
 never cropped in half — the letterboxing on the sides shows the card's own `bg-ui-card-bg`.
-`image` has no box and keeps `object-cover` on its own picture.
+That is the vertical layout only: with `horizontal` the 36 % column has no ratio of its own,
+and the picture keeps `object-cover` there (`imgFitClass`). `image` has no box and keeps
+`object-cover` on its own picture.
 
 The header, the breadcrumbs and the footer have no key here: each has one look, see "Frame".
 
