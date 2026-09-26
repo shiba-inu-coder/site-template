@@ -136,7 +136,7 @@ brand or surface ref it resolves to, the same string `shared/utils/ui-theme.ts` 
 | `ui-table-row-border` | `primary-100`      | data-table outer border                                                                        |
 | `ui-badge-bg`         | `accent-200`       | author/position badge background                                                               |
 | `ui-badge-text`       | `surface-on-brand` | text on `ui-badge-bg`                                                                          |
-| `ui-marker`           | `accent-200`       | `#article` list markers, author avatar ring, `data-h2`/`data-bg`/hero decor                    |
+| `ui-marker`           | `accent-200`       | `#article` list markers, author avatar ring, `data-h2`/hero decor                              |
 | `ui-accent-strong`    | `accent-300`       | rating score, entity ribbon cutout                                                             |
 | `ui-accent-soft`      | `accent-100`       | bonus amount (needs the lighter shade for contrast — same reason as the old `text-accent-100`) |
 
@@ -175,11 +175,11 @@ UiTheme = {
   templateId, templateName, mode: "dark" | "light",
   colors: { primary, active, accent } × { 300, 200, 100 },
   scheme: { [uiToken]: "primary-200" | "surface-text" | "#hex" }, // ~31 keys, see table above
-  type: { display: { family, weight?, case?, tracking? }, body: { family }, scale?, h1Align? },
-  geometry: { radius, borders?, shadow?, density? },
+  type: { display: { family, weight?, tracking? }, body: { family } },
+  geometry: { radius, borders?, shadow?, blockGap?, paragraphGap? },
   variants: { toc?, gridCards?, faq?, buttonRef? }, // see "Shortcodes"
   frame: { headerInverted?, heroStyle?, bands? }, // hero/sidebar/width/sticky moved to the post's own `frame`, see "Frame"
-  decor: { h2?, bg?, img?, btn? }, accents: { badge? }, // see "Frame"
+  decor: { h2?, sectionBg? }, accents: { badge? }, // see "Frame"
   updatedAt,
 }
 ```
@@ -188,7 +188,9 @@ UiTheme = {
 `primary-`/`active-`/`accent-` reads `theme.colors`, one starting with `surface-` reads a
 fixed dark/light neutral pair (the same values as `:root`/`:root[data-theme="light"]`), and
 anything else (a `#hex`) passes through unchanged. `themeToCssVars(theme)` wraps
-`resolveScheme`'s output plus `--radius-primary`/`--font-primary`/`--font-heading` in one
+`resolveScheme`'s output plus `--radius-primary`/`--font-primary`/`--font-heading` /
+`--font-heading-weight`/`--font-heading-tracking`/`--block-gap`/`--paragraph-gap`/
+`--ui-section-bg` in one
 `:root { … }` string — **no `--shadow-*`**: shadow utilities compile to a literal at build
 time (see below), so a runtime CSS variable for it would do nothing, the same reason the
 brand patcher never patched one. An axis the record does not carry is left out of that
@@ -339,30 +341,33 @@ CSS; `useUiTheme().frameAttrs` then turns the merged result into `data-*` attrib
 page root — `<div id="site">` in `layouts/default.vue` **and in `error.vue`**, because a 404 is
 not drawn by the layout and would otherwise lose the frame.
 
-| Attribute              | Axis                           | Values                                                          | Without a value |
-| ---------------------- | ------------------------------ | --------------------------------------------------------------- | --------------- |
-| `data-scale`           | `uiTheme.type.scale`           | `compact` / `regular` / `display`                               | `regular`       |
-| `data-h1`              | `uiTheme.type.h1Align`         | `left` / `center`                                               | `left`          |
-| `data-density`         | `uiTheme.geometry.density`     | `tight` / `regular` / `airy`                                    | `regular`       |
-| `data-borders`         | `uiTheme.geometry.borders`     | `0` / `1` / `2`                                                 | `1`             |
-| `data-shadow`          | `uiTheme.geometry.shadow`      | `none` / `soft` / `glow`                                        | `none`          |
-| `data-width`           | **post** `frame.width`         | `narrow` / `wide`                                               | `wide`          |
-| `data-header-inverted` | `uiTheme.frame.headerInverted` | `true` / `false`                                                | `false`         |
-| `data-hero`            | **post** `frame.hero`          | `none` / `band` / `photo`                                       | `none`          |
-| `data-hero-style`      | `uiTheme.frame.heroStyle`      | `radial`…`flat` (seven, see below)                              | `none`          |
-| `data-sidebar`         | **post** `frame.sidebar`       | `none` / `toc` / `toc-offer`                                    | `none`          |
-| `data-bands`           | `uiTheme.frame.bands`          | `true` / `false`                                                | `false`         |
-| `data-sticky`          | **post** `frame.sticky`        | `none` / `bar` / `button`                                       | `none`          |
-| `data-h2`              | `uiTheme.decor.h2`             | `none`/`underline`/`left-rule`/`dot`/`gradient`/`number`/`line` | `none`          |
-| `data-bg`              | `uiTheme.decor.bg`             | `flat` / `radial` / `dots` / `grid` / `stripes`                 | `flat`          |
-| `data-img`             | `uiTheme.decor.img`            | `rounded` / `framed` / `square` / `tilt`                        | `rounded`       |
-| `data-btn`             | `uiTheme.decor.btn[]`          | space-joined subset of `pill skew gradient`                     | none            |
-| `data-badge`           | `uiTheme.accents.badge`        | `pill` / `square`                                               | `pill`          |
+| Attribute                 | Axis                            | Values                                                          | Without a value |
+| ------------------------- | -------------------------------- | --------------------------------------------------------------- | --------------- |
+| `data-borders`            | `uiTheme.geometry.borders`      | `0` / `1` / `2`                                                 | `1`             |
+| `data-shadow`             | `uiTheme.geometry.shadow`       | `none` / `soft` / `glow`                                        | `none`          |
+| `data-width`              | **post** `frame.width`          | `narrow` / `wide`                                               | `wide`          |
+| `data-header-inverted`    | `uiTheme.frame.headerInverted`  | `true` / `false`                                                | `false`         |
+| `data-hero`               | **post** `frame.hero`           | `none` / `band` / `photo`                                       | `none`          |
+| `data-hero-style`         | `uiTheme.frame.heroStyle`       | `radial`…`flat` (seven, see below)                              | `none`          |
+| `data-sidebar`            | **post** `frame.sidebar`        | `none` / `toc` / `toc-offer`                                    | `none`          |
+| `data-bands`              | `uiTheme.frame.bands`           | `true` / `false`                                                | `false`         |
+| `data-sticky`             | **post** `frame.sticky`         | `none` / `bar` / `button`                                       | `none`          |
+| `data-h2`                 | `uiTheme.decor.h2`              | `none`/`underline`/`left-rule`/`dot`/`gradient`/`number`/`line` | `none`          |
+| `data-section-bg-width`   | `uiTheme.decor.sectionBg.width` | `container` / `full`                                            | none            |
+| `data-badge`              | `uiTheme.accents.badge`         | `pill` / `square`                                               | `pill`          |
 
 **An axis nothing carries is not written as an attribute at all**, and the `/* UI axes */`
 block in `tailwind.css` only ever styles a _deviation_ — so a page with no frame and a site
 with no theme render exactly what they rendered before this existed. That is the rule to keep
 when adding a value: never write the default branch.
+
+**`data-section-bg-width` is the one exception with no CSS rule behind it.** Nothing in
+`tailwind.css` selects on it — `PostSections.vue` (see "Sections") reads
+`useUiTheme().theme.value.decor.sectionBg` directly for its own per-section rendering
+decision, more reliably than re-deriving it from the DOM. The attribute exists only for
+the same consistency/inspection value the other axes get, and is written only when
+`decor.sectionBg.token` is non-empty (an empty token means "no default background",
+whatever `width` says).
 
 That block is plain CSS on purpose. `@config` turns off Tailwind's source scanning, so a
 class assembled at runtime is never compiled — an attribute selector is not a class and is
@@ -522,6 +527,13 @@ Fonts link written by `app/plugins/ui-theme.ts` at runtime.
 `defaults.weights` in `nuxt.config.ts` is **one list for every family**, so the patcher writes
 the union of both fonts' weights. Declaring the heading font with the same name but a heavier
 weight is a supported way to ask for that weight.
+
+Loading the weight is only half of it: `useUiTheme()`'s `fontsHref` adds `type.display.weight`
+to `GOOGLE_FONT_WEIGHTS` so the *file* is fetched, and `--font-heading-weight` (`themeToCssVars`,
+`h1…h6`'s `font-weight`) is what actually *sets* it — a theme with a weight the Google Fonts
+request didn't carry would render the browser's synthetic-bold fallback instead. Letter-spacing
+has no separate loading step: `--font-heading-tracking` is a raw CSS value passed straight
+through from `type.display.tracking` into `letter-spacing`.
 
 ## Logos
 
@@ -684,9 +696,9 @@ and the models have to stay compatible with the panel's.
 enum the panel offers the operator — a variant the panel cannot write is a variant nobody
 will ever see.
 
-The axes a variant does **not** read: `geometry.borders`/`shadow`, `decor.img`/`btn` and
-`accents.badge` arrive as `data-*` attributes on the page root, so a component must not
-hardcode a border, a shadow or a button shape where those are meant to reach it.
+The axes a variant does **not** read: `geometry.borders`/`shadow` and `accents.badge` arrive
+as `data-*` attributes on the page root, so a component must not hardcode a border or a
+shadow where those are meant to reach it.
 
 **A `data-table` cell is its own second runtime-compile surface.** `row[column.name]` goes
 through `PostDataTableRuntime.vue` the same way the article body goes through
@@ -733,32 +745,39 @@ single `RuntimeTemplateLayout` over `content`. Both fields are always populated 
 also assembles the sections into flat HTML — so a site that has not been rebuilt yet keeps
 rendering the same article from `content` and notices nothing.
 
-Every section renders inside the same `CONTAINER` wrapper no matter what `layout.width` says —
-`PostSections.vue` stopped reading `section.layout` altogether, and with it went the
-`container`/`full` branch and the inline `style="padding:…"`. `CONTAINER` carries its own
-horizontal padding again (`px-2.5 md:px-4 xl:px-0`), the same values `BasePostView.vue`'s
-legacy `content` path has always used. The old full-bleed trick (`100vw`, negative margins)
-still exists only in the panel's fallback HTML, where the markup lives inside the shared
-container and has to fight its way out — not on this path.
+**A section's background comes from `layout.mode`, read on every render.** `"site"` takes the
+theme's own `decor.sectionBg` whole — `--ui-section-bg` **and** its `width` — the section's own
+`width` is not consulted in this mode, since the operator picked "as the site" precisely to
+inherit it. `"none"` suppresses even a configured theme default. `"color"`/`"image"` carry the
+section's own background and its own `width`. `width: "full"` paints the background on the
+wrapper **outside** `CONTAINER`, edge to edge, no rounding; `width: "container"` paints it on
+the `<section>` itself, **inside** `CONTAINER`, with `rounded-primary` and the `p-primary-1`
+padding block. `CONTAINER` itself is unconditional either way — its own horizontal padding
+(`px-2.5 md:px-4 xl:px-0`) is the same `BasePostView.vue`'s legacy `content` path has always
+used, and a section with no background at all (mode `"none"`, or `"site"` with no theme default
+set) renders exactly as it did before this axis existed.
 
 Section bodies go through the same `RuntimeTemplateLayout`, so shortcodes work untouched:
 `shortcodesConfig` sits on the post as a whole and `uniqId` addresses a block across the
 entire article, not within one section.
 
-**`shared/utils/section-style.ts` is a mirror of `appspro/shared/utils/article-sections.js`.**
-Colours, padding, margin and radius are emitted as an inline `style`, never as classes: the
-values come out of Mongo, and `@config` means a class assembled at runtime is never compiled.
-`layout.padding` is an object (`{top,right,bottom,left}`, px) rather than the four presets it
-used to be — a record written before that change still stores a preset string
-(`none`/`sm`/`md`/`lg`), and `normalizeSectionLayout` converts it to px on the way in so old and
-new records render the same way. The outer margin (`margin.top`/`bottom`, gap from the
-neighbouring sections) is written as `margin-top`/`margin-bottom` specifically, never the
-`margin` shorthand — the panel's own fallback HTML relies on `margin-left` for its "full width"
-escape trick, and the shorthand would zero that out if it ever landed on the same element. A
-brand token becomes `color-mix(in srgb, var(--color-primary-200) 40%, transparent)` rather than
-a resolved colour, so repainting the brand repaints articles that were written long before. If
-that formula changes on one side and not the other, the same article renders differently
-depending on which of the two paths drew it.
+**`shared/utils/section-style.ts`'s `normalizeSectionLayout` fills in every field a record
+written before an axis existed does not carry** — `mode` defaults to `"site"`, the same
+"operator never touched this" meaning an absent `sectionImageLayout`/`resolvePageFrame` field
+carries elsewhere. `sectionBackgroundColor`/`sectionBackgroundImage` are what `PostSections.vue`
+actually calls, and they mirror `appspro`'s own `ArticleSection.js`/`section-bg.js` — but only
+the narrow shape (`mode`, `width`, `bg.token`, `image.{path,alt,overlay}`) the panel's per-section
+form writes. `sectionStyle`, the older function combining colour, image, padding, margin and
+radius into one inline `style`, has no caller left in this repository: the panel dropped
+`padding`/`margin`/`radius`/`hex`/`opacity` from its own mirror when it brought `layout` back,
+and nothing writes them from the operator-facing form any more. A record from that earlier era
+can still carry them, and `normalizeSectionLayout` still parses them without throwing, but
+nothing on this page reads the result. A brand token in `bg.token` becomes
+`color-mix(in srgb, var(--color-primary-200) 40%, transparent)` rather than a resolved colour,
+so repainting the brand repaints sections that were coloured long before. Darkening an image
+background is the same `color-mix` device, but against `--color-ui-page-bg` rather than a brand
+token — a flat black overlay would read as a foreign smudge on a light theme, where the page
+(and the section text sitting on it) is already light.
 
 ## Template sync
 
