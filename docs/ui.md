@@ -408,12 +408,16 @@ Where the frame parts are drawn:
   home page's `breadcrumbTitle`, and the panel leaves it empty there. `breadcrumbTitle` and
   `layout.breadcrumbs.homeLabel` only answer on a template no brand has been applied to. The
   BreadcrumbList schema.org carries the same labels.
-- **Footer** — `FooterLayout.vue`, one look, no logo: a text column (`layout.footer.body`, the
-  disclaimer HTML the brand run generates) beside a links column (`layout.footer.links`), a
-  row of badges under them (`layout.footer.legalLogos` — 18+, GamCare, the licence; Cloudinary
-  public ids through `NuxtImg`), and the copyright line. That line is `layout.footer.title`,
-  which the panel assembles as "domain © year rights" when a brand is applied, so its year is
-  the year of the last apply; a site with no brand record gets `© <year> <DOMAIN_NAME>`.
+- **Footer** — `FooterLayout.vue`, one look, a single centered column
+  (`flex flex-col items-center gap-6`): the logo (`siteConfig.logo`, the same `logoSize`
+  ceiling as the header — see "Logos" below — skipped with no text fallback when the site has
+  none), the text (`layout.footer.body`, the disclaimer HTML the brand run generates,
+  left-aligned inside the centered column), a row of badges (`layout.footer.legalLogos` — 18+,
+  GamCare, the licence; Cloudinary public ids through `NuxtImg`), a row of links
+  (`layout.footer.links`), and the copyright line. That line keeps its own `bg-ui-footer-bg-alt`
+  strip below the column, text centred; it is `layout.footer.title`, which the panel assembles
+  as "domain © year rights" when a brand is applied, so its year is the year of the last apply
+  — a site with no brand record gets `© <year> <DOMAIN_NAME>`.
 
 The offer behind the sidebar card and the sticky bar is `usePageOffer()`: there is no "offer"
 record in an article, so it is assembled from what the page already has — the banner's casino

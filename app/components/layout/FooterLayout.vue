@@ -1,17 +1,43 @@
 <template>
   <footer class="site-footer bg-ui-footer-bg text-ui-text">
     <div
-      v-if="body || links.length"
-      class="grid gap-6 px-5 py-8 md:grid-cols-[2fr_1fr] md:px-8"
+      v-if="siteConfig.logo.src || body || legalLogos.length || links.length"
+      class="flex flex-col items-center gap-6 px-5 py-8 md:px-8"
     >
+      <NuxtImg
+        v-if="siteConfig.logo.src"
+        provider="cloudinary"
+        v-bind="logoSize(siteConfig.logo, 50, 240)"
+        class="h-auto w-auto max-h-[50px] max-w-[240px] object-contain"
+        :alt="siteConfig.logo.alt"
+        :src="siteConfig.logo.src"
+      />
+
       <div
         v-if="body"
-        class="text-step-9 leading-5"
+        class="w-full text-left text-step-9 leading-5"
         v-html="body"
       ></div>
+
+      <div
+        v-if="legalLogos.length"
+        class="flex flex-wrap justify-center gap-4"
+      >
+        <NuxtImg
+          v-for="(gamblingIcon, i) in legalLogos"
+          :key="i"
+          loading="lazy"
+          width="auto"
+          provider="cloudinary"
+          height="50"
+          :src="gamblingIcon.src"
+          :alt="gamblingIcon.alt"
+        />
+      </div>
+
       <div
         v-if="links.length"
-        class="grid content-start gap-1.5 text-step-8"
+        class="flex flex-wrap justify-center gap-x-4 gap-y-1.5 text-step-8"
       >
         <nuxt-link
           v-for="{ link, name } in links"
@@ -24,25 +50,9 @@
       </div>
     </div>
 
-    <div
-      v-if="legalLogos.length"
-      class="flex flex-wrap items-center gap-4 px-5 pb-6 md:px-8"
-    >
-      <NuxtImg
-        v-for="(gamblingIcon, i) in legalLogos"
-        :key="i"
-        loading="lazy"
-        width="auto"
-        provider="cloudinary"
-        height="50"
-        :src="gamblingIcon.src"
-        :alt="gamblingIcon.alt"
-      />
-    </div>
-
     <p
       v-if="copyright"
-      class="bg-ui-footer-bg-alt px-5 py-3 text-step-9 text-ui-muted md:px-8"
+      class="bg-ui-footer-bg-alt px-5 py-3 text-center text-step-9 text-ui-muted md:px-8"
     >
       {{ copyright }}
     </p>
@@ -50,6 +60,8 @@
 </template>
 
 <script setup lang="ts">
+import { logoSize } from "#rc/utils/logo-size";
+
 const siteConfig = useSiteConfig();
 const domainName = useRuntimeConfig().public.DOMAIN_NAME as string | undefined;
 
