@@ -15,9 +15,11 @@ npm run dev        # dev server on http://localhost:3000 (needs .env with MONGO_
 npm run build      # production build; vue-tsc type check runs as part of it
 npm run lint       # eslint + prettier --write
 npm run lintfix    # eslint --fix + prettier
+npm test           # node --test over tests/*.test.ts
 ```
 
-- No test suite exists.
+- Tests cover pure functions from `shared/` only — no DB, no network, no components.
+  Templates and class names are checked by `npm run build` alone.
 - `npm install` requires `legacy-peer-deps` (set in `.npmrc`). Vite is overridden to `rolldown-vite`.
 - Deploy: GitHub Actions builds the image with **no build args** → VPS Docker Swarm.
   `docker/entrypoint.mjs` reads the site's Vault record at container start and exports every
@@ -61,7 +63,6 @@ types/constants/utils). Aliases: `#sg` → `server/`, `#rc` → `app/`.
 
 ### Conventions & gotchas
 
-- The `:root` block in `tailwind.css` is the one place comments are load-bearing — see below.
 - `components: false` — no component auto-import; import components explicitly.
 - Auto-imports from `shared/` are load-bearing: `EntityModel`, `PostCategory`, `buildURL`,
   `I*` types are used WITHOUT imports. Never "clean up" `shared/types/index.ts`.
@@ -93,14 +94,16 @@ component's classes, or a new page. The three rules that break things silently:
 - **Colour by role, not by eye.** `primary` = surfaces, `active` = anything interactive
   (CTA, links, hover, focus), `accent` = static brightness (badges, ribbons, article
   headings). The scale is inverted: 300 is darkest, 200 is the base, hover moves one step.
-  These nine values are written in by the AppsPro brand patcher, so a misplaced family puts
-  a brand's button colour on a heading. Body text is `text-surface-text`, never `text-white`
+  These nine values come from the site's `uiTheme.colors` at runtime, so a misplaced family
+  puts a brand's button colour on a heading. Body text is `text-surface-text`, never `text-white`
   — that token is what flips between the light and dark themes.
 - **Sizes come from `text-step-1` … `text-step-9`** (1 is the largest), radii from
   `rounded-primary`. Not `text-sm`/`rounded-lg`.
-- **`:root` in `tailwind.css` is a contract with that patcher**, comments included. It throws
-  on a renamed anchor, a reordered family, or a second `--radius-primary` — in production,
-  for every site. Run the patcher over the file after editing it.
+- **`:root` in `tailwind.css` holds the template's neutral defaults, not a brand.** A site's
+  colours, radius, fonts and `ui-*` scheme reach the page only through `themeToCssVars`
+  (`shared/utils/ui-theme.ts`) in `<style id="ui-theme">`. A variable a component or a
+  runtime style reads by name has to be written there too, or a themed site shows the slate
+  default under its brand. A `ui-*` line renamed in `:root` is renamed in `UI_TOKENS` as well.
 - **`@config` disables Tailwind's source detection.** Only the globs in `tailwind.config.js`
   are scanned, so a class name built in a `.ts` file or coming from Mongo never compiles.
   Spell runtime-chosen classes out as literals.
