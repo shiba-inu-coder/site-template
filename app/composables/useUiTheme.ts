@@ -18,7 +18,6 @@ import type {
 export const useUiTheme = () => {
   const { uiTheme, setUiTheme } = useSettings();
   const siteConfig = useSiteConfig();
-  const runtimeConfig = useRuntimeConfig();
   const { frame: postFrame } = usePost();
 
   const theme = computed<UiTheme | null>(() =>
@@ -30,12 +29,7 @@ export const useUiTheme = () => {
   );
 
   const cssVars = computed(() =>
-    theme.value
-      ? themeToCssVars(
-          theme.value,
-          runtimeConfig.public.CLOUDINARY_CLOUD_NAME as string,
-        )
-      : "",
+    theme.value ? themeToCssVars(theme.value) : "",
   );
 
   const fontsHref = computed(() => {
@@ -89,10 +83,12 @@ export const useUiTheme = () => {
       "data-width": frameValue.width,
       "data-sticky": frameValue.sticky,
       "data-h2": value?.decor?.h2,
-      "data-bg": value?.decor?.bg,
-      "data-bg-image": value?.decor?.bgImage?.path ? "1" : undefined,
-      "data-img": value?.decor?.img,
-      "data-btn": value?.decor?.btn?.join(" "),
+      // Ширина фона секций по умолчанию — читает PostSections.vue у секций
+      // с mode "site" напрямую через useUiTheme().theme, а не через этот
+      // атрибут; он здесь для той же CSS-развязки, что и остальные оси.
+      "data-section-bg-width": value?.decor?.sectionBg?.token
+        ? value.decor.sectionBg.width
+        : undefined,
     };
 
     return Object.fromEntries(

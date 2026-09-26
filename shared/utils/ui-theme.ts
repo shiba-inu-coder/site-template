@@ -1,7 +1,6 @@
 // Чистый модуль: без импортов из Nuxt/Vue и без auto-import. Схема темы
 // читается и панелью (appspro), и этим сайтом, и превью — там, где Nuxt не
 // поднят вовсе.
-import { getCloudinaryBaseUrl } from "#rc/utils/get-cloudinary-base-url";
 import { contrastRatio } from "./contrast.ts";
 
 export type UiThemeMode = "dark" | "light";
@@ -120,6 +119,11 @@ export interface UiVariants {
   buttonRef?: string;
 }
 
+// Три оттенка primary — та же ось, что per-секционный layout.bg.token в
+// конструкторе статьи (appspro-articles, PostSection.layout ниже), с этим
+// объектом не путать: тот перекрывает эту по одной секции, mode "site".
+export type SectionBgToken = "" | "primary-100" | "primary-200" | "primary-300";
+
 export interface UiDecor {
   h2?:
     | "none"
@@ -129,12 +133,7 @@ export interface UiDecor {
     | "gradient"
     | "number"
     | "line";
-  bg?: "flat" | "radial" | "dots" | "grid" | "stripes";
-  // Побеждает над `bg`: обе оси взаимоисключающи, порядок правил в
-  // tailwind.css решает это на CSS-уровне, а не чтением здесь.
-  bgImage?: { path: string; overlay: number };
-  img?: "rounded" | "framed" | "square" | "tilt";
-  btn?: Array<"pill" | "skew" | "gradient">;
+  sectionBg?: { token?: SectionBgToken; width?: "container" | "full" };
 }
 
 export interface UiTheme {
@@ -306,10 +305,9 @@ export const resolveScheme = (theme: UiTheme): Record<UiToken, string> => {
   return result;
 };
 
-// Цвета + радиус + шрифты + фон статьи картинкой — оси, которые уже есть в
-// этом этапе. Остальной декор (variants/decor.h2|bg|img|btn) сюда не
-// попадает: его рендерят 4c/4e.
-export const themeToCssVars = (theme: UiTheme, cloudName: string): string => {
+// Цвета + радиус + шрифты + отступы + фон секций по умолчанию. Остальной
+// декор (variants/decor.h2) сюда не попадает: его рендерят другие слои.
+export const themeToCssVars = (theme: UiTheme): string => {
   const resolved = resolveScheme(theme);
 
   const lines = UI_TOKENS.map(
@@ -340,22 +338,17 @@ export const themeToCssVars = (theme: UiTheme, cloudName: string): string => {
     lines.push(`  --paragraph-gap: ${theme.geometry.paragraphGap};`);
   }
 
-  const bgImagePath = theme.decor?.bgImage?.path;
-  if (bgImagePath) {
-    const url = /^https?:\/\//.test(bgImagePath)
-      ? bgImagePath
-      : `${getCloudinaryBaseUrl(cloudName)}f_auto,q_auto/${bgImagePath}`;
+  // Только оттенок primary — тот же диапазон, что SectionBgToken; секция с
+  // mode "site" (PostSections.vue) читает эту переменную по имени, без
+  // своего резолва токена.
+  const sectionBgToken = theme.decor?.sectionBg?.token;
+  if (sectionBgToken) {
+    const shade = sectionBgToken.split("-")[1] as keyof UiColorRamp;
+    const hex = theme.colors?.primary?.[shade];
 
-    // `decor` — Mixed в Mongo, без валидации на запись: overlay нечисловым
-    // или вне 0–100 не должен превращать весь background-image (картинка
-    // вместе с градиентом-затемнением — одно CSS-значение) в невалидный.
-    const rawOverlay = Number(theme.decor?.bgImage?.overlay);
-    const overlay = Number.isFinite(rawOverlay)
-      ? Math.min(100, Math.max(0, rawOverlay))
-      : 0;
-
-    lines.push(`  --ui-bg-image: url(${url});`);
-    lines.push(`  --ui-bg-overlay: ${overlay / 100};`);
+    if (hex) {
+      lines.push(`  --ui-section-bg: ${hex};`);
+    }
   }
 
   return `:root {\n${lines.join("\n")}\n}`;

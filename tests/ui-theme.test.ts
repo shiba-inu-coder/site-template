@@ -10,65 +10,34 @@ import {
   DEFAULT_UI_THEME_DARK,
 } from "../shared/utils/ui-theme.ts";
 
-const CLOUD_NAME = "test-cloud";
-
-const withBgImage = (bgImage: { path: string; overlay: number }) => ({
+const withSectionBg = (sectionBg: { token: string; width: string }) => ({
   ...DEFAULT_UI_THEME_DARK,
-  decor: { ...DEFAULT_UI_THEME_DARK.decor, bgImage },
+  decor: { ...DEFAULT_UI_THEME_DARK.decor, sectionBg },
 });
 
-test("themeToCssVars: без decor.bgImage фоновых строк нет", () => {
-  const css = themeToCssVars(DEFAULT_UI_THEME_DARK, CLOUD_NAME);
+test("themeToCssVars: без decor.sectionBg своей переменной нет", () => {
+  const css = themeToCssVars(DEFAULT_UI_THEME_DARK);
 
-  assert.doesNotMatch(css, /--ui-bg-image/);
-  assert.doesNotMatch(css, /--ui-bg-overlay/);
+  assert.doesNotMatch(css, /--ui-section-bg/);
 });
 
-test("themeToCssVars: пустой path — то же самое, что фона нет", () => {
+test("themeToCssVars: пустой token — то же самое, что фона нет", () => {
+  const css = themeToCssVars(withSectionBg({ token: "", width: "container" }));
+
+  assert.doesNotMatch(css, /--ui-section-bg/);
+});
+
+test("themeToCssVars: фон секций по умолчанию идёт через оттенок primary", () => {
   const css = themeToCssVars(
-    withBgImage({ path: "", overlay: 50 }),
-    CLOUD_NAME,
-  );
-
-  assert.doesNotMatch(css, /--ui-bg-image/);
-  assert.doesNotMatch(css, /--ui-bg-overlay/);
-});
-
-test("themeToCssVars: Cloudinary public id идёт через f_auto,q_auto", () => {
-  const css = themeToCssVars(
-    withBgImage({ path: "site/bg-mountains", overlay: 40 }),
-    CLOUD_NAME,
+    withSectionBg({ token: "primary-200", width: "full" }),
   );
 
   assert.match(
     css,
-    /--ui-bg-image: url\(https:\/\/res\.cloudinary\.com\/test-cloud\/image\/upload\/f_auto,q_auto\/site\/bg-mountains\);/,
+    new RegExp(
+      `--ui-section-bg: ${DEFAULT_UI_THEME_DARK.colors.primary[200]};`,
+    ),
   );
-  assert.match(css, /--ui-bg-overlay: 0\.4;/);
-});
-
-test("themeToCssVars: абсолютный URL идёт как есть, без Cloudinary", () => {
-  const css = themeToCssVars(
-    withBgImage({ path: "https://example.com/bg.jpg", overlay: 0 }),
-    CLOUD_NAME,
-  );
-
-  assert.match(css, /--ui-bg-image: url\(https:\/\/example\.com\/bg\.jpg\);/);
-  assert.match(css, /--ui-bg-overlay: 0;/);
-});
-
-test("themeToCssVars: overlay вне 0–100 клампится, а не ломает значение", () => {
-  const tooHigh = themeToCssVars(
-    withBgImage({ path: "site/bg.jpg", overlay: 150 }),
-    CLOUD_NAME,
-  );
-  const negative = themeToCssVars(
-    withBgImage({ path: "site/bg.jpg", overlay: -20 }),
-    CLOUD_NAME,
-  );
-
-  assert.match(tooHigh, /--ui-bg-overlay: 1;/);
-  assert.match(negative, /--ui-bg-overlay: 0;/);
 });
 
 const withHeaderBg = (headerBg: string, overrides: Record<string, string> = {}) => ({
