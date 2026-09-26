@@ -658,6 +658,12 @@ none of them is migrated.
 picture in a 36 % column to the left of the text, for `image-caption` and
 `image-title-text`. `image` has no text to put beside the picture and ignores it.
 
+**The image box in `image-caption` and `image-title-text` is a fixed `aspect-video` (16:9)
+with `object-contain`, not `object-cover`.** Every card in a row lands the same height
+regardless of the source image's own ratio, and a near-square cover (a game thumbnail) is
+never cropped in half — the letterboxing on the sides shows the card's own `bg-ui-card-bg`.
+`image` has no box and keeps `object-cover` on its own picture.
+
 The header, the breadcrumbs and the footer have no key here: each has one look, see "Frame".
 
 **The table of contents' accordion is `<details>`/`<summary>`** — no script, closed until
