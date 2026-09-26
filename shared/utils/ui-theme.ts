@@ -80,21 +80,21 @@ export interface UiTypeAxis {
   display: {
     family: string;
     weight?: number;
-    case?: "none" | "upper";
     tracking?: string;
   };
   body: {
     family: string;
   };
-  scale?: "compact" | "regular" | "display";
-  h1Align?: "left" | "center";
 }
 
 export interface UiGeometry {
   radius: string;
   borders?: 0 | 1 | 2;
   shadow?: "none" | "soft" | "glow";
-  density?: "tight" | "regular" | "airy";
+  // Свободные CSS-длины (12px/0.5rem), не enum — оператор набирает своё
+  // значение, а не выбирает из трёх пресетов, как раньше density.
+  blockGap?: string;
+  paragraphGap?: string;
 }
 
 // Поля страницы, не темы — у каждой страницы свой каркас, и
@@ -326,6 +326,18 @@ export const themeToCssVars = (theme: UiTheme, cloudName: string): string => {
   }
   if (theme.type?.display?.family) {
     lines.push(`  --font-heading: ${theme.type.display.family};`);
+  }
+  if (theme.type?.display?.weight) {
+    lines.push(`  --font-heading-weight: ${theme.type.display.weight};`);
+  }
+  if (theme.type?.display?.tracking) {
+    lines.push(`  --font-heading-tracking: ${theme.type.display.tracking};`);
+  }
+  if (theme.geometry?.blockGap) {
+    lines.push(`  --block-gap: ${theme.geometry.blockGap};`);
+  }
+  if (theme.geometry?.paragraphGap) {
+    lines.push(`  --paragraph-gap: ${theme.geometry.paragraphGap};`);
   }
 
   const bgImagePath = theme.decor?.bgImage?.path;

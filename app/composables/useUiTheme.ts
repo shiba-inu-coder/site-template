@@ -82,11 +82,8 @@ export const useUiTheme = () => {
     const frameValue = frame.value;
 
     const attrs: Record<string, unknown> = {
-      "data-scale": value?.type?.scale,
-      "data-h1": value?.type?.h1Align,
       "data-borders": value?.geometry?.borders,
       "data-shadow": value?.geometry?.shadow,
-      "data-density": value?.geometry?.density,
       "data-hero": frameValue.hero,
       "data-sidebar": frameValue.sidebar,
       "data-width": frameValue.width,

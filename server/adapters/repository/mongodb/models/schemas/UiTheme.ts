@@ -47,21 +47,20 @@ export const UiThemeSchema = new Schema(
       display: {
         family: { type: String },
         weight: { type: Number },
-        case: { type: String, enum: ["none", "upper"] },
         tracking: { type: String },
       },
       body: {
         family: { type: String },
       },
-      scale: { type: String, enum: ["compact", "regular", "display"] },
-      h1Align: { type: String, enum: ["left", "center"] },
     },
 
     geometry: {
       radius: { type: String },
       borders: { type: Number, enum: [0, 1, 2] },
       shadow: { type: String, enum: ["none", "soft", "glow"] },
-      density: { type: String, enum: ["tight", "regular", "airy"] },
+      // Свободные CSS-длины, не enum — та же причина, что у radius.
+      blockGap: { type: String },
+      paragraphGap: { type: String },
     },
 
     variants: { type: VariantsSchema, default: () => ({}) },

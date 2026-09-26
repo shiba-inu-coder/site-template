@@ -256,7 +256,7 @@
     p {
       font-size: 1.1rem;
       font-weight: 400;
-      margin: 15px 0;
+      margin-block: var(--paragraph-gap, 15px);
     }
 
     h1,
@@ -267,7 +267,8 @@
     h6 {
       margin: 20px 0 20px 0;
       font-family: var(--font-heading);
-      font-weight: 500;
+      font-weight: var(--font-heading-weight, 500);
+      letter-spacing: var(--font-heading-tracking, normal);
       word-break: break-word;
       color: var(--color-ui-heading);
     }
@@ -406,8 +407,7 @@
 }
 
 .shortcode {
-  margin-top: calc(var(--spacing) * 10);
-  margin-bottom: calc(var(--spacing) * 10);
+  margin-block: var(--block-gap, calc(var(--spacing) * 10));
 }
 
 .app-link {
@@ -467,66 +467,6 @@ button:not(:disabled),
   /* Акцидентный шрифт — не только заголовкам: крупная оценка и сумма бонуса
      читаются как заголовок и набраны им же. */
   font-family: var(--font-heading);
-}
-
-#site[data-scale="compact"] #article h1 {
-  font-size: 1.6rem;
-}
-
-#site[data-scale="compact"] #article h2 {
-  font-size: 1.4rem;
-}
-
-#site[data-scale="display"] #article h1 {
-  font-size: 2.4rem;
-  line-height: 1.15;
-}
-
-#site[data-scale="display"] #article h2 {
-  font-size: 2rem;
-}
-
-@media (min-width: 48rem) {
-  #site[data-scale="compact"] #article h1 {
-    font-size: 1.9rem;
-  }
-
-  #site[data-scale="compact"] #article h2 {
-    font-size: 1.6rem;
-  }
-
-  #site[data-scale="display"] #article h1 {
-    font-size: 3rem;
-  }
-
-  #site[data-scale="display"] #article h2 {
-    font-size: 2.4rem;
-  }
-}
-
-#site[data-h1="center"] #article h1,
-#site[data-h1="center"] .site-hero-text {
-  text-align: center;
-}
-
-#site[data-h1="center"] .site-hero-text {
-  justify-items: center;
-}
-
-#site[data-density="tight"] .shortcode {
-  margin-block: calc(var(--spacing) * 6);
-}
-
-#site[data-density="tight"] #article p {
-  margin-block: 10px;
-}
-
-#site[data-density="airy"] .shortcode {
-  margin-block: calc(var(--spacing) * 14);
-}
-
-#site[data-density="airy"] #article p {
-  margin-block: 20px;
 }
 
 #site[data-width="narrow"]:not([data-sidebar="toc"]):not(
