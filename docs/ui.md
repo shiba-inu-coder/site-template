@@ -424,9 +424,10 @@ Where the frame parts are drawn:
   `layout.breadcrumbs.homeLabel` only answer on a template no brand has been applied to. The
   BreadcrumbList schema.org carries the same labels.
 - **Footer** — `FooterLayout.vue`, one look, a single centered column
-  (`flex flex-col items-center gap-6`): the logo (`siteConfig.logo`, the same `logoSize`
-  ceiling as the header — see "Logos" below — skipped with no text fallback when the site has
-  none), the text (`layout.footer.body`, the disclaimer HTML the brand run generates,
+  (`flex flex-col items-center gap-6`): the logo (`siteConfig.logo` through the same `logoSize`
+  helper as the header — see "Logos" below — but with its own, larger ceiling, 50 px high and
+  240 px wide against the header's 36/200; lazy-loaded, since it always sits below the fold;
+  skipped with no text fallback when the site has none), the text (`layout.footer.body`, the disclaimer HTML the brand run generates,
   left-aligned inside the centered column), a row of badges (`layout.footer.legalLogos` — 18+,
   GamCare, the licence; Cloudinary public ids through `NuxtImg`), a row of links
   (`layout.footer.links`), and the copyright line. That line keeps its own `bg-ui-footer-bg-alt`

@@ -6,6 +6,7 @@
     >
       <NuxtImg
         v-if="siteConfig.logo.src"
+        loading="lazy"
         provider="cloudinary"
         v-bind="logoSize(siteConfig.logo, 50, 240)"
         class="h-auto w-auto max-h-[50px] max-w-[240px] object-contain"
