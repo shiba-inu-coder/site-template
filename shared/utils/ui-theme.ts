@@ -343,7 +343,7 @@ export const themeToCssVars = (theme: UiTheme): string => {
   // своего резолва токена.
   const sectionBgToken = theme.decor?.sectionBg?.token;
   if (sectionBgToken) {
-    const shade = sectionBgToken.split("-")[1] as keyof UiColorRamp;
+    const shade = Number(sectionBgToken.split("-")[1]) as keyof UiColorRamp;
     const hex = theme.colors?.primary?.[shade];
 
     if (hex) {

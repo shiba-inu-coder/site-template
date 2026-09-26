@@ -4,6 +4,18 @@ import { getCloudinaryBaseUrl } from "#rc/utils/get-cloudinary-base-url";
 // сборщик HTML для неперевезённых сайтов (article-sections.js) и этот файл.
 // Зеркальную копию в панели нужно держать в синхроне с этим файлом.
 
+// "site" — фон темы (decor.sectionBg) целиком, "none" гасит его даже там,
+// где он есть, "color"/"image" — секция несёт фон сама. Тот же список несёт
+// Section.ts (Mongoose enum) — один источник на оба места.
+export const SECTION_BG_MODES = ["site", "color", "image", "none"] as const;
+
+type SectionBgMode = (typeof SECTION_BG_MODES)[number];
+
+const resolveSectionBgMode = (mode: unknown): SectionBgMode | undefined =>
+  (SECTION_BG_MODES as readonly unknown[]).includes(mode)
+    ? (mode as SectionBgMode)
+    : undefined;
+
 const SECTION_PADDING_MAX = 200;
 const SECTION_MARGIN_MAX = 200;
 const SECTION_RADIUS_MAX = 64;
@@ -60,6 +72,7 @@ export const normalizeSectionLayout = (
   layout?: RawPostSectionLayout | null,
 ): PostSectionLayout => {
   const base: PostSectionLayout = {
+    mode: "site",
     width: "container",
     bg: { token: "", hex: "", opacity: 100 },
     image: { path: "", alt: "", overlay: 0 },
@@ -72,6 +85,7 @@ export const normalizeSectionLayout = (
     return base;
   }
 
+  const mode = resolveSectionBgMode(layout.mode) ?? base.mode;
   const width = layout.width === "full" ? "full" : base.width;
   const bg = { ...base.bg, ...(layout.bg || {}) };
   const image = { ...base.image, ...(layout.image || {}) };
@@ -88,7 +102,7 @@ export const normalizeSectionLayout = (
 
   const radius = clampPx(layout.radius, SECTION_RADIUS_MAX, base.radius);
 
-  return { width, bg, image, padding, margin, radius };
+  return { mode, width, bg, image, padding, margin, radius };
 };
 
 export const sectionBackgroundColor = (bg?: PostSectionBg): string => {
@@ -114,7 +128,10 @@ const alphaSuffix = (opacity: number): string =>
 
 /**
  * Затемнение — вторым слоем градиента, а не трансформацией Cloudinary: правка
- * ползунка в панели не должна перезаливать ассет.
+ * ползунка в панели не должна перезаливать ассет. Цвет — `--color-ui-page-bg`
+ * через color-mix, не чёрный: на светлой теме страницы чёрная вуаль поверх
+ * картинки читалась бы как чужеродное пятно, а текст секции остаётся тёмным
+ * (surface-text светлой темы) и должен остаться читаемым поверх затемнения.
  */
 export const sectionBackgroundImage = (
   image: PostSectionImage | undefined,
@@ -132,8 +149,8 @@ export const sectionBackgroundImage = (
   const layers: string[] = [];
 
   if (overlay > 0) {
-    const alpha = (overlay / 100).toFixed(2);
-    layers.push(`linear-gradient(rgba(0,0,0,${alpha}),rgba(0,0,0,${alpha}))`);
+    const mixed = `color-mix(in srgb, var(--color-ui-page-bg) ${overlay}%, transparent)`;
+    layers.push(`linear-gradient(${mixed},${mixed})`);
   }
 
   layers.push(`url(${url})`);

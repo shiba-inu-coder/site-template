@@ -9,8 +9,12 @@ import {
   resolveScheme,
   DEFAULT_UI_THEME_DARK,
 } from "../shared/utils/ui-theme.ts";
+import type { SectionBgToken } from "../shared/utils/ui-theme.ts";
 
-const withSectionBg = (sectionBg: { token: string; width: string }) => ({
+const withSectionBg = (sectionBg: {
+  token: SectionBgToken;
+  width: "container" | "full";
+}) => ({
   ...DEFAULT_UI_THEME_DARK,
   decor: { ...DEFAULT_UI_THEME_DARK.decor, sectionBg },
 });
@@ -40,9 +44,16 @@ test("themeToCssVars: фон секций по умолчанию идёт че�
   );
 });
 
-const withHeaderBg = (headerBg: string, overrides: Record<string, string> = {}) => ({
+const withHeaderBg = (
+  headerBg: string,
+  overrides: Record<string, string> = {},
+) => ({
   ...DEFAULT_UI_THEME_DARK,
-  scheme: { ...DEFAULT_UI_THEME_DARK.scheme, "header-bg": headerBg, ...overrides },
+  scheme: {
+    ...DEFAULT_UI_THEME_DARK.scheme,
+    "header-bg": headerBg,
+    ...overrides,
+  },
 });
 
 test("header-text: auto даёт белый на тёмном header-bg", () => {

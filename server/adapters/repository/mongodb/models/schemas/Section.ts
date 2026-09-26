@@ -1,4 +1,5 @@
 import { Schema } from "mongoose";
+import { SECTION_BG_MODES } from "#shared/utils/section-style";
 
 /**
  * Секция статьи из конструктора AppsPro. Зеркало `SectionSchema` там же —
@@ -64,6 +65,10 @@ const legacyPaddingToPx = (preset: string) => {
 
 const SectionLayoutSchema = new Schema(
   {
+    // "site" — фон темы (decor.sectionBg) целиком, "none" гасит его даже там,
+    // где он есть; появилось позже остальных полей этой схемы — запись без
+    // него нормализуется в "site" на чтении (normalizeSectionLayout).
+    mode: { type: String, enum: [...SECTION_BG_MODES], default: "site" },
     width: { type: String, default: "container", trim: true },
     bg: { type: SectionBgSchema, default: () => ({}) },
     image: { type: SectionImageSchema, default: () => ({}) },

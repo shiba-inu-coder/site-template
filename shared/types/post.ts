@@ -106,7 +106,13 @@ export interface PostSectionMargin {
 // только normalizeSectionLayout в section-style.ts, через RawPostSectionLayout.
 export type LegacyPostSectionPadding = "none" | "sm" | "md" | "lg";
 
+// "site" — берёт decor.sectionBg темы целиком (свою width секция при этом не
+// диктует, её решает тема); "none" гасит фон темы даже там, где он есть;
+// "color"/"image" — секция несёт фон сама, своей width. Запись до этого
+// поля (появилось в плане «3. Формы темы и фон секций») читается как "site"
+// в normalizeSectionLayout — тем же смыслом, что «оператор фон не трогал».
 export interface PostSectionLayout {
+  mode: "site" | "color" | "image" | "none";
   width: "container" | "full";
   bg: PostSectionBg;
   image: PostSectionImage;
