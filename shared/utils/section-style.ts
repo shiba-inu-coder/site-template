@@ -1,4 +1,5 @@
 import { getCloudinaryBaseUrl } from "#rc/utils/get-cloudinary-base-url";
+import type { UiDecor } from "./ui-theme.ts";
 
 // Оформление секции статьи. Значения читают трое: конструктор в панели,
 // сборщик HTML для неперевезённых сайтов (article-sections.js) и этот файл.
@@ -156,6 +157,58 @@ export const sectionBackgroundImage = (
   layers.push(`url(${url})`);
 
   return layers.join(",");
+};
+
+export interface SectionBgPlacement {
+  // "wrap" — обёртка во всю ширину, без скругления; "box" — сам <section>
+  // внутри контейнера, со скруглением. Классы под каждое значение живут
+  // литералами в PostSections.vue: Tailwind не сканирует .ts.
+  target: "none" | "wrap" | "box";
+  style: string;
+  // Коробки со скруглением, поставленные встык, читаются одной плашкой со
+  // щербинами. Полосы во всю ширину, наоборот, встык и задуманы.
+  gap: boolean;
+}
+
+/**
+ * "color"/"image" несут фон сами, своей width; "site" берёт --ui-section-bg
+ * и width темы целиком — width самой секции здесь не в счёт, оператор явно
+ * выбрал «как у сайта»; "none" гасит фон темы даже там, где он есть.
+ */
+export const resolveSectionBg = (
+  layout: RawPostSectionLayout | null | undefined,
+  decor: UiDecor | undefined,
+  cloudName: string,
+): SectionBgPlacement => {
+  const normalized = normalizeSectionLayout(layout);
+
+  let width = normalized.width;
+  let color = "";
+  let image = "";
+
+  if (normalized.mode === "color") {
+    color = sectionBackgroundColor(normalized.bg);
+  } else if (normalized.mode === "image") {
+    image = sectionBackgroundImage(normalized.image, cloudName);
+  } else if (normalized.mode === "site") {
+    width = decor?.sectionBg?.width === "full" ? "full" : "container";
+    color = decor?.sectionBg?.token ? "var(--ui-section-bg)" : "";
+  }
+
+  const style = [
+    color && `background-color:${color}`,
+    image && `background-image:${image}`,
+  ]
+    .filter(Boolean)
+    .join(";");
+
+  if (!style) {
+    return { target: "none", style: "", gap: false };
+  }
+
+  return width === "full"
+    ? { target: "wrap", style, gap: false }
+    : { target: "box", style, gap: true };
 };
 
 /**

@@ -756,7 +756,14 @@ inherit it. `"none"` suppresses even a configured theme default. `"color"`/`"ima
 section's own background and its own `width`. `width: "full"` paints the background on the
 wrapper **outside** `CONTAINER`, edge to edge, no rounding; `width: "container"` paints it on
 the `<section>` itself, **inside** `CONTAINER`, with `rounded-primary` and the `p-primary-1`
-padding block. `CONTAINER` itself is unconditional either way — its own horizontal padding
+padding block. **A container box also gets a vertical margin (`my-6`), a full-width band does
+not**: rounded boxes set edge to edge — a theme whose default is "in a container" puts one
+under every section — read as a single slab with notches at the seams, while bands meeting
+edge to edge is exactly what a full-width stripe is for. That decision — mode and width in,
+which element carries the background and whether it gets the gap out — is
+`resolveSectionBg` (`shared/utils/section-style.ts`, tested); `PostSections.vue` only maps its
+`target` onto literal class strings, because `@config` never scans a `.ts` file (see "Tailwind
+v4 traps"). `CONTAINER` itself is unconditional either way — its own horizontal padding
 (`px-2.5 md:px-4 xl:px-0`) is the same `BasePostView.vue`'s legacy `content` path has always
 used, and a section with no background at all (mode `"none"`, or `"site"` with no theme default
 set) renders exactly as it did before this axis existed.
@@ -768,8 +775,8 @@ entire article, not within one section.
 **`shared/utils/section-style.ts`'s `normalizeSectionLayout` fills in every field a record
 written before an axis existed does not carry** — `mode` defaults to `"site"`, the same
 "operator never touched this" meaning an absent `sectionImageLayout`/`resolvePageFrame` field
-carries elsewhere. `sectionBackgroundColor`/`sectionBackgroundImage` are what `PostSections.vue`
-actually calls, and they mirror `appspro`'s own `ArticleSection.js`/`section-bg.js` — but only
+carries elsewhere. `sectionBackgroundColor`/`sectionBackgroundImage` are what `resolveSectionBg`
+builds the inline style from, and they mirror `appspro`'s own `ArticleSection.js`/`section-bg.js` — but only
 the narrow shape (`mode`, `width`, `bg.token`, `image.{path,alt,overlay}`) the panel's per-section
 form writes. `sectionStyle`, the older function combining colour, image, padding, margin and
 radius into one inline `style`, has no caller left in this repository: the panel dropped
@@ -777,8 +784,10 @@ radius into one inline `style`, has no caller left in this repository: the panel
 and nothing writes them from the operator-facing form any more. A record from that earlier era
 can still carry them, and `normalizeSectionLayout` still parses them without throwing, but
 nothing on this page reads the result. A brand token in `bg.token` becomes
-`color-mix(in srgb, var(--color-primary-200) 40%, transparent)` rather than a resolved colour,
-so repainting the brand repaints sections that were coloured long before. Darkening an image
+`var(--color-primary-200)` rather than a resolved colour, so repainting the brand repaints
+sections that were coloured long before — which only works because `themeToCssVars` writes the
+nine brand variables at runtime (see "`settings.uiTheme`"); without them the variable is the
+template's slate. Darkening an image
 background is the same `color-mix` device, but against `--color-ui-page-bg` rather than a brand
 token — a flat black overlay would read as a foreign smudge on a light theme, where the page
 (and the section text sitting on it) is already light.
