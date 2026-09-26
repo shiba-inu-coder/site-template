@@ -238,7 +238,7 @@ const resolveRef = (
     const prefix = `${family}-`;
     if (ref.startsWith(prefix)) {
       const shade = Number(ref.slice(prefix.length)) as keyof UiColorRamp;
-      return theme.colors[family][shade] ?? ref;
+      return theme.colors?.[family]?.[shade] ?? ref;
     }
   }
 
@@ -310,8 +310,19 @@ export const resolveScheme = (theme: UiTheme): Record<UiToken, string> => {
 export const themeToCssVars = (theme: UiTheme): string => {
   const resolved = resolveScheme(theme);
 
-  const lines = UI_TOKENS.map(
-    (token) => `  --color-ui-${token}: ${resolved[token]};`,
+  // Девять цветов бренда нужны не только схеме `ui-*`: фон секции «Цвет»
+  // (`section-style.ts`) и классы вроде `bg-active-200` читают
+  // `--color-<семья>-<оттенок>` напрямую, а в `:root` образа там дефолт
+  // шаблона — в образ бренд больше никто не вписывает.
+  const lines = BRAND_FAMILIES.flatMap((family) =>
+    RAMP_SHADES.filter((shade) => theme.colors?.[family]?.[shade]).map(
+      (shade) =>
+        `  --color-${family}-${shade}: ${theme.colors[family][shade]};`,
+    ),
+  );
+
+  lines.push(
+    ...UI_TOKENS.map((token) => `  --color-ui-${token}: ${resolved[token]};`),
   );
 
   // Ось, которой в записи нет, не переопределяется пустотой: значение из

@@ -1,11 +1,11 @@
 # UI & theme
 
-Everything visual in this template is driven by a manifest that a **different program
-writes in** — the AppsPro panel patches `app/assets/css/tailwind.css` from a brand manifest
-before the image is built, and everything else about a particular site (menu, footer, texts,
-logo, language, favicon, theme) arrives at runtime from that site's own database. See "Site
-config from DB". A class picked by feel rather than by role does not just look wrong here;
-it puts a brand's call-to-action colour on an article heading.
+Everything visual in this template is driven by data that a **different program writes
+in** — the AppsPro panel writes a site's palette, fonts, menu, footer, texts, logo, language,
+favicon and theme into that site's own database, and all of it arrives at runtime. The image
+itself carries only the template's neutral defaults. See "Site config from DB" and "Runtime
+theme". A class picked by feel rather than by role does not just look wrong here; it puts a
+brand's call-to-action colour on an article heading.
 
 ## The three colour families
 
@@ -146,15 +146,13 @@ scheme editor writes it, and dropping it is an edit on both sides. `ui-accent-st
 `accent-300`/`accent-100` out from `ui-heading` (`accent-200`) the same way the brand family
 itself splits by shade — same hue, different weight, independently tunable later.
 
-### `/* UI scheme */` is additive, not a second patcher contract
+### `/* UI scheme */` is the default wiring, the runtime theme overrides it
 
-The block lives in `:root`, under the nine brand colours, behind its own anchor comment. It
-is **not** read by `appspro/server/helpers/brand-apply/patch-tailwind-css.js` — that patcher
-only touches `/* Primary */`/`/* Accent */`/`/* Active */`, `--radius-primary`,
-`--font-primary` and `--font-heading`, all still exactly where the "`:root` is a contract"
-section below describes. Renaming or reordering a `ui-*` line does not break brand apply. It
-does break the site the moment a component's class stops matching a declared token, the same
-way a typo in any Tailwind class would — there is no separate machine check for that yet.
+The block lives in `:root`, under the nine brand colours, behind its own anchor comment.
+Renaming a `ui-*` line here without renaming it in `UI_TOKENS` (`shared/utils/ui-theme.ts`)
+breaks the themed site — `themeToCssVars` would write a variable nothing reads — and renaming
+it without renaming the component class breaks every site, the same way a typo in any
+Tailwind class would. There is no separate machine check for either yet.
 
 Every `--color-ui-*` value is a `var(--color-<family>-<shade>)` or `var(--color-surface-*)`
 reference, never a literal hex — that's what makes the scheme swappable later without
@@ -189,13 +187,18 @@ UiTheme = {
 `resolveScheme(theme)` turns `scheme` into `Record<uiToken, hex>` — a ref starting with
 `primary-`/`active-`/`accent-` reads `theme.colors`, one starting with `surface-` reads a
 fixed dark/light neutral pair (the same values as `:root`/`:root[data-theme="light"]`), and
-anything else (a `#hex`) passes through unchanged. `themeToCssVars(theme)` wraps
-`resolveScheme`'s output plus `--radius-primary`/`--font-primary`/`--font-heading` /
+anything else (a `#hex`) passes through unchanged. `themeToCssVars(theme)` wraps the nine
+brand colours themselves (`--color-<family>-<shade>`), `resolveScheme`'s output, plus
+`--radius-primary`/`--font-primary`/`--font-heading` /
 `--font-heading-weight`/`--font-heading-tracking`/`--block-gap`/`--paragraph-gap`/
 `--ui-section-bg` in one
-`:root { … }` string — **no `--shadow-*`**: shadow utilities compile to a literal at build
-time (see below), so a runtime CSS variable for it would do nothing, the same reason the
-brand patcher never patched one. An axis the record does not carry is left out of that
+`:root { … }` string. **The nine brand colours are not redundant with the `ui-*` layer**:
+a section's own `mode: "color"` background (`var(--color-primary-200)`, see "Sections") and the few
+classes still on a brand family directly (`bg-active-200` in `PaginationDots.vue`) read
+them by name, and without this line they would get the template's neutral slate from
+`tailwind.css` under a brand's text colour. **No `--shadow-*`**: shadow utilities compile to
+a literal at build time (see below), so a runtime CSS variable for it would do nothing. An
+axis the record does not carry is left out of that
 string rather than written empty, so a half-filled theme cannot blank a value the image
 already has. `DEFAULT_UI_THEME_DARK`/`DEFAULT_UI_THEME_LIGHT` are the template's current look
 expressed in this shape — the panel's starting point for a new theme, not what the site
@@ -284,7 +287,7 @@ was the reason they were not in `app.vue` to begin with.
 
 **A site without `uiTheme` renders exactly as before.** An empty or half-filled record is
 not a theme: `isUiThemeConfigured` demands a `mode` and all nine colours, and anything less
-falls back to the brand baked into `tailwind.css` by the AppsPro patcher, to
+falls back to the template's neutral palette in `tailwind.css`'s own `:root`, to
 `seo.conf.ts`'s `site.theme` for the mode, and to the build's own Inter. That is the state every
 site is in until an operator saves a theme for it, so the fallback is the normal path, not
 an error path.
@@ -439,25 +442,18 @@ record in an article, so it is assembled from what the page already has — the 
 `PostButtonRef` is always an external affiliate link and cannot render an internal
 `nuxt-link`, which `layout.header.cta.link` may well be.
 
-## `:root` is a contract, not a stylesheet
+## `:root` holds the template's defaults, the brand arrives at runtime
 
-`app/assets/css/tailwind.css` is parsed by
-`appspro/server/helpers/brand-apply/patch-tailwind-css.js`, which throws rather than guesses.
-This is about the nine brand values only — the `/* UI scheme */` block a few lines below them
-is a **different, additive** layer the patcher never reads; see "UI tokens" above. The
-patcher needs, verbatim:
+Nothing rewrites `app/assets/css/tailwind.css` per site any more: the panel's patcher that
+used to write a brand's nine colours, radius and fonts into this file before a build is gone,
+and a site's palette now reaches `:root` only through `themeToCssVars` (see
+"`settings.uiTheme`" and "Runtime theme"). The nine values in the file are the template's
+neutral slate — what a site with no theme record renders, nothing more. A variable read
+directly by a component or a runtime style (`--color-primary-200` under a section's own
+background) therefore has to be written by `themeToCssVars` too, or a themed site silently
+shows that slate under its own brand.
 
-- the literal `:root {`, and the block closed by a `\n}`;
-- the comments `/* Primary */`, `/* Accent */`, `/* Active */`, each followed by its three
-  `--color-<family>-<shade>:` declarations;
-- `--radius-primary:`, `--font-primary:` and `--font-heading:` **exactly once** each.
-
-Renaming a comment, reordering the families or adding a second `--radius-primary` does not
-break the site — it breaks _brand apply_, in production, for every site at once. The
-contract is pinned by `appspro/tests/server/helpers/patch-tailwind-css.test.js`; the patcher
-is a pure function and also runs under bare node against this checkout.
-
-The nine values live **only** in `:root`. The `@theme reference` block above declares the
+The nine values are declared **only** in `:root`. The `@theme reference` block above declares the
 same names so Tailwind generates `bg-primary-200` and friends, and `reference` is what stops
 Tailwind from emitting its own copy — with a plain `@theme` (or `@theme inline`) the output
 contained `--color-primary-300: var(--color-primary-300)`, a declaration referring to itself,
@@ -468,7 +464,8 @@ theme value into the rule at build time — `.shadow-primary` compiles to
 `--tw-shadow: <literal>`, never `var(--shadow-primary)` — so overwriting the variable does
 nothing. The manifest used to carry a `shadowPrimary` knob that could never have worked; it
 is gone. `--shadow-primary` is one template token holding the card glow. Radius has no such
-problem (`border-radius: var(--radius-primary)`), which is why it stays patchable.
+problem (`border-radius: var(--radius-primary)`), which is why the runtime theme can
+override it.
 
 ## Tailwind v4 traps in this repository
 

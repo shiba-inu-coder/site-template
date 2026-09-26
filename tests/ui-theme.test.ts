@@ -44,6 +44,31 @@ test("themeToCssVars: фон секций по умолчанию идёт че�
   );
 });
 
+test("themeToCssVars: девять цветов бренда пишутся своими переменными", () => {
+  const css = themeToCssVars({
+    ...DEFAULT_UI_THEME_DARK,
+    colors: {
+      primary: { 300: "#0e0f20", 200: "#1a1c33", 100: "#2b2e4a" },
+      active: { 300: "#b8860b", 200: "#daa520", 100: "#f0c75e" },
+      accent: { 300: "#8b0000", 200: "#b22222", 100: "#dc5c5c" },
+    },
+  });
+
+  assert.match(css, /--color-primary-300: #0e0f20;/);
+  assert.match(css, /--color-primary-200: #1a1c33;/);
+  assert.match(css, /--color-active-200: #daa520;/);
+  assert.match(css, /--color-accent-100: #dc5c5c;/);
+});
+
+test("themeToCssVars: без цветов своих переменных бренда нет — остаются из :root образа", () => {
+  const css = themeToCssVars({
+    ...DEFAULT_UI_THEME_DARK,
+    colors: {} as typeof DEFAULT_UI_THEME_DARK.colors,
+  });
+
+  assert.doesNotMatch(css, /--color-(primary|active|accent)-/);
+});
+
 const withHeaderBg = (
   headerBg: string,
   overrides: Record<string, string> = {},
