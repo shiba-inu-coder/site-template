@@ -117,11 +117,21 @@ export const usePost = <E>() => {
   // preview — токен из адреса страницы. Сам он сюда не долетает: $api это
   // голый $fetch без переноса запроса, и параметр надо передать руками.
   // Пустой в query не кладём, иначе у обычного посетителя ключ кеша nginx
-  // отличался бы от того же адреса без него.
-  const GET_POST_BY_SLUG = <E>(slug: string, preview = "") => {
-    return $api()<ObjectIdToStr<IPostBySlug<E>>>("/api/v1/public/posts/slug", {
-      query: preview ? { slug, preview } : { slug },
-    });
+  // отличался бы от того же адреса без него. `onResponse` получает ответ
+  // целиком — по его заголовкам страница решает, можно ли кешировать её саму.
+  const GET_POST_BY_SLUG = async <E>(
+    slug: string,
+    preview = "",
+    onResponse?: (response: { headers: Headers }) => void,
+  ) => {
+    const response = await $api().raw<ObjectIdToStr<IPostBySlug<E>>>(
+      "/api/v1/public/posts/slug",
+      { query: preview ? { slug, preview } : { slug } },
+    );
+
+    onResponse?.(response);
+
+    return response._data as ObjectIdToStr<IPostBySlug<E>>;
   };
 
   return {

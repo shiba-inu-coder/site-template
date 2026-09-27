@@ -74,8 +74,19 @@ export default defineNuxtPlugin({
         : [],
     }));
 
-    const { data } = await useAsyncData<ISettingPublic>("ui-theme", () =>
-      $fetch<ISettingPublic>("/api/v1/public/settings/settings"),
+    const markVolatile = useVolatilePageMark();
+
+    const { data } = await useAsyncData<ISettingPublic>(
+      "ui-theme",
+      async () => {
+        const response = await $fetch.raw<ISettingPublic>(
+          "/api/v1/public/settings/settings",
+        );
+
+        markVolatile(response);
+
+        return response._data as ISettingPublic;
+      },
     );
 
     if (data.value) {

@@ -9,11 +9,12 @@ const route = useRoute();
 const slug = route.name as string;
 
 const preview = (route.query.preview as string) || "";
+const markVolatile = useVolatilePageMark();
 
 const { data, status } = await useAsyncData(
   `post-${slug}${preview ? ":preview" : ""}`,
   () => {
-    return GET_POST_BY_SLUG(slug, preview);
+    return GET_POST_BY_SLUG(slug, preview, markVolatile);
   },
   {
     deep: false,
