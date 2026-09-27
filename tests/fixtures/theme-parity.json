@@ -1,0 +1,275 @@
+{
+  "about": "Общий набор примеров темы для site-template и appspro (этапы 8a и 8b плана 27.09). Файл одинаковый в обоих репозиториях: пример меняется только в обоих разом.",
+  "fontFamily": [
+    {
+      "input": "Raleway",
+      "name": "Raleway"
+    },
+    {
+      "input": "\"Raleway\", sans-serif",
+      "name": "Raleway"
+    },
+    {
+      "input": "'Exo 2', cursive",
+      "name": "Exo 2"
+    },
+    {
+      "input": "Source Sans 3",
+      "name": "Source Sans 3"
+    },
+    {
+      "input": "  Playfair   Display  ",
+      "name": "Playfair Display"
+    },
+    {
+      "input": "Inter;}body{color:red",
+      "name": ""
+    },
+    {
+      "input": "\"Raleway",
+      "name": ""
+    },
+    {
+      "input": "",
+      "name": ""
+    }
+  ],
+  "radius": [
+    {
+      "input": "var(--radius-none)",
+      "output": "0"
+    },
+    {
+      "input": "var(--radius-xs)",
+      "output": "0.125rem"
+    },
+    {
+      "input": "var(--radius-sm)",
+      "output": "0.25rem"
+    },
+    {
+      "input": "var(--radius-md)",
+      "output": "0.375rem"
+    },
+    {
+      "input": "var(--radius-lg)",
+      "output": "0.5rem"
+    },
+    {
+      "input": "var(--radius-xl)",
+      "output": "0.75rem"
+    },
+    {
+      "input": "var(--radius-2xl)",
+      "output": "1rem"
+    },
+    {
+      "input": "var(--radius-3xl)",
+      "output": "1.5rem"
+    },
+    {
+      "input": "var(--radius-4xl)",
+      "output": "2rem"
+    },
+    {
+      "input": "var(--radius-full)",
+      "output": "9999px"
+    },
+    {
+      "input": "var( --radius-xl )",
+      "output": "0.75rem"
+    },
+    {
+      "input": "var(--radius-5xl)",
+      "output": ""
+    },
+    {
+      "input": "var(--radius-constructor)",
+      "output": ""
+    },
+    {
+      "input": "var(--radius-primary)",
+      "output": ""
+    },
+    {
+      "input": "0",
+      "output": "0"
+    },
+    {
+      "input": "0px",
+      "output": "0px"
+    },
+    {
+      "input": "12px",
+      "output": "12px"
+    },
+    {
+      "input": ".75rem",
+      "output": ".75rem"
+    },
+    {
+      "input": "50%",
+      "output": "50%"
+    },
+    {
+      "input": "-4px",
+      "output": ""
+    },
+    {
+      "input": "12",
+      "output": ""
+    },
+    {
+      "input": "1e3px",
+      "output": ""
+    },
+    {
+      "input": "calc(1px + 2px)",
+      "output": ""
+    },
+    {
+      "input": "12px;}",
+      "output": ""
+    },
+    {
+      "input": "abc",
+      "output": ""
+    }
+  ],
+  "hex": [
+    {
+      "input": "#ff0000",
+      "rgb": [255, 0, 0]
+    },
+    {
+      "input": "#f00",
+      "rgb": [255, 0, 0]
+    },
+    {
+      "input": "#ff0000ff",
+      "rgb": [255, 0, 0]
+    },
+    {
+      "input": "#f00f",
+      "rgb": [255, 0, 0]
+    },
+    {
+      "input": "#0E0F20",
+      "rgb": [14, 15, 32]
+    },
+    {
+      "input": "#0e0f2080",
+      "rgb": [14, 15, 32]
+    }
+  ],
+  "fontsHref": [
+    {
+      "input": ["\"Raleway\", sans-serif", "Raleway"],
+      "weights": [400, 500, 700],
+      "output": "https://fonts.googleapis.com/css2?family=Raleway:wght@400;500;700&display=swap"
+    },
+    {
+      "input": ["Source Sans 3", "Exo 2"],
+      "weights": [700, 400, 500, 700],
+      "output": "https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;500;700&family=Exo+2:wght@400;500;700&display=swap"
+    },
+    {
+      "input": ["Inter;}x"],
+      "weights": [400],
+      "output": ""
+    }
+  ],
+  "cssVars": [
+    {
+      "theme": {
+        "templateId": "parity-legacy",
+        "templateName": "Старые значения из базы",
+        "mode": "dark",
+        "colors": {
+          "primary": {
+            "100": "#2b2e4a",
+            "200": "#1a1c33",
+            "300": "#0e0f20"
+          },
+          "active": {
+            "100": "#f0c75e",
+            "200": "#daa520",
+            "300": "#b8860b"
+          },
+          "accent": {
+            "100": "#dc5c5c",
+            "200": "#b22222",
+            "300": "#8b0000"
+          }
+        },
+        "scheme": {},
+        "type": {
+          "display": {
+            "family": "\"Pinyon Script\", cursive",
+            "weight": 700,
+            "tracking": "0.02em"
+          },
+          "body": {
+            "family": "Raleway"
+          }
+        },
+        "geometry": {
+          "radius": "var(--radius-xl)",
+          "blockGap": "24px",
+          "paragraphGap": "12px"
+        },
+        "variants": {},
+        "decor": {
+          "sectionBg": {
+            "token": "primary-200",
+            "width": "full"
+          }
+        },
+        "updatedAt": "2026-09-27T09:25:27.768Z"
+      },
+      "output": ":root {\n  --color-primary-300: #0e0f20;\n  --color-primary-200: #1a1c33;\n  --color-primary-100: #2b2e4a;\n  --color-active-300: #b8860b;\n  --color-active-200: #daa520;\n  --color-active-100: #f0c75e;\n  --color-accent-300: #8b0000;\n  --color-accent-200: #b22222;\n  --color-accent-100: #dc5c5c;\n  --color-ui-page-bg: #0e0f20;\n  --color-ui-header-bg: #0e0f20;\n  --color-ui-header-text: #ffffff;\n  --color-ui-footer-bg: #1a1c33;\n  --color-ui-footer-bg-alt: #0e0f20;\n  --color-ui-card-bg: #2b2e4a;\n  --color-ui-card-border: #0e0f20;\n  --color-ui-card-title: #b22222;\n  --color-ui-panel-bg: #1a1c33;\n  --color-ui-panel-border: #0e0f20;\n  --color-ui-input-bg: #2b2e4a;\n  --color-ui-input-border: #2b2e4a;\n  --color-ui-highlight-bg: #f0c75e;\n  --color-ui-highlight-text: #0e0f20;\n  --color-ui-heading: #b22222;\n  --color-ui-text: #ffffff;\n  --color-ui-muted: #cbd5e1;\n  --color-ui-link: #daa520;\n  --color-ui-link-hover: #b8860b;\n  --color-ui-cta-bg: #daa520;\n  --color-ui-cta-hover: #b8860b;\n  --color-ui-cta-text: #0f172a;\n  --color-ui-table-head-bg: #0e0f20;\n  --color-ui-table-head-text: #ffffff;\n  --color-ui-table-row: #1a1c33;\n  --color-ui-table-row-alt: #0e0f20;\n  --color-ui-table-row-border: #2b2e4a;\n  --color-ui-badge-bg: #b22222;\n  --color-ui-badge-text: #0f172a;\n  --color-ui-marker: #b22222;\n  --color-ui-accent-strong: #8b0000;\n  --color-ui-accent-soft: #dc5c5c;\n  --radius-primary: 0.75rem;\n  --font-primary: \"Raleway\", sans-serif;\n  --font-heading: \"Pinyon Script\", sans-serif;\n  --font-heading-weight: 700;\n  --font-heading-tracking: 0.02em;\n  --block-gap: 24px;\n  --paragraph-gap: 12px;\n  --ui-section-bg: #1a1c33;\n}"
+    },
+    {
+      "theme": {
+        "templateId": "parity-junk",
+        "templateName": "Мусор в осях и альфа в hex",
+        "mode": "light",
+        "colors": {
+          "primary": {
+            "100": "#2b2e4a",
+            "200": "#1a1c33",
+            "300": "#0e0f20"
+          },
+          "active": {
+            "100": "#f0c75e",
+            "200": "#daa520",
+            "300": "#b8860b"
+          },
+          "accent": {
+            "100": "#dc5c5c",
+            "200": "#b22222",
+            "300": "#8b0000"
+          }
+        },
+        "scheme": {
+          "header-bg": "#ff0000ff"
+        },
+        "type": {
+          "display": {
+            "family": "Inter;}body{color:red"
+          },
+          "body": {
+            "family": ""
+          }
+        },
+        "geometry": {
+          "radius": "-4px"
+        },
+        "variants": {},
+        "decor": {},
+        "updatedAt": "2026-09-27T09:25:27.768Z"
+      },
+      "output": ":root {\n  --color-primary-300: #0e0f20;\n  --color-primary-200: #1a1c33;\n  --color-primary-100: #2b2e4a;\n  --color-active-300: #b8860b;\n  --color-active-200: #daa520;\n  --color-active-100: #f0c75e;\n  --color-accent-300: #8b0000;\n  --color-accent-200: #b22222;\n  --color-accent-100: #dc5c5c;\n  --color-ui-page-bg: #0e0f20;\n  --color-ui-header-bg: #ff0000ff;\n  --color-ui-header-text: #0f172a;\n  --color-ui-footer-bg: #1a1c33;\n  --color-ui-footer-bg-alt: #0e0f20;\n  --color-ui-card-bg: #2b2e4a;\n  --color-ui-card-border: #0e0f20;\n  --color-ui-card-title: #b22222;\n  --color-ui-panel-bg: #1a1c33;\n  --color-ui-panel-border: #0e0f20;\n  --color-ui-input-bg: #2b2e4a;\n  --color-ui-input-border: #2b2e4a;\n  --color-ui-highlight-bg: #f0c75e;\n  --color-ui-highlight-text: #0e0f20;\n  --color-ui-heading: #b22222;\n  --color-ui-text: #0f172a;\n  --color-ui-muted: #475569;\n  --color-ui-link: #daa520;\n  --color-ui-link-hover: #b8860b;\n  --color-ui-cta-bg: #daa520;\n  --color-ui-cta-hover: #b8860b;\n  --color-ui-cta-text: #ffffff;\n  --color-ui-table-head-bg: #0e0f20;\n  --color-ui-table-head-text: #0f172a;\n  --color-ui-table-row: #1a1c33;\n  --color-ui-table-row-alt: #0e0f20;\n  --color-ui-table-row-border: #2b2e4a;\n  --color-ui-badge-bg: #b22222;\n  --color-ui-badge-text: #ffffff;\n  --color-ui-marker: #b22222;\n  --color-ui-accent-strong: #8b0000;\n  --color-ui-accent-soft: #dc5c5c;\n}"
+    }
+  ]
+}

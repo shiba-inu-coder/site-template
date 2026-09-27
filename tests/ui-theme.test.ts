@@ -7,6 +7,7 @@ import assert from "node:assert/strict";
 import {
   themeToCssVars,
   resolveScheme,
+  googleFontsHref,
   DEFAULT_UI_THEME_DARK,
 } from "../shared/utils/ui-theme.ts";
 import type { SectionBgToken } from "../shared/utils/ui-theme.ts";
@@ -98,4 +99,59 @@ test("header-text: явный primary-100 резолвится в свой цв�
   const resolved = resolveScheme(theme);
 
   assert.equal(resolved["header-text"], theme.colors.primary[100]);
+});
+
+const withFonts = (body: string, display = body) => ({
+  ...DEFAULT_UI_THEME_DARK,
+  type: { display: { family: display }, body: { family: body } },
+});
+
+test("шрифт: голое имя, CSS-значение из базы и имя с цифрой дают семейство в кавычках с фолбэком", () => {
+  for (const [input, name] of [
+    ["Raleway", "Raleway"],
+    ['"Raleway", sans-serif', "Raleway"],
+    ["Source Sans 3", "Source Sans 3"],
+  ]) {
+    const css = themeToCssVars(withFonts(input));
+
+    assert.match(css, new RegExp(`--font-primary: "${name}", sans-serif;`));
+    assert.match(css, new RegExp(`--font-heading: "${name}", sans-serif;`));
+  }
+});
+
+test("шрифт: одно семейство, записанное в базе по-разному, — одно family= в ссылке", () => {
+  const href = googleFontsHref(['"Raleway", sans-serif', "Raleway"]);
+
+  assert.equal(href.match(/family=/g)?.length, 1);
+  assert.match(href, /family=Raleway:wght@/);
+});
+
+test("шрифт: строка с `;}` не даёт строки ни в CSS, ни ссылки на Google Fonts", () => {
+  const css = themeToCssVars(withFonts("Inter;}body{color:red"));
+
+  assert.doesNotMatch(css, /--font-(primary|heading):/);
+  assert.equal(googleFontsHref("Inter;}body{color:red"), "");
+});
+
+const withRadius = (radius: string) => ({
+  ...DEFAULT_UI_THEME_DARK,
+  geometry: { ...DEFAULT_UI_THEME_DARK.geometry, radius },
+});
+
+test("радиус: токен шкалы уходит литералом, процент остаётся как есть", () => {
+  assert.match(
+    themeToCssVars(withRadius("var(--radius-xl)")),
+    /--radius-primary: 0\.75rem;/,
+  );
+  assert.match(themeToCssVars(withRadius("50%")), /--radius-primary: 50%;/);
+});
+
+test("радиус: неизвестный токен, отрицательный и нечисловой — строки нет", () => {
+  for (const radius of ["var(--radius-5xl)", "-4px", "abc"]) {
+    assert.doesNotMatch(
+      themeToCssVars(withRadius(radius)),
+      /--radius-primary/,
+      radius,
+    );
+  }
 });

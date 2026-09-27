@@ -298,11 +298,77 @@ export const resolveScheme = (theme: UiTheme): Record<UiToken, string> => {
   const result = {} as Record<UiToken, string>;
 
   for (const token of UI_TOKENS) {
-    const ref = theme.scheme[token] ?? DEFAULT_UI_SCHEME[token];
+    const ref = theme.scheme?.[token] ?? DEFAULT_UI_SCHEME[token];
     result[token] = resolveRef(ref, theme, result);
   }
 
   return result;
+};
+
+// Весь каталог Google Fonts (1946 семейств на 27.09.2026) укладывается в
+// латиницу, цифры и пробелы. Имя уходит и в CSS внутри `<style>`, и в адрес
+// Google Fonts, поэтому всё, что шире, отбрасывается, а не экранируется.
+const FONT_FAMILY_NAME = /^[A-Za-z0-9 ]{1,64}$/;
+
+// В базах лежит и голое имя, и готовое CSS-значение `"Raleway", sans-serif`:
+// второе давало в адресе `family="Raleway",+sans-serif`, и Google отвечал 400.
+export const normalizeFontFamily = (value: unknown): string => {
+  if (typeof value !== "string") {
+    return "";
+  }
+
+  const name = value
+    .split(",")[0]
+    .trim()
+    .replace(/^(["'])(.*)\1$/, "$2")
+    .replace(/\s+/g, " ")
+    .trim();
+
+  return FONT_FAMILY_NAME.test(name) ? name : "";
+};
+
+// Без кавычек `--font-primary: Source Sans 3` делает `font-family`
+// невалидным целиком: «3» — не идентификатор CSS.
+const fontFamilyCss = (value: unknown): string => {
+  const name = normalizeFontFamily(value);
+
+  return name ? `"${name}", sans-serif` : "";
+};
+
+// Шкала Tailwind 4.3.3 (`tailwindcss/theme.css`) плюс none/full. Старые
+// записи несут токен вида `var(--radius-xl)`, а в бандле объявлен только
+// `--radius-lg` — такая ссылка вела в пустоту. Map, а не объект: токен
+// `constructor` не должен найти что-то в прототипе.
+const RADIUS_TOKENS = new Map([
+  ["none", "0"],
+  ["xs", "0.125rem"],
+  ["sm", "0.25rem"],
+  ["md", "0.375rem"],
+  ["lg", "0.5rem"],
+  ["xl", "0.75rem"],
+  ["2xl", "1rem"],
+  ["3xl", "1.5rem"],
+  ["4xl", "2rem"],
+  ["full", "9999px"],
+]);
+
+const RADIUS_TOKEN = /^var\(\s*--radius-([a-z0-9]+)\s*\)$/;
+const CSS_LENGTH =
+  /^(?:\d+(?:\.\d+)?|\.\d+)(?:px|rem|em|%|vw|vh|vmin|vmax|ch|ex|pt)$/;
+
+export const resolveRadius = (value: unknown): string => {
+  if (typeof value !== "string") {
+    return "";
+  }
+
+  const radius = value.trim();
+  const token = RADIUS_TOKEN.exec(radius);
+
+  if (token) {
+    return RADIUS_TOKENS.get(token[1]) ?? "";
+  }
+
+  return radius === "0" || CSS_LENGTH.test(radius) ? radius : "";
 };
 
 // Цвета + радиус + шрифты + отступы + фон секций по умолчанию. Остальной
@@ -325,16 +391,20 @@ export const themeToCssVars = (theme: UiTheme): string => {
     ...UI_TOKENS.map((token) => `  --color-ui-${token}: ${resolved[token]};`),
   );
 
-  // Ось, которой в записи нет, не переопределяется пустотой: значение из
-  // `:root` собранного образа остаётся жить.
-  if (theme.geometry?.radius) {
-    lines.push(`  --radius-primary: ${theme.geometry.radius};`);
+  // Ось, которой в записи нет или которая не прошла проверку, не
+  // переопределяется пустотой: значение из `tailwind.css` остаётся жить.
+  const radius = resolveRadius(theme.geometry?.radius);
+  const bodyFont = fontFamilyCss(theme.type?.body?.family);
+  const displayFont = fontFamilyCss(theme.type?.display?.family);
+
+  if (radius) {
+    lines.push(`  --radius-primary: ${radius};`);
   }
-  if (theme.type?.body?.family) {
-    lines.push(`  --font-primary: ${theme.type.body.family};`);
+  if (bodyFont) {
+    lines.push(`  --font-primary: ${bodyFont};`);
   }
-  if (theme.type?.display?.family) {
-    lines.push(`  --font-heading: ${theme.type.display.family};`);
+  if (displayFont) {
+    lines.push(`  --font-heading: ${displayFont};`);
   }
   if (theme.type?.display?.weight) {
     lines.push(`  --font-heading-weight: ${theme.type.display.weight};`);
@@ -378,10 +448,15 @@ export const googleFontsHref = (
   const families = [
     ...new Set(
       (Array.isArray(fontFamily) ? fontFamily : [fontFamily])
-        .map((name) => name.trim())
+        .map(normalizeFontFamily)
         .filter(Boolean),
     ),
   ];
+
+  if (!families.length) {
+    return "";
+  }
+
   const weightAxis = [...new Set(weights)].sort((a, b) => a - b).join(";");
   const query = families
     .map((name) => `family=${name.replace(/\s+/g, "+")}:wght@${weightAxis}`)
