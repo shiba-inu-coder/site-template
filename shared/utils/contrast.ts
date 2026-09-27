@@ -3,15 +3,18 @@
 
 import type { UiToken } from "./ui-theme";
 
-const hexToRgb = (hex: string): [number, number, number] => {
+// Альфа отбрасывается: `#rrggbbaa` целиком разбирался как одно число со
+// сдвигом каналов, и `#ff0000ff` давал шапке другой цвет текста, чем `#ff0000`.
+export const hexToRgb = (hex: string): [number, number, number] => {
   const normalized = hex.replace("#", "").trim();
   const full =
-    normalized.length === 3
+    normalized.length === 3 || normalized.length === 4
       ? normalized
+          .slice(0, 3)
           .split("")
           .map((channel) => channel + channel)
           .join("")
-      : normalized;
+      : normalized.slice(0, 6);
   const int = Number.parseInt(full, 16);
 
   return [(int >> 16) & 255, (int >> 8) & 255, int & 255];
