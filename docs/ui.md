@@ -351,16 +351,16 @@ turns the result into `data-*` attributes on the page root — `<div id="site">`
 `layouts/default.vue` **and in `error.vue`**, because a 404 is not drawn by the layout and
 would otherwise lose the frame.
 
-| Attribute                 | Axis                            | Values                                                          | Without a value |
-| ------------------------- | -------------------------------- | --------------------------------------------------------------- | --------------- |
-| `data-borders`            | `uiTheme.geometry.borders`      | `0` / `1` / `2`                                                 | `1`             |
-| `data-shadow`             | `uiTheme.geometry.shadow`       | `none` / `soft` / `glow`                                        | `none`          |
-| `data-width`              | **post** `frame.width`          | `narrow` / `wide`                                               | `wide`          |
-| `data-hero`               | **post** `frame.hero`           | `none` / `band` / `photo`                                       | `none`          |
-| `data-sidebar`            | **post** `frame.sidebar`        | `none` / `toc` / `toc-offer`                                    | `none`          |
-| `data-sticky`             | **post** `frame.sticky`         | `none` / `bar` / `button`                                       | `none`          |
-| `data-h2`                 | `uiTheme.decor.h2`              | `none`/`underline`/`left-rule`/`dot`/`gradient`/`number`/`line` | `none`          |
-| `data-section-bg-width`   | `uiTheme.decor.sectionBg.width` | `container` / `full`                                            | none            |
+| Attribute               | Axis                            | Values                                                          | Without a value |
+| ----------------------- | ------------------------------- | --------------------------------------------------------------- | --------------- |
+| `data-borders`          | `uiTheme.geometry.borders`      | `0` / `1` / `2`                                                 | `1`             |
+| `data-shadow`           | `uiTheme.geometry.shadow`       | `none` / `soft` / `glow`                                        | `none`          |
+| `data-width`            | **post** `frame.width`          | `narrow` / `wide`                                               | `wide`          |
+| `data-hero`             | **post** `frame.hero`           | `none` / `band` / `photo`                                       | `none`          |
+| `data-sidebar`          | **post** `frame.sidebar`        | `none` / `toc` / `toc-offer`                                    | `none`          |
+| `data-sticky`           | **post** `frame.sticky`         | `none` / `bar` / `button`                                       | `none`          |
+| `data-h2`               | `uiTheme.decor.h2`              | `none`/`underline`/`left-rule`/`dot`/`gradient`/`number`/`line` | `none`          |
+| `data-section-bg-width` | `uiTheme.decor.sectionBg.width` | `container` / `full`                                            | none            |
 
 There is no `data-header-inverted`, `data-hero-style`, `data-bands` or `data-badge`
 attribute any more — the theme-level `frame`/`accents` axis they used to read is gone from
@@ -397,6 +397,10 @@ Where the frame parts are drawn:
   its own — the white-over-brand-surface look an inverted header used to force by hand now
   falls out of the scheme automatically. A `frame.header`/`frame.headerInverted` still stored
   in an older theme record is not read.
+  The header is `sticky top-0`, not `fixed`: it keeps its own height in the flow, so nothing
+  below it needs a top offset. A `fixed` header plus `mt-18` on `#article` drifted — the real
+  header is 80 px with the default buttons and changes with a brand's items and the fluid
+  font size, so the date line slid 8 px under it.
 - **Hero** — `HeroLayout.vue`, rendered by `BasePostView.vue` above the sections when the
   post's own `frame.hero !== "none"`. Breadcrumbs, the date line, the first section's H1, the author
   line (`PostBiographyWriter` with `compact`) and a CTA move into it; with `hero: "photo"`
@@ -423,6 +427,13 @@ Where the frame parts are drawn:
   home page's `breadcrumbTitle`, and the panel leaves it empty there. `breadcrumbTitle` and
   `layout.breadcrumbs.homeLabel` only answer on a template no brand has been applied to. The
   BreadcrumbList schema.org carries the same labels.
+  Breadcrumbs and the "last updated" line are one component, `PostMetaLayout.vue` (crumbs
+  first, date under them), used by both the hero and the page without one — two copies of
+  that markup had already drifted into opposite orders. `BreadcrumbsLayout` carries no outer
+  margin; the parent sets it.
+- **Heading → first block** — a shortcode that opens a section body right under its H1/H2
+  loses its top `--block-gap` (`tailwind.css`, next to `.shortcode`), so the heading's own
+  20 px is the distance, the same as for a paragraph. Between two blocks `--block-gap` stays.
 - **Footer** — `FooterLayout.vue`, one look, a single centered column
   (`flex flex-col items-center gap-6`): the logo (`siteConfig.logo` through the same `logoSize`
   helper as the header — see "Logos" below — but with its own, larger ceiling, 50 px high and
@@ -534,8 +545,8 @@ the union of both fonts' weights. Declaring the heading font with the same name 
 weight is a supported way to ask for that weight.
 
 Loading the weight is only half of it: `useUiTheme()`'s `fontsHref` adds `type.display.weight`
-to `GOOGLE_FONT_WEIGHTS` so the *file* is fetched, and `--font-heading-weight` (`themeToCssVars`,
-`h1…h6`'s `font-weight`) is what actually *sets* it — a theme with a weight the Google Fonts
+to `GOOGLE_FONT_WEIGHTS` so the _file_ is fetched, and `--font-heading-weight` (`themeToCssVars`,
+`h1…h6`'s `font-weight`) is what actually _sets_ it — a theme with a weight the Google Fonts
 request didn't carry would render the browser's synthetic-bold fallback instead. Letter-spacing
 has no separate loading step: `--font-heading-tracking` is a raw CSS value passed straight
 through from `type.display.tracking` into `letter-spacing`.

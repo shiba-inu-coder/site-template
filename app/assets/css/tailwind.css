@@ -410,6 +410,13 @@
   margin-block: var(--block-gap, calc(var(--spacing) * 10));
 }
 
+/* Блок сразу под заголовком секции: его --block-gap поглощал 20px самого
+   заголовка, и блок отъезжал от своего H1/H2 вдвое дальше абзаца. Обёртка
+   `div` — корень, в который RuntimeTemplateLayout всегда компилирует тело. */
+#article section > :is(h1, h2) + div > .shortcode:first-child {
+  margin-block-start: 0;
+}
+
 .app-link {
   text-wrap: pretty;
   color: var(--color-ui-link);

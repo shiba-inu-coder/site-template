@@ -1,5 +1,5 @@
 <template>
-  <nav class="mt-4 flex w-full">
+  <nav class="flex w-full">
     <ol
       class="not-format flex items-center overflow-x-auto overflow-y-hidden text-step-8"
     >

@@ -18,24 +18,7 @@
       />
 
       <div class="site-hero-text grid content-start gap-2">
-        <BreadcrumbsLayout
-          v-if="breadcrumbs.length"
-          :breadcrumbs="breadcrumbs"
-        ></BreadcrumbsLayout>
-
-        <span
-          v-if="postDated"
-          class="block text-step-8 font-medium text-ui-heading"
-        >
-          {{ siteConfig.translates.lastUpdated }}:
-          <NuxtTime
-            :datetime="postDated"
-            month="long"
-            day="2-digit"
-            :locale="siteConfig.site.lang"
-            year="numeric"
-          />
-        </span>
+        <PostMetaLayout></PostMetaLayout>
 
         <h1 v-if="leadTitle">
           {{ leadTitle }}
@@ -63,13 +46,12 @@
 </template>
 
 <script setup lang="ts">
-import BreadcrumbsLayout from "#rc/components/layout/BreadcrumbsLayout.vue";
 import CtaButtonLayout from "#rc/components/layout/CtaButtonLayout.vue";
+import PostMetaLayout from "#rc/components/layout/PostMetaLayout.vue";
 import RuntimeTemplateLayout from "#rc/components/layout/RuntimeTemplateLayout.vue";
 import PostBiographyWriter from "#rc/components/post/PostBiographyWriter.vue";
 
 const siteConfig = useSiteConfig();
-const { breadcrumbs, postDated } = usePost();
 // Картинка хиро — не своя, а та, что редактор поставил в лид блоком
 // «картинка + текст»: отдельного поля под обложку в шаблоне нет. На телефоне
 // она идёт сверху, на десктопе уходит во вторую колонку.

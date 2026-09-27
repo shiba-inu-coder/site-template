@@ -1,32 +1,13 @@
 <template>
-  <div
-    id="article"
-    class="mt-18"
-  >
+  <div id="article">
     <slot>
       <template v-if="sections?.length">
         <HeroLayout v-if="heroEnabled"></HeroLayout>
         <div
           v-else
-          class="px-2.5 md:px-4 xl:px-0 w-full max-w-7xl mx-auto"
+          class="px-2.5 md:px-4 xl:px-0 w-full max-w-7xl mx-auto pt-4 md:pt-6"
         >
-          <span
-            v-if="postDated"
-            class="text-step-8 text-ui-heading font-medium block"
-          >
-            {{ siteConfig.translates.lastUpdated }}:
-            <NuxtTime
-              :datetime="postDated"
-              month="long"
-              day="2-digit"
-              :locale="siteConfig.site.lang"
-              year="numeric"
-            />
-          </span>
-          <BreadcrumbsLayout
-            v-if="breadcrumbs.length"
-            :breadcrumbs="breadcrumbs"
-          ></BreadcrumbsLayout>
+          <PostMetaLayout></PostMetaLayout>
         </div>
         <div
           :class="
@@ -64,8 +45,8 @@
 </template>
 <script setup lang="ts">
 import AsideLayout from "#rc/components/layout/AsideLayout.vue";
-import BreadcrumbsLayout from "#rc/components/layout/BreadcrumbsLayout.vue";
 import HeroLayout from "#rc/components/layout/HeroLayout.vue";
+import PostMetaLayout from "#rc/components/layout/PostMetaLayout.vue";
 import RuntimeTemplateLayout from "#rc/components/layout/RuntimeTemplateLayout.vue";
 import StickyCtaLayout from "#rc/components/layout/StickyCtaLayout.vue";
 import PostSections from "#rc/components/post/PostSections.vue";
@@ -74,17 +55,8 @@ import { getCloudinaryBaseUrl } from "#rc/utils/get-cloudinary-base-url";
 import { logoSize } from "#rc/utils/logo-size";
 import { pickVariant } from "#shared/utils/block-variant";
 
-const {
-  createdAt,
-  updatedAt,
-  content,
-  sections,
-  slug,
-  metaTags,
-  title,
-  postDated,
-  breadcrumbs,
-} = usePost();
+const { createdAt, updatedAt, content, sections, slug, metaTags, title } =
+  usePost();
 
 const siteConfig = useSiteConfig();
 const { frame } = useUiTheme();
