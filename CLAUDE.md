@@ -18,8 +18,11 @@ npm run lintfix    # eslint --fix + prettier
 npm test           # node --test over tests/*.test.ts
 ```
 
-- Tests cover pure functions from `shared/` only — no DB, no network, no components.
-  Templates and class names are checked by `npm run build` alone.
+- Tests cover pure functions — `shared/` plus `server/lib/cache-generations.ts`, written
+  without Nitro imports so the purge races can be tested — no DB, no network, no components.
+  Templates and class names are checked by `npm run build` alone, and
+  `tests/theme-css-layers.test.ts` also reads the built `entry.css` when `.output` exists, so
+  `npm run build && npm test` is the full check.
 - `npm install` requires `legacy-peer-deps` (set in `.npmrc`). Vite is overridden to `rolldown-vite`.
 - Deploy: GitHub Actions builds the image with **no build args** → VPS Docker Swarm.
   `docker/entrypoint.mjs` reads the site's Vault record at container start and exports every
@@ -50,7 +53,11 @@ types/constants/utils). Aliases: `#sg` → `server/`, `#rc` → `app/`.
   the order and keep plain names.
 - `server/lib/app-cache.ts` — Nitro cached functions (groups `posts`/`settings`) on fs
   storage `fsApp` (`./app-cache` in prod), TTL 1 year. Invalidation happens ONLY via the
-  purge endpoint — content edits in admin without a purge stay stale.
+  purge endpoint — content edits in admin without a purge stay stale. A purge bumps a
+  generation before it clears storage (`server/lib/cache-generations.ts`), so a Mongo read
+  already in flight cannot write the old value back; a read that kept meeting purges answers
+  `volatile`, and then the API and the SSR page both go out with `no-store`. See
+  `docs/ui.md`, "Cache purge".
 
 ### Client
 
@@ -101,7 +108,10 @@ component's classes, or a new page. The three rules that break things silently:
   `rounded-primary`. Not `text-sm`/`rounded-lg`.
 - **`:root` in `tailwind.css` holds the template's neutral defaults, not a brand.** A site's
   colours, radius, fonts and `ui-*` scheme reach the page only through `themeToCssVars`
-  (`shared/utils/ui-theme.ts`) in `<style id="ui-theme">`. A variable a component or a
+  (`shared/utils/ui-theme.ts`) in `<style id="ui-theme">`. The defaults sit in `@layer theme`
+  and the theme tag is unlayered, which is the only reason the brand survives a lazily loaded
+  `entry.css`; a theme variable declared on a root selector outside a layer brings the
+  flip back (`tests/theme-css-layers.test.ts`). A variable a component or a
   runtime style reads by name has to be written there too, or a themed site shows the slate
   default under its brand. A `ui-*` line renamed in `:root` is renamed in `UI_TOKENS` as well.
 - **`@config` disables Tailwind's source detection.** Only the globs in `tailwind.config.js`

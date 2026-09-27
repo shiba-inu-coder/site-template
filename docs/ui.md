@@ -294,16 +294,49 @@ an error path.
 
 Two details that look like noise and are not:
 
-- `<style id="ui-theme">` is pushed with **`tagPriority: 65`**. unhead sorts head tags by
-  weight, and both `<link rel="stylesheet">` and `<style>` weigh 60, ties broken by
-  registration order — the plugin registers before the bundle's own CSS, so at the default
-  weight the runtime `:root` would land _above_ `tailwind.css` and lose the cascade to it.
-  65 puts it after every stylesheet and before the preloads (70).
+- **The theme wins by layer, not by position.** `<style id="ui-theme">` is unlayered and
+  the template's defaults sit in `@layer theme`, so the theme beats them wherever the tags
+  end up. Position used to decide it: with the defaults unlayered too, the later of two
+  equal `:root` rules won — and a lazily hydrated block (FAQ, pros/cons, grid cards)
+  carries `entry.css` in its chunk's dependencies, so Vite's loader appended a `<link>` to
+  the end of `<head>` on scroll and the brand flipped back to the slate defaults. The tag
+  is still pushed with `tagPriority: 65` (after the stylesheets at 60, before the preloads
+  at 70), but nothing depends on that order any more.
 - **The font link is written by hand.** `@nuxt/fonts` scans CSS at build time and knows
   nothing about a family that arrives from Mongo, so the plugin emits two `preconnect`s and
   one `<link rel="stylesheet">` to Google Fonts covering both families (`type.display` and
   `type.body`) in a single request. `vitalizer.disableStylesheets` cannot eat it: that
   option only strips `css` entries from the build manifest and never touches head tags.
+
+### Cache purge
+
+The public settings and posts are Nitro cached functions (`server/lib/app-cache.ts`, fs
+storage `fsApp`, a year's TTL), and the panel's purge endpoint is the only thing that
+invalidates them. A purge has to survive a read that is already in flight: Nitro writes
+the resolver's result to storage _after_ the `await`, so a Mongo read started before the
+purge used to write the old value back into the file the purge had just deleted — for a
+year. `server/lib/cache-generations.ts` closes that:
+
+- **A purge bumps a generation first, then clears storage.** Each cache key carries a boot
+  id and the generations captured _before_ the call (`all`, plus `settings` or the post's
+  own); a late write lands under the old key and nothing reads it again. `all` bumps a
+  generation shared by every key, including keys that did not exist yet. A restart gets a
+  new boot id, so files from before it are never reused.
+- **A read that saw a purge retries.** After the call, the captured generations are
+  compared with the current ones; changed means read again, three attempts at most. If
+  purges kept coming through all three, the request gets the last value it read, marked
+  `volatile` — a page without a theme would be worse than a possibly stale one, so no 503.
+  That value is not stored under the current generation. A database error with no
+  successful read at all is an ordinary error.
+- **`volatile` is never cached on the way out.** The API answer keeps its body and adds
+  `X-App-Cache-State: volatile`, `Cache-Control: no-store` and `X-Accel-Expires: 0` (nginx
+  honours both; it ignores only `Set-Cookie`). SSR reads that header off the internal
+  settings and post responses (`useVolatilePageMark`) and puts the same two cache headers
+  on the HTML. None of this deletes what nginx already holds — clearing nginx is still
+  `cache_clear.sh`'s job.
+
+The guarantee is per process. Getting a purge to every container is the purge caller's
+problem, not this module's.
 
 `useUiTheme()` is where a component asks about the theme: `theme` (the record or `null`),
 `mode`, `cssVars`, `fontsHref`, `contrast`, `variantFor(key)` (the block-variant lookup, see
@@ -465,11 +498,16 @@ directly by a component or a runtime style (`--color-primary-200` under a sectio
 background) therefore has to be written by `themeToCssVars` too, or a themed site silently
 shows that slate under its own brand.
 
-The nine values are declared **only** in `:root`. The `@theme reference` block above declares the
-same names so Tailwind generates `bg-primary-200` and friends, and `reference` is what stops
-Tailwind from emitting its own copy — with a plain `@theme` (or `@theme inline`) the output
-contained `--color-primary-300: var(--color-primary-300)`, a declaration referring to itself,
-which only rendered because unlayered CSS outranks `@layer theme`.
+The nine values are declared **only** in `:root`, and that `:root` — with its light-theme
+twin `:root[data-theme="light"]` — sits inside `@layer theme`. Unlayered CSS outranks any
+layer, so the runtime `<style id="ui-theme">` beats these defaults whatever order the
+stylesheets load in (see "Runtime theme"). `tests/theme-css-layers.test.ts` holds that line:
+every variable `themeToCssVars` writes may appear on a root selector in `tailwind.css`, and
+in the built `entry.css`, only inside `@layer` or `@theme`. The `@theme reference` block
+above declares the same names so Tailwind generates `bg-primary-200` and friends, and
+`reference` is what stops Tailwind from emitting its own copy — with a plain `@theme` (or
+`@theme inline`) the output contained `--color-primary-300: var(--color-primary-300)`, a
+declaration referring to itself.
 
 **Shadows are not brand data and cannot be.** Tailwind v4's shadow utilities resolve the
 theme value into the rule at build time — `.shadow-primary` compiles to
@@ -477,7 +515,10 @@ theme value into the rule at build time — `.shadow-primary` compiles to
 nothing. The manifest used to carry a `shadowPrimary` knob that could never have worked; it
 is gone. `--shadow-primary` is one template token holding the card glow. Radius has no such
 problem (`border-radius: var(--radius-primary)`), which is why the runtime theme can
-override it.
+override it. What the theme writes there goes through `resolveRadius`: old records carry a
+token like `var(--radius-xl)`, but the bundle declares only `--radius-lg`, so a token from
+Tailwind's scale (`none`, `xs` … `4xl`, `full`) is written as its literal, a plain CSS length
+(`0`, `12px`, `50%`) passes as is, and anything else writes no line at all.
 
 ## Tailwind v4 traps in this repository
 
@@ -539,6 +580,20 @@ is optional and the patcher falls back.
 `@nuxt/fonts` carries **one** family, Inter, and it is the template's fallback, not the
 brand's font: the pair a themed site actually uses arrives from `uiTheme.type` as a Google
 Fonts link written by `app/plugins/ui-theme.ts` at runtime.
+
+A family name goes through `normalizeFontFamily` on both of its ways out. Records hold both
+a bare name (`Raleway`) and a ready CSS value (`"Raleway", sans-serif`); the second, taken as
+is, made the Google Fonts request `family="Raleway",+sans-serif` and got a 400. So the name
+is cut at the first comma and unquoted; the CSS variable gets it back quoted with a
+`sans-serif` fallback — unquoted, `Source Sans 3` or `Exo 2` makes the whole `font-family`
+invalid — and the link gets bare names, deduplicated after normalization. A name outside
+letters, digits and spaces is dropped rather than escaped: it lands in a `<style>` and in a
+URL, and the whole Google Fonts catalogue (1946 families) fits that set.
+
+The same examples — font names, radius, hex parsing, the font link and a full
+`themeToCssVars` output — live in `tests/fixtures/theme-parity.json`, and the panel keeps an
+identical copy: it builds its preview with mirrored functions, and the two must not drift.
+An example changes in both repositories at once.
 
 `defaults.weights` in `nuxt.config.ts` is **one list for every family**, so the patcher writes
 the union of both fonts' weights. Declaring the heading font with the same name but a heavier
