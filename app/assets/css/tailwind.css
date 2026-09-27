@@ -2,7 +2,7 @@
 @config "../../../tailwind.config.js";
 
 /* Девять бренд-цветов. `reference` — Tailwind собирает из них утилиты, но НЕ выдаёт
-   переменные в свой слой, поэтому единственное объявление живёт в :root ниже.
+   переменные в свой слой, поэтому их дефолты объявлены в :root ниже, в @layer theme.
    С обычным @theme (и с `inline` тоже) сюда попадало `--color-primary-300:
    var(--color-primary-300)` — объявление, ссылающееся само на себя. */
 @theme reference {
@@ -107,101 +107,107 @@
   --font-heading: "Inter", sans-serif;
 }
 
-:root {
-  /* Fluid Font Size Config */
-  --fs-min: 0.9rem;
-  --fs-max: 1rem;
-  --min-vw: 360px;
-  --max-vw: 1280px;
-  --fs-slope: calc(
-    (var(--fs-max) - var(--fs-min)) / (var(--max-vw) - var(--min-vw))
-  );
-  --fs-intercept: calc(var(--fs-min) - var(--min-vw) * var(--fs-slope));
+/* Дефолты шаблона — в слое: тема сайта (<style id="ui-theme">) вне слоёв и
+   перебивает их при любом порядке таблиц. Вне слоя дефолты побеждали тему,
+   стоя ниже неё, а ленивый блок (FAQ, плюсы/минусы, карточки) дописывает
+   entry.css в конец <head> — при прокрутке бренд сменялся дефолтом. */
+@layer theme {
+  :root {
+    /* Fluid Font Size Config */
+    --fs-min: 0.9rem;
+    --fs-max: 1rem;
+    --min-vw: 360px;
+    --max-vw: 1280px;
+    --fs-slope: calc(
+      (var(--fs-max) - var(--fs-min)) / (var(--max-vw) - var(--min-vw))
+    );
+    --fs-intercept: calc(var(--fs-min) - var(--min-vw) * var(--fs-slope));
 
-  /* Theme Colors */
+    /* Theme Colors */
 
-  /* Primary */
-  --color-primary-100: #ffffff;
-  --color-primary-200: #f1f5f9;
-  --color-primary-300: #e2e8f0;
+    /* Primary */
+    --color-primary-100: #ffffff;
+    --color-primary-200: #f1f5f9;
+    --color-primary-300: #e2e8f0;
 
-  /* Accent */
-  --color-accent-100: #64748b;
-  --color-accent-200: #475569;
-  --color-accent-300: #334155;
+    /* Accent */
+    --color-accent-100: #64748b;
+    --color-accent-200: #475569;
+    --color-accent-300: #334155;
 
-  /* Active */
-  --color-active-100: #94a3b8;
-  --color-active-200: #334155;
-  --color-active-300: #1e293b;
+    /* Active */
+    --color-active-100: #94a3b8;
+    --color-active-200: #334155;
+    --color-active-300: #1e293b;
 
-  /* Нейтральный слой тёмной темы. Бренд-патчер его не трогает. */
-  --color-surface-text: #ffffff;
-  --color-surface-muted: #cbd5e1;
-  --color-surface-raised: #ffffff;
-  /* Текст поверх active/accent — не то же, что текст страницы: подложка там
-     бренд, а не нейтраль, и по контрасту она противоположна фону. */
-  --color-surface-on-brand: #0f172a;
+    /* Нейтральный слой тёмной темы. Бренд-патчер его не трогает. */
+    --color-surface-text: #ffffff;
+    --color-surface-muted: #cbd5e1;
+    --color-surface-raised: #ffffff;
+    /* Текст поверх active/accent — не то же, что текст страницы: подложка там
+       бренд, а не нейтраль, и по контрасту она противоположна фону. */
+    --color-surface-on-brand: #0f172a;
 
-  /* UI scheme. Слой между брендом и компонентами: какой брендовый или
-     нейтральный токен стоит за каждым ui-*, решает только этот блок —
-     компоненты сами брендовую шкалу больше не трогают. Дефолты один в один
-     воспроизводят то, что раньше было захардкожено по месту; с этапа 6 схему
-     сможет переписывать панель. Ссылки на surface-* (не на литералы) — так
-     text/cta-text остаются тем, что переворачивается вместе с темой. */
-  --color-ui-page-bg: var(--color-primary-300);
-  --color-ui-header-bg: var(--color-primary-300);
-  /* Сайт без темы (или тема без явной ссылки — resolveRef решает "auto" сам)
-     выглядит как раньше: текст шапки — просто текст страницы. */
-  --color-ui-header-text: var(--color-surface-text);
-  --color-ui-footer-bg: var(--color-primary-200);
-  --color-ui-footer-bg-alt: var(--color-primary-300);
+    /* UI scheme. Слой между брендом и компонентами: какой брендовый или
+       нейтральный токен стоит за каждым ui-*, решает только этот блок —
+       компоненты сами брендовую шкалу больше не трогают. Дефолты один в один
+       воспроизводят то, что раньше было захардкожено по месту; с этапа 6 схему
+       сможет переписывать панель. Ссылки на surface-* (не на литералы) — так
+       text/cta-text остаются тем, что переворачивается вместе с темой. */
+    --color-ui-page-bg: var(--color-primary-300);
+    --color-ui-header-bg: var(--color-primary-300);
+    /* Сайт без темы (или тема без явной ссылки — resolveRef решает "auto" сам)
+       выглядит как раньше: текст шапки — просто текст страницы. */
+    --color-ui-header-text: var(--color-surface-text);
+    --color-ui-footer-bg: var(--color-primary-200);
+    --color-ui-footer-bg-alt: var(--color-primary-300);
 
-  --color-ui-card-bg: var(--color-primary-100);
-  --color-ui-card-border: var(--color-primary-300);
-  --color-ui-card-title: var(--color-accent-200);
+    --color-ui-card-bg: var(--color-primary-100);
+    --color-ui-card-border: var(--color-primary-300);
+    --color-ui-card-title: var(--color-accent-200);
 
-  --color-ui-panel-bg: var(--color-primary-200);
-  --color-ui-panel-border: var(--color-primary-300);
+    --color-ui-panel-bg: var(--color-primary-200);
+    --color-ui-panel-border: var(--color-primary-300);
 
-  --color-ui-input-bg: var(--color-primary-100);
-  --color-ui-input-border: var(--color-primary-100);
+    --color-ui-input-bg: var(--color-primary-100);
+    --color-ui-input-border: var(--color-primary-100);
 
-  --color-ui-highlight-bg: var(--color-active-100);
-  --color-ui-highlight-text: var(--color-primary-300);
+    --color-ui-highlight-bg: var(--color-active-100);
+    --color-ui-highlight-text: var(--color-primary-300);
 
-  --color-ui-heading: var(--color-accent-200);
-  --color-ui-text: var(--color-surface-text);
-  --color-ui-muted: var(--color-surface-muted);
+    --color-ui-heading: var(--color-accent-200);
+    --color-ui-text: var(--color-surface-text);
+    --color-ui-muted: var(--color-surface-muted);
 
-  --color-ui-link: var(--color-active-200);
-  --color-ui-link-hover: var(--color-active-300);
+    --color-ui-link: var(--color-active-200);
+    --color-ui-link-hover: var(--color-active-300);
 
-  --color-ui-cta-bg: var(--color-active-200);
-  --color-ui-cta-hover: var(--color-active-300);
-  --color-ui-cta-text: var(--color-surface-on-brand);
+    --color-ui-cta-bg: var(--color-active-200);
+    --color-ui-cta-hover: var(--color-active-300);
+    --color-ui-cta-text: var(--color-surface-on-brand);
 
-  --color-ui-table-head-bg: var(--color-primary-300);
-  --color-ui-table-head-text: var(--color-surface-text);
-  --color-ui-table-row: var(--color-primary-200);
-  --color-ui-table-row-alt: var(--color-primary-300);
-  --color-ui-table-row-border: var(--color-primary-100);
+    --color-ui-table-head-bg: var(--color-primary-300);
+    --color-ui-table-head-text: var(--color-surface-text);
+    --color-ui-table-row: var(--color-primary-200);
+    --color-ui-table-row-alt: var(--color-primary-300);
+    --color-ui-table-row-border: var(--color-primary-100);
 
-  --color-ui-badge-bg: var(--color-accent-200);
-  --color-ui-badge-text: var(--color-surface-on-brand);
-  --color-ui-marker: var(--color-accent-200);
+    --color-ui-badge-bg: var(--color-accent-200);
+    --color-ui-badge-text: var(--color-surface-on-brand);
+    --color-ui-marker: var(--color-accent-200);
 
-  --color-ui-accent-strong: var(--color-accent-300);
-  --color-ui-accent-soft: var(--color-accent-100);
-}
+    --color-ui-accent-strong: var(--color-accent-300);
+    --color-ui-accent-soft: var(--color-accent-100);
+  }
 
-/* Светлая тема. Переворачивается только нейтраль: шкала primary — это уже
-   светлые цвета бренда из манифеста, а active/accent одинаково работают на обеих. */
-:root[data-theme="light"] {
-  --color-surface-text: #0f172a;
-  --color-surface-muted: #475569;
-  --color-surface-raised: #f1f5f9;
-  --color-surface-on-brand: #ffffff;
+  /* Светлая тема. Переворачивается только нейтраль: шкала primary — это уже
+     светлые цвета бренда из манифеста, а active/accent одинаково работают на обеих. */
+  :root[data-theme="light"] {
+    --color-surface-text: #0f172a;
+    --color-surface-muted: #475569;
+    --color-surface-raised: #f1f5f9;
+    --color-surface-on-brand: #ffffff;
+  }
 }
 
 @layer base {
