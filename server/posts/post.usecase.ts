@@ -8,11 +8,17 @@ export class PostUsecase implements IPostUsecasePublic {
     // isActive: false закешировался бы на год под тем же ключом, и после
     // публикации живая страница отвечала бы 404 из устаревшей записи кеша.
     if (isPreview) {
-      return this.postRepository.getBySlug(slug);
+      return {
+        data: await this.postRepository.getBySlug(slug),
+        volatile: false,
+      };
     }
 
-    return AppNitroCache().setCachePostItem(slug, () =>
-      this.postRepository.getBySlug(slug),
+    const { value, volatile } = await AppNitroCache().setCachePostItem(
+      slug,
+      () => this.postRepository.getBySlug(slug),
     );
+
+    return { data: value, volatile };
   }
 }

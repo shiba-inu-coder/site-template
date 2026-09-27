@@ -13,3 +13,7 @@ export const CLOUDINARY_CLOUD_NAME =
   process.env.CLOUDINARY_CLOUD_NAME || "duhutcvan";
 export const PostSlugRegex =
   /^[a-z0-9]+(?:-[a-z0-9]+)*(\/[a-z0-9]+(?:-[a-z0-9]+)*)*$/;
+
+// Ответ API несёт его со значением `volatile`, когда отданное прочитано между
+// сбросами кеша; SSR по нему закрывает от кеширования и саму страницу.
+export const APP_CACHE_STATE_HEADER = "x-app-cache-state";

@@ -70,5 +70,8 @@ export interface IPostUsecasePrivate {
   getOptions(param?: { label: string; value: string }): Promise<Option[]>;
 }
 export interface IPostUsecasePublic {
-  getBySlug(id: string, isPreview?: boolean): Promise<IPostBySlug>;
+  getBySlug(
+    id: string,
+    isPreview?: boolean,
+  ): Promise<{ data: IPostBySlug; volatile: boolean }>;
 }

@@ -2,6 +2,7 @@ import type { H3Event } from "h3";
 
 import { AppError } from "#sg/lib/app-error";
 import { AppLogger } from "#sg/lib/app-logger";
+import { markCacheVolatile } from "#sg/lib/app-cache";
 import { SettingModel } from "#sg/adapters/repository/mongodb/models/setting.model";
 import {
   isPreviewGrantLive,
@@ -90,7 +91,10 @@ export class PostController {
     const previewVerdict = await isPreviewAllowed(e, preview);
     const isPreview = previewVerdict.allowed;
     try {
-      const res = await this.postUsecase.getBySlug(slug, isPreview);
+      const { data: res, volatile } = await this.postUsecase.getBySlug(
+        slug,
+        isPreview,
+      );
 
       // Удалённая страница не открывается никогда: предпросмотр — это «ещё не
       // опубликовано», а не «уже выброшено». Неопубликованную пускаем по
@@ -113,6 +117,11 @@ export class PostController {
         setHeader(e, "Cache-Control", "no-store");
         setHeader(e, "X-Robots-Tag", "noindex, nofollow");
       }
+
+      if (volatile) {
+        markCacheVolatile(e);
+      }
+
       log.info("post found successfully", { slug });
       return res;
     } catch (error: any) {
