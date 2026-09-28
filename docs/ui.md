@@ -439,10 +439,17 @@ Where the frame parts are drawn:
 - **Hero** — `HeroLayout.vue`, rendered by `BasePostView.vue` above the sections when the
   post's own `frame.hero !== "none"`. Breadcrumbs, the date line, the first section's H1, the author
   line (`PostBiographyWriter` with `compact`) and a CTA move into it; with `hero: "photo"`
-  the lead's `text-image` picture moves too. **What moves is decided once**, in
+  the picture of the lead's first `text-image` that has one moves too. **What moves is
+  decided once**, by `resolveHeroContent` (`shared/utils/hero-content.ts`) behind
   `useHeroContent()`, and `PostSections.vue` reads the same decision — it drops the first
-  section's H1 and renders its body with the moved markers removed
-  (`shared/utils/shortcode-markers.ts`), or the author and the picture would appear twice.
+  section's H1 and renders its body with the moved markers removed, or the author would
+  appear twice. A marker moves **as an instance**, not by name: the first author and the first
+  `button-ref` go to the hero, a second author and a second button stay in the lead
+  (`removeShortcodeMarkers` matches the found marker's position and `uniq-id`). From a
+  `text-image` **only the picture** moves: its marker stays in the lead, and `PostTextImage`
+  renders the text and the button there without the picture — before, the whole block went
+  and its text and button were lost. The hero's H1 carries the first section's `uid` as its
+  `id`, so the table of contents' first anchor still lands.
   The hero background itself has no variant any more: `.site-hero` in `tailwind.css` is
   always the same default surface (`panel-bg` plus a bottom border) — there is no
   `heroStyle` axis left to switch it.
@@ -564,20 +571,21 @@ Article headings — `#article h1…h6` — keep their own ramp of hardcoded rem
 folding a 2rem → 1.3rem sequence into the nine steps would either distort it or force the
 scale to grow again. They do take `--font-heading`.
 
-`BasePostView.vue` opens with `mt-18` — an offset for the fixed header in
-`HeaderLayout.vue`, and the only one: the header has a single height. Changing the header's
-padding silently breaks the gap under it.
+Nothing under the header carries a top offset: it is `sticky`, not `fixed`, and keeps its
+own height in the flow (see "Frame").
 
 Z-index has no scale yet; the values in use are `z-20` (the hero's content over its
-decorations, the back-to-top button), `z-30` (the sticky CTA), `z-50` (the fixed header) and
+decorations, the back-to-top button), `z-30` (the sticky CTA), `z-50` (the sticky header) and
 `z-[999]` (a drawer). Pick from those rather than inventing a fifth.
 
 ## Fonts
 
 Two families: `--font-primary` on the layout root and `--font-heading` on `#article h1…h6`
 plus the two largest text steps (a rating score and a bonus sum read as headings and are set
-like them). A brand with one font gets the same family in both — the manifest's `fontHeading`
-is optional and the patcher falls back.
+like them). A brand with one font gets the same family in both: the panel writes it into
+`type.body` and `type.display` alike. A record without `type.display` writes no
+`--font-heading` line at all (`themeToCssVars`), and headings stay on the template's Inter —
+they do not fall back to the body font.
 
 `@nuxt/fonts` carries **one** family, Inter, and it is the template's fallback, not the
 brand's font: it self-hosts at build time (`/_fonts/`) and knows nothing about the pair a
@@ -633,12 +641,10 @@ The same examples — font names, radius, hex parsing, the font link and a full
 identical copy: it builds its preview with mirrored functions, and the two must not drift.
 An example changes in both repositories at once.
 
-`defaults.weights` in `nuxt.config.ts` is **one list for every family**, so the patcher writes
-the union of both fonts' weights. Declaring the heading font with the same name but a heavier
-weight is a supported way to ask for that weight.
-
-Loading the weight is only half of it: `themeFontsHref` adds `type.display.weight` to
-`GOOGLE_FONT_WEIGHTS` so the _file_ is fetched, and `--font-heading-weight` (`themeToCssVars`,
+`defaults.weights` in `nuxt.config.ts` covers only the build-time Inter; nothing patches it per
+site any more. The theme pair's weights are `GOOGLE_FONT_WEIGHTS` plus `type.display.weight`,
+and loading them is only half of it: `themeFontsHref` adds that weight so the _file_ is
+fetched, and `--font-heading-weight` (`themeToCssVars`,
 `h1…h6`'s `font-weight`) is what actually _sets_ it — a theme with a weight the Google Fonts
 request didn't carry would render the browser's synthetic-bold fallback instead. Letter-spacing
 has no separate loading step: `--font-heading-tracking` is a raw CSS value passed straight
@@ -675,6 +681,69 @@ logo would declare sizes the fetched image does not have.
 An empty `logo.src` is a normal state: that is the template before a brand is applied. The
 header, the footer and the schema.org `publisher` all skip the image entirely rather than
 render a broken one.
+
+## Images
+
+**Article pictures — the `text-image` block, the hero photo, grid cards — are a plain `<img>`,
+not `<NuxtImg>`.** @nuxt/image still builds every URL (`useResponsiveImage()`,
+`app/composables/useResponsiveImage.ts`, over `useImage()`); what it no longer decides is the
+candidate set and `sizes`, because it gets both wrong here. It writes the descriptor it asked
+for, not the width of the file: `w_2560` of a 1344 px original is 2560 px of upscaled blur,
+advertised as `2560w`. And its `sizes` prop understands only `px`/`vw` per breakpoint, so the
+real slot — `calc(100vw - 396px)` next to a sidebar — cannot be said at all. Logos and small
+icons stay on `NuxtImg`.
+
+Four rules:
+
+- **Dimensions come from the data.** The panel writes the file's own `width`/`height` into
+  `img` when it uploads (`PostShortcodeImage`; optional in `TextImage.ts` and `GridCard.ts`),
+  and the block passes them as attributes — that is what holds the space before the file
+  arrives. A record without them renders as it always did; nothing is fetched to find out.
+  The exception is a vertical grid card: its `aspect-video` box holds the space already and
+  the picture is `object-contain`ed into it, so the original's dimensions say nothing there.
+  A horizontal card and the `image` variant get them.
+- **At most one priority image per page.** `resolvePriorityImage`
+  (`shared/utils/priority-image.ts`) picks it once: the hero photo under `hero: "photo"`;
+  otherwise the lead's first `text-image` that has a picture, **if it is on the first screen**
+  — no more than `FIRST_SCREEN_TEXT` (300) characters of text above it, a `button-ref` or an
+  author card counted at their height, and any other block above it (a table of contents, a
+  table, cards) pushes it off. `bottom` puts the picture under the block's own text, so that
+  text counts too; an orphaned marker counts for nothing. A post without sections is searched
+  in `content`. No candidate is a normal answer — the LCP is text, and there is no preload.
+  The chosen block gets `loading="eager"` + `fetchpriority="high"` and puts the preload into
+  the head itself (`usePriorityImagePreload`) from the very attributes its `<img>` carries, so
+  `imagesrcset`/`imagesizes` cannot drift from the picture. NuxtImg's `preload` prop is not
+  used for this: it builds its own set.
+- **Candidates and `sizes` come only from the generator.** `candidateWidths`
+  (`shared/utils/image-candidates.ts`) cuts the 320…2560 ladder at the original's width and
+  offers the original itself last; with no width on record the ladder stops at 1920. Every
+  candidate carries `c_limit`: a width on record is the panel's claim, and a wrong one must not
+  upscale either. `imageSizes(role, layout)` (`shared/utils/image-sizes.ts`) returns the slot
+  as a `calc()` per breakpoint range, and **its numbers are the components' own classes** —
+  `CONTAINER`'s padding, the sidebar's 300 px plus gap, `data-width="narrow"`'s 52rem,
+  `p-primary-1` of a section with a background, the grid gaps, a horizontal card's 36 %, the
+  hero's `1.2fr_1fr`. A padding or a gap changed in `BasePostView`, `PostSections`,
+  `HeroLayout`, `PostTextImage` or `PostGridCards` is changed there too, or `sizes` quietly
+  asks for the wrong file. A section's background reaches the block through
+  `RuntimeTemplateLayout`'s `imageLayout` prop (`IMAGE_LAYOUT_KEY`); a body rendered without
+  it takes the page's layout.
+- **A block never hardcodes `loading`.** It takes `imageLoading(isPriority)` — lazy for all but
+  the one. Chrome is outside the rule: the header logo loads eagerly, the footer logo and the
+  sidebar offer logo are `lazy` (the sidebar does not exist on a phone at all).
+
+A grid-cards record with a numeric `imgWidth`/`imgHeight` — a size the operator typed by hand
+— keeps the old 1x/2x pair built from those numbers: that is a transformation someone asked
+for, not the size of the file. A section's own background image is a CSS `background-image`
+with no `srcset`, so it gets one `w_1920,c_limit`.
+
+`node scripts/perf-smoke.mjs <url> [--expect-priority]` checks a live page against these
+rules from the **SSR response**, not the DOM after load: at most one `fetchpriority="high"`
+(exactly one with the flag), not `lazy`, one image preload with the same `srcset`/`sizes`,
+numeric `width`/`height` wherever the post's data API knows the original (outside an
+`aspect-*` box), every descriptor equal to its file's `w_` and no candidate wider than the
+original. It exits non-zero when any rule is broken, and it runs after every release
+(`docs/release.md`). Whether the chosen picture really is the LCP is a browser's question,
+not the script's.
 
 ## Components
 
@@ -836,11 +905,13 @@ position field, `imgSide`. `left`/`right` put the picture in one of two equal co
 desktop, `top`/`bottom` keep a single column with the picture first or last. On a phone
 there is always one column, and a picture from the side goes above the text. `full` is what
 the panel wrote while the position was a modifier of the variants — one column, picture
-first — and is read as `top`; any other unknown value falls back to `right`. Because
-`@config` only scans `.vue` files, the grid-column map, the order map and the `sizes` map for
-`NuxtImg` are literal objects keyed by side — **every variant's classes are literal for the
-same reason**, which is why a component carries a `Record<variant, string>` map instead of
-building a class from the stored value.
+first — and is read as `top`; any other unknown value falls back to `right`
+(`resolveTextImageSide`, `shared/utils/text-image.ts` — the priority image reads the side
+too). Because `@config` only scans `.vue` files, the grid-column map and the order map are
+literal objects keyed by side — **every variant's classes are literal for the same reason**,
+which is why a component carries a `Record<variant, string>` map instead of building a class
+from the stored value. `sizes` is not a map any more: a side picks a role (`left`/`right` a
+half, `top`/`bottom` the whole column), and `imageSizes` does the rest (see "Images").
 
 A record with no `img` at all — text-only, or an old block whose picture lives in the body
 HTML instead — collapses the grid to a single column rather than leaving an empty second one
