@@ -24,7 +24,6 @@
     "@nuxt/image": "2.1.0",
     "@nuxtjs/sitemap": "7.4.7",
     "@tailwindcss/vite": "4.3.3",
-    "dayjs": "1.11.20",
     "isomorphic-dompurify": "3.19.0",
     "mongoose": "8.8.4",
     "mongoose-unique-validator": "6.1.0",
@@ -34,8 +33,7 @@
     "path-to-regexp": "8.2.0",
     "pino": "9.5.0",
     "rfdc": "1.4.1",
-    "tailwindcss": "4.3.3",
-    "zod": "3.24.2"
+    "tailwindcss": "4.3.3"
   },
   "devDependencies": {
     "@nuxt/eslint": "1.17.0",
