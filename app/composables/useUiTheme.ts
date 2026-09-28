@@ -27,8 +27,17 @@ export const useUiTheme = () => {
     () => theme.value?.mode || (siteConfig.value.site.theme as UiThemeMode),
   );
 
+  // Стеки с запасным шрифтом считает сервер (таблица метрик в клиент не
+  // едет) и отдаёт через состояние: клиент обязан собрать ту же строку, что
+  // SSR, иначе после гидратации unhead перепишет `<style id="ui-theme">`
+  // стеком без запасного шрифта.
+  const fontStacks = useState<Record<string, string>>(
+    "ui-theme-font-stacks",
+    () => ({}),
+  );
+
   const cssVars = computed(() =>
-    theme.value ? themeToCssVars(theme.value) : "",
+    theme.value ? themeToCssVars(theme.value, fontStacks.value) : "",
   );
 
   const fontsHref = computed(() => themeFontsHref(theme.value));
@@ -92,6 +101,7 @@ export const useUiTheme = () => {
     theme,
     mode,
     cssVars,
+    fontStacks,
     fontsHref,
     contrast,
     variantFor,
