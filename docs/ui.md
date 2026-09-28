@@ -931,11 +931,20 @@ HTML, not through `PostTextImage.vue`, and stays as-is.
 
 A post written in the AppsPro constructor arrives as `sections[]` — an ordered list where each
 entry is an H2 with everything under it (`uid`, `title`, `body` **without** its own `<h2>`,
-plus `layout`). `BasePostView.vue` forks on `sections?.length`: with sections it renders
-`PostSections.vue` and **drops the global `max-w-7xl` wrapper**, without them it keeps the old
-single `RuntimeTemplateLayout` over `content`. Both fields are always populated — the panel
-also assembles the sections into flat HTML — so a site that has not been rebuilt yet keeps
-rendering the same article from `content` and notices nothing.
+plus `layout`). `BasePostView.vue` forks on `postNeedsContent` (`shared/utils/post-content.ts`):
+with sections it renders `PostSections.vue` and **drops the global `max-w-7xl` wrapper**,
+without them (no field, or an empty list) it keeps the old single `RuntimeTemplateLayout` over
+`content`. The panel writes both fields — it also assembles the sections into flat HTML — so a
+site on an older image keeps rendering the same article from `content`.
+
+**The public post answer carries `content` only for a post without sections.**
+`withoutUnusedContent` drops it in `PostUsecase` before the value is cached, for the preview
+path too: a page with sections never reads it, and in `__NUXT_DATA__` it was a second copy of
+the article next to `sections[].body`. The fork above, `resolvePriorityImage` and the server
+ask the same `postNeedsContent`, so they cannot disagree about which post needs it — and
+anything new that reads `content` gets `undefined` on a page with sections. The cache key and
+the purge are untouched; a value cached before a deploy is never read again anyway (a restart
+gets a new boot id, see "Cache purge").
 
 **A section's background comes from `layout.mode`, read on every render.** `"site"` takes the
 theme's own `decor.sectionBg` whole — `--ui-section-bg` **and** its `width` — the section's own

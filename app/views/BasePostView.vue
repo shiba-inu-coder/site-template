@@ -1,7 +1,7 @@
 <template>
   <div id="article">
     <slot>
-      <template v-if="sections?.length">
+      <template v-if="!needsContent">
         <HeroLayout v-if="heroEnabled"></HeroLayout>
         <div
           v-else
@@ -54,6 +54,7 @@ import ButtonFastUpLayout from "#rc/components/layout/ButtonFastUpLayout.vue";
 import { getCloudinaryBaseUrl } from "#rc/utils/get-cloudinary-base-url";
 import { logoSize } from "#rc/utils/logo-size";
 import { pickVariant } from "#shared/utils/block-variant";
+import { postNeedsContent } from "#shared/utils/post-content";
 import { resolvePageLang } from "#shared/utils/site-config";
 
 const { createdAt, updatedAt, content, sections, slug, metaTags, title } =
@@ -62,6 +63,10 @@ const { createdAt, updatedAt, content, sections, slug, metaTags, title } =
 const siteConfig = useSiteConfig();
 const { frame } = useUiTheme();
 const { enabled: heroEnabled } = useHeroContent();
+
+const needsContent = computed(() =>
+  postNeedsContent({ sections: sections.value }),
+);
 
 const hasSidebar = computed(() => (frame.value.sidebar || "none") !== "none");
 
