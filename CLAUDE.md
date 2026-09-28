@@ -24,6 +24,9 @@ npm test           # node --test over tests/*.test.ts
   `tests/theme-css-layers.test.ts` also reads the built `entry.css` when `.output` exists, so
   `npm run build && npm test` is the full check.
 - `npm install` requires `legacy-peer-deps` (set in `.npmrc`). Vite is overridden to `rolldown-vite`.
+  The flag also means npm never installs optional peers on its own: `zod` is one for
+  `nuxt-schema-org`, needed only by its `@nuxt/content` integration, so it is not in
+  `dependencies` — wiring `@nuxt/content` in means adding `zod` back.
 - Deploy: GitHub Actions builds the image with **no build args** → VPS Docker Swarm.
   `docker/entrypoint.mjs` reads the site's Vault record at container start and exports every
   key as `NUXT_*` before importing Nitro; on an unreachable Vault it falls back to the cached
