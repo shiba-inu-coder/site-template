@@ -1,3 +1,5 @@
+import { resolvePageLang } from "#shared/utils/site-config";
+
 export const useMetaHead = () => {
   const route = useRoute();
   const siteConfig = useSiteConfig();
@@ -51,7 +53,9 @@ export const useMetaHead = () => {
       title: metaTags.value?.title
         ? metaTags.value.title
         : siteConfig.value.site.name,
-      htmlAttrs: { lang: metaTags.value.lang || siteConfig.value.site.lang },
+      htmlAttrs: {
+        lang: resolvePageLang(metaTags.value, siteConfig.value.site),
+      },
       meta,
       link,
     };

@@ -4,7 +4,10 @@
 // не пришлось.
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { buildSiteConfig } from "../shared/utils/site-config.ts";
+import {
+  buildSiteConfig,
+  resolvePageLang,
+} from "../shared/utils/site-config.ts";
 
 const template: DeepPartial<SiteConfig> = {
   site: { name: "", lang: "en", theme: "light", brandSlug: "" },
@@ -88,4 +91,12 @@ test("buildSiteConfig: uiTheme из settings не просачивается в 
 
   assert.equal("uiTheme" in config, false);
   assert.equal(settings.uiTheme, null);
+});
+
+test("язык страницы: пост перекрывает сайт, пустой — не перекрывает", () => {
+  const site = { lang: "en" };
+
+  assert.equal(resolvePageLang({ lang: "de-DE" }, site), "de-DE");
+  assert.equal(resolvePageLang({ lang: "" }, site), "en");
+  assert.equal(resolvePageLang(undefined, site), "en");
 });

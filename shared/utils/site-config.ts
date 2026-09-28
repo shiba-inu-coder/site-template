@@ -83,3 +83,10 @@ export const buildSiteConfig = (
 
   return deepMerge(deepMerge(SITE_CONFIG_STRUCTURE, template), fromDb);
 };
+
+// `<html lang>` и `inLanguage` в schema.org обязаны совпадать — поэтому правило
+// одно на оба места.
+export const resolvePageLang = (
+  metaTag: Pick<PostMetaTag, "lang"> | undefined,
+  site: Pick<SiteConfig["site"], "lang">,
+) => metaTag?.lang || site.lang;
