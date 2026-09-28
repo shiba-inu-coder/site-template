@@ -1,8 +1,7 @@
 <script setup lang="ts">
 import { computed } from "#imports";
-import { compile } from "vue";
 import ButtonRef from "#rc/components/post/PostButtonRef.vue";
-import { sanitizeRuntimeTemplate } from "#shared/utils/sanitize-runtime-template";
+import { compileSafeTemplate } from "#shared/utils/safe-runtime-template";
 
 // const MiniCasinoReview = defineLazyHydrationComponent(
 //   "visible",
@@ -97,10 +96,8 @@ const CompiledTemplate = computed(() => {
   // отрисовать один блок. Свой onError гасит throw для того, что парсер умеет
   // восстановить сам; try/catch — страховка на случай, если не умеет.
   try {
-    const render = compile(`<div>${sanitizeRuntimeTemplate(template)}</div>`, {
-      onError: (error) => {
-        console.error("[RuntimeTemplateLayout] template compile error", error);
-      },
+    const render = compileSafeTemplate(`<div>${template}</div>`, (error) => {
+      console.error("[RuntimeTemplateLayout] template compile error", error);
     });
 
     return { render, components };
