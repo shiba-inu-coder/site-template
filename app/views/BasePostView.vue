@@ -54,6 +54,7 @@ import ButtonFastUpLayout from "#rc/components/layout/ButtonFastUpLayout.vue";
 import { getCloudinaryBaseUrl } from "#rc/utils/get-cloudinary-base-url";
 import { logoSize } from "#rc/utils/logo-size";
 import { pickVariant } from "#shared/utils/block-variant";
+import { resolvePageLang } from "#shared/utils/site-config";
 
 const { createdAt, updatedAt, content, sections, slug, metaTags, title } =
   usePost();
@@ -75,9 +76,11 @@ const CLOUDINARY_BASE_URL = computed(() =>
 const DOMAIN_NAME = computed(() => useRuntimeConfig().public.DOMAIN_NAME);
 const articleUrl = computed(() => `${SITE_URL.value}${useRoute().path}`);
 const websiteId = computed(() => `${SITE_URL.value}#website`);
-const webpage = computed(() => `${SITE_URL.value}#webpage`);
-const baseId = computed(() => `${articleUrl.value}#`);
-const article = computed(() => `${baseId.value}article`);
+const webpage = computed(() => `${articleUrl.value}#webpage`);
+const article = computed(() => `${articleUrl.value}#article`);
+const pageLang = computed(() =>
+  resolvePageLang(metaTags.value, siteConfig.value.site),
+);
 
 // Высота в трансформации Cloudinary берётся из того же расчёта, что и атрибуты:
 // у широкого лого logoSize сажает высоту ниже запрошенной, и захардкоженный
@@ -112,6 +115,7 @@ useSchemaOrg([
     description: metaTags.value.description,
     name: siteConfig.value.site.name,
     url: articleUrl.value,
+    inLanguage: pageLang.value,
     isPartOf: {
       "@id": websiteId.value,
     },
@@ -135,7 +139,7 @@ useSchemaOrg([
     description: metaTags.value.description,
     datePublished: createdAt.value,
     dateModified: updatedAt.value,
-    inLanguage: siteConfig.value.site.lang,
+    inLanguage: pageLang.value,
 
     mainEntityOfPage: {
       "@type": "WebPage",
