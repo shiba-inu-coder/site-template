@@ -960,6 +960,17 @@ Section bodies go through the same `RuntimeTemplateLayout`, so shortcodes work u
 `shortcodesConfig` sits on the post as a whole and `uniqId` addresses a block across the
 entire article, not within one section.
 
+**Only the first section's body hydrates at once.** Every body below it is
+`RuntimeTemplateLayout` behind `defineLazyHydrationComponent("visible")`: the server renders it
+in full, as before, and the client compiles it when its section comes into view — hydration
+used to compile the whole article in one long task. The first stays eager because it is the
+first screen: the priority image is in it or in the hero, never in a later section
+(`resolvePriorityImage` reads only the lead). The headings are outside the lazy part, so an
+anchor or the table of contents lands on a section that has not hydrated yet, and it hydrates
+there. A block inside a lazy body keeps its own `visible` strategy on top — it wakes when both
+it and its section are in view. A client-side navigation renders everything at once; lazy
+hydration only exists on the first load.
+
 **`shared/utils/section-style.ts`'s `normalizeSectionLayout` fills in every field a record
 written before an axis existed does not carry** — `mode` defaults to `"site"`, the same
 "operator never touched this" meaning an absent `sectionImageLayout`/`resolvePageFrame` field
