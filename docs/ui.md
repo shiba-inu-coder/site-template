@@ -301,8 +301,8 @@ Two details that look like noise and are not:
   equal `:root` rules won — and a lazily hydrated block (FAQ, pros/cons, grid cards)
   carries `entry.css` in its chunk's dependencies, so Vite's loader appended a `<link>` to
   the end of `<head>` on scroll and the brand flipped back to the slate defaults. The tag
-  is still pushed with `tagPriority: 65` (after the stylesheets at 60, before the preloads
-  at 70), but nothing depends on that order any more.
+  is still pushed with `tagPriority: 65` (after the stylesheets at 60), but nothing depends
+  on that order any more.
 - **The theme's fonts are self-hosted at runtime, not at build.** `@nuxt/fonts` scans CSS
   at build time and knows nothing about a family that arrives from Mongo, and a
   `<link rel="stylesheet">` to Google Fonts was a render-blocking request to a third
@@ -736,7 +736,9 @@ Four rules:
   The chosen block gets `loading="eager"` + `fetchpriority="high"` and puts the preload into
   the head itself (`usePriorityImagePreload`) from the very attributes its `<img>` carries, so
   `imagesrcset`/`imagesizes` cannot drift from the picture. NuxtImg's `preload` prop is not
-  used for this: it builds its own set.
+  used for this: it builds its own set. The link goes out with `tagPriority: 55`, above every
+  `<style>` (60): by default unhead puts a preload at 70, behind the ~50 KB that
+  `features.inlineStyles` writes into the head, and the browser met it that much later.
 - **Candidates and `sizes` come only from the generator.** `candidateWidths`
   (`shared/utils/image-candidates.ts`) cuts the 320…2560 ladder at the original's width and
   offers the original itself last; with no width on record the ladder stops at 1920. Every
