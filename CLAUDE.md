@@ -87,6 +87,13 @@ types/constants/utils). Aliases: `#sg` → `server/`, `#rc` → `app/`.
   `app/plugins/ui-theme.ts` turns it into `<link rel="icon">` — only when it is set. The
   brandless template declares no icon and has no `public/favicon.ico`: browsers still hit
   `/favicon.ico` themselves and get a 404, which is fine. Do not commit one.
+- The theme's font pair never reaches the browser from Google. `@nuxt/fonts` self-hosts only
+  the build-time Inter; the pair from `uiTheme.type` is fetched by the server
+  (`server/lib/theme-fonts.ts`, cached in `fsApp`), its gstatic URLs rewritten to
+  `/_theme-fonts/…` (a Nitro route that downloads each woff2 once per node), and
+  `app/plugins/ui-theme.ts` inlines the `@font-face` rules into the SSR HTML — not into the
+  payload. A `<link>` to Google appears only as a fallback: the server could not get the
+  CSS, or the panel preview changed the font live. See `docs/ui.md`, "Fonts".
 - No auth/JWT anywhere: inactive (`isActive: false`) and deleted posts are 404 for everyone.
 - env vars: see `.env.example` (MONGO_URI, DB_NAME, SITE_URL, DOMAIN_NAME, CACHE_PURGE_SECRET).
   `.env` is for local dev only — in the container the same values come from Vault. The one

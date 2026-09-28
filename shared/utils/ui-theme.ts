@@ -438,9 +438,11 @@ export const themeToCssVars = (theme: UiTheme): string => {
 // Что реально используют шрифты шаблона: текст + полужирный + подзаголовки.
 export const GOOGLE_FONT_WEIGHTS = [400, 500, 700];
 
-// Сборка href без @nuxt/fonts — тот модуль сканирует CSS на сборке и о
-// семействе, приехавшем из базы, не знает. Пара семейств уходит одной
-// ссылкой: два запроса к fonts.googleapis.com вместо одного ничего не дают.
+// Адрес css2 собирается без @nuxt/fonts — тот модуль сканирует CSS на сборке
+// и о семействе, приехавшем из базы, не знает. По этому адресу сервер сам
+// забирает @font-face и встраивает в страницу (`server/lib/theme-fonts.ts`);
+// браузер идёт сюда только в превью панели и когда сервер до Google не
+// достучался. Пара семейств — один запрос: два вместо одного ничего не дают.
 export const googleFontsHref = (
   fontFamily: string | string[],
   weights: number[] = GOOGLE_FONT_WEIGHTS,
@@ -463,6 +465,22 @@ export const googleFontsHref = (
     .join("&");
 
   return `https://fonts.googleapis.com/css2?${query}&display=swap`;
+};
+
+// Один расчёт на сервер и страницу: сервер встраивает @font-face по этому
+// адресу, а страница сверяет с ним свой. Разойдись они — сайт тянул бы тот же
+// шрифт ещё и ссылкой на Google.
+export const themeFontsHref = (theme: UiTheme | null | undefined): string => {
+  if (!isUiThemeConfigured(theme)) {
+    return "";
+  }
+
+  const type = theme.type;
+  const weights = type?.display?.weight
+    ? [...GOOGLE_FONT_WEIGHTS, type.display.weight]
+    : GOOGLE_FONT_WEIGHTS;
+
+  return googleFontsHref([type?.body?.family, type?.display?.family], weights);
 };
 
 // Дефолт шаблона до 6a/5b: тот же primary/active/accent, что сейчас в

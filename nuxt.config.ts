@@ -70,9 +70,11 @@ export default defineNuxtConfig({
     },
   },
 
-  // Одно нейтральное семейство — дефолт шаблона и фолбэк. Пару шрифтов темы
-  // (`type.display`/`type.body`) подключает ссылкой `app/plugins/ui-theme.ts`:
-  // @nuxt/fonts сканирует CSS на сборке и о семействе из базы не знает.
+  // Одно нейтральное семейство — дефолт шаблона и фолбэк. @nuxt/fonts
+  // сканирует CSS на сборке и о семействе из базы не знает, поэтому пару
+  // шрифтов темы (`type.display`/`type.body`) сервер забирает у Google сам уже
+  // в рантайме (`server/lib/theme-fonts.ts`), а `app/plugins/ui-theme.ts`
+  // встраивает её @font-face в страницу.
   fonts: {
     families: [
       {

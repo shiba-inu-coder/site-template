@@ -266,8 +266,9 @@ Cloudinary public id, built into a URL with `getCloudinaryBaseUrl`. **There is n
 browsers ask for `/favicon.ico` anyway and get a 404, which is fine.
 
 `@nuxt/fonts` in `nuxt.config.ts` carries one neutral family (Inter) as the template's
-fallback; the brand's own pair comes from `uiTheme.type` as a Google Fonts link written by
-the plugin. Nothing in `nuxt.config.ts` is patched per site any more.
+fallback; the brand's own pair comes from `uiTheme.type`, fetched from Google by the server
+and inlined by the plugin (see "Fonts"). Nothing in `nuxt.config.ts` is patched per site any
+more.
 
 ## Runtime theme
 
@@ -302,11 +303,12 @@ Two details that look like noise and are not:
   the end of `<head>` on scroll and the brand flipped back to the slate defaults. The tag
   is still pushed with `tagPriority: 65` (after the stylesheets at 60, before the preloads
   at 70), but nothing depends on that order any more.
-- **The font link is written by hand.** `@nuxt/fonts` scans CSS at build time and knows
-  nothing about a family that arrives from Mongo, so the plugin emits two `preconnect`s and
-  one `<link rel="stylesheet">` to Google Fonts covering both families (`type.display` and
-  `type.body`) in a single request. `vitalizer.disableStylesheets` cannot eat it: that
-  option only strips `css` entries from the build manifest and never touches head tags.
+- **The theme's fonts are self-hosted at runtime, not at build.** `@nuxt/fonts` scans CSS
+  at build time and knows nothing about a family that arrives from Mongo, and a
+  `<link rel="stylesheet">` to Google Fonts was a render-blocking request to a third
+  domain (~800 ms in Lighthouse). So the server fetches the `@font-face` rules itself and
+  the plugin inlines them as `<style id="ui-theme-fonts">`; the page makes no request to
+  Google at all. How, and when the old link comes back as a fallback: "Fonts".
 
 ### Cache purge
 
@@ -578,8 +580,44 @@ like them). A brand with one font gets the same family in both — the manifest'
 is optional and the patcher falls back.
 
 `@nuxt/fonts` carries **one** family, Inter, and it is the template's fallback, not the
-brand's font: the pair a themed site actually uses arrives from `uiTheme.type` as a Google
-Fonts link written by `app/plugins/ui-theme.ts` at runtime.
+brand's font: it self-hosts at build time (`/_fonts/`) and knows nothing about the pair a
+themed site actually uses, which arrives from `uiTheme.type` at runtime. That pair is
+self-hosted at runtime instead, and the browser never talks to Google:
+
+- **One address, one calculation.** `themeFontsHref(theme)` (`shared/utils/ui-theme.ts`)
+  builds the css2 URL for both families plus the heading weight; `useUiTheme()`'s
+  `fontsHref` and the server both call it, so they cannot disagree about which fonts the
+  page needs.
+- **The server fetches the CSS.** `/api/v1/public/settings/theme-fonts` reads the cached
+  public settings, asks Google for that URL with a desktop Chrome `User-Agent` (without one
+  css2 answers with whole TTFs instead of `unicode-range`-split woff2), and keeps only
+  `@font-face` blocks whose every `url()` points at a gstatic font file, rewritten to
+  `/_theme-fonts/<path>` (`rewriteFontFaceUrls`, `shared/utils/theme-fonts.ts`). The
+  endpoint takes no input from the client, so it cannot be used to fetch anything but the
+  site's own fonts. The result is a Nitro cached function on `fsApp` keyed by the URL, for a
+  year; a failure is never cached there, and the same URL is not retried for a minute, so an
+  unreachable Google costs one timeout, not one per page render. A `purge all` drops the
+  entry too — it is refetched on the next render.
+- **The plugin inlines it into the SSR HTML only.** `app/plugins/ui-theme.ts` puts the CSS
+  into `<style id="ui-theme-fonts">` and deliberately keeps it out of the payload: for a CJK
+  family it is hundreds of kilobytes, and state would ship it twice. On the client the style
+  entry is empty and the server's tag stays where it is — unhead only removes tags it put
+  there itself on the client. What does go into state is the URL whose faces are inlined
+  (`useState("ui-theme-fonts-href")`).
+- **The old link is a fallback.** When the theme's URL differs from the inlined one — the
+  server could not get the CSS, or the panel preview switched the font live — the plugin
+  emits the Google `preconnect`s and `<link rel="stylesheet">` exactly as before.
+  `vitalizer.disableStylesheets` cannot eat that link: it only strips `css` entries from the
+  build manifest.
+- **Files come through `/_theme-fonts/[...path]`.** Only paths shaped like gstatic's
+  (`s/<family>/v<n>/<name>[.<n>].woff2`, `isThemeFontPath`) are accepted. A file already on
+  disk (`fsApp`, `theme-fonts:` keys — outside what a purge clears) is served as is, because
+  HTML in nginx's cache may still name a previous theme's file; a new one is downloaded
+  only if the current theme's CSS names it, so the route is not a proxy to all of
+  fonts.gstatic.com. Every file is checked against its WOFF2 header length before it is
+  stored or served — a file read while another request is still writing it would otherwise
+  go out as `immutable` for a year. `url-normalize` skips the prefix, so a font path is
+  never lowercased.
 
 A family name goes through `normalizeFontFamily` on both of its ways out. Records hold both
 a bare name (`Raleway`) and a ready CSS value (`"Raleway", sans-serif`); the second, taken as
@@ -599,8 +637,8 @@ An example changes in both repositories at once.
 the union of both fonts' weights. Declaring the heading font with the same name but a heavier
 weight is a supported way to ask for that weight.
 
-Loading the weight is only half of it: `useUiTheme()`'s `fontsHref` adds `type.display.weight`
-to `GOOGLE_FONT_WEIGHTS` so the _file_ is fetched, and `--font-heading-weight` (`themeToCssVars`,
+Loading the weight is only half of it: `themeFontsHref` adds `type.display.weight` to
+`GOOGLE_FONT_WEIGHTS` so the _file_ is fetched, and `--font-heading-weight` (`themeToCssVars`,
 `h1…h6`'s `font-weight`) is what actually _sets_ it — a theme with a weight the Google Fonts
 request didn't carry would render the browser's synthetic-bold fallback instead. Letter-spacing
 has no separate loading step: `--font-heading-tracking` is a raw CSS value passed straight
