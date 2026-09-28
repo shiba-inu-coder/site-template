@@ -13,7 +13,7 @@ export default defineEventHandler((event) => {
     "/",
     /\.[a-zA-Z0-9]+$/,
     /^\/api\b/,
-    /^\/_(nuxt|payload|ipx|nitro)\b/,
+    /^\/_(nuxt|payload|ipx|nitro|theme-fonts)\b/,
     /^\/__\w+/,
     /^\/@\w+/,
     /^\/sitemap\.xml$/,

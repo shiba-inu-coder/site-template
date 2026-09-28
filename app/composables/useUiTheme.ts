@@ -1,11 +1,10 @@
 import { contrastReport } from "#shared/utils/contrast";
 import type { ContrastReportEntry } from "#shared/utils/contrast";
 import {
-  GOOGLE_FONT_WEIGHTS,
-  googleFontsHref,
   isUiThemeConfigured,
   resolvePageFrame,
   resolveScheme,
+  themeFontsHref,
   themeToCssVars,
 } from "#shared/utils/ui-theme";
 import type {
@@ -32,22 +31,7 @@ export const useUiTheme = () => {
     theme.value ? themeToCssVars(theme.value) : "",
   );
 
-  const fontsHref = computed(() => {
-    const type = theme.value?.type;
-    const families = [type?.body?.family, type?.display?.family].filter(
-      Boolean,
-    ) as string[];
-
-    if (!families.length) {
-      return "";
-    }
-
-    const weights = type?.display?.weight
-      ? [...GOOGLE_FONT_WEIGHTS, type.display.weight]
-      : GOOGLE_FONT_WEIGHTS;
-
-    return googleFontsHref(families, weights);
-  });
+  const fontsHref = computed(() => themeFontsHref(theme.value));
 
   // Каркас читают компоненты, а не только CSS: от `frame.hero` зависит, кто
   // рисует H1, а от `frame.sidebar` — рендерится ли колонка вообще.
