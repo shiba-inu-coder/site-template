@@ -722,6 +722,16 @@ Article bodies arrive as HTML from Mongo and are compiled at runtime
 in `app/components/layout/RuntimeTemplateLayout.vue` — Vue camelises `vue:text-image` into the
 key `TextImage`.
 
+**Stored HTML is compiled only through `compileSafeTemplate`**
+(`shared/utils/safe-runtime-template.ts`), never through `compile` from `vue`. A binding in the
+HTML is an expression the compiler runs — on the server during SSR, with the Vault token and the
+site's database in the same process. `compileSafeTemplate` parses the HTML with Vue's own parser
+and drops every directive, interpolation, `on*`/`srcdoc` attribute and `javascript:`/`vbscript:`
+URL from the tree before codegen; `{{`/`}}` in text are collapsed to single braces first, so they
+stay text. It is the same parser that compiles the result — a regex over the source disagrees with
+it about where a tag ends (`title=">"`), and that disagreement is the bypass. A marker survives
+because it is static attributes only.
+
 The registry on the other side lives in `appspro/shared/constants/shortcodes.js`. Adding a
 shortcode means touching both repositories, and the props must agree: `button-ref` still
 offers a `wrapper-class` attribute in the panel that `PostButtonRef` has no prop for, and the
@@ -813,13 +823,13 @@ those are meant to reach it.
 
 **A `data-table` cell is its own second runtime-compile surface.** `row[column.name]` goes
 through `PostDataTableRuntime.vue` the same way the article body goes through
-`RuntimeTemplateLayout.vue` — same `sanitizeRuntimeTemplate`, its own small component map
+`RuntimeTemplateLayout.vue` — same `compileSafeTemplate`, its own small component map
 (`Image` → `PostDataTableImg.vue`, plus `RefLink`, `RefLinkBtn`). `Image`'s `inline` prop
 swaps the default centered 70px block for a 20px icon sitting in the text flow
 (`inline-flex`, `align-middle`, margin on the right), for a cell that reads as an icon next
 to a name rather than an icon above one. It has to be written as a bare attribute
-(`<div is="vue:Image" name="…" inline>`), never `:inline="true"` — `sanitizeRuntimeTemplate`
-strips only `v-*`/`:prop`/`@event`/`#slot` attributes, so a literal one survives untouched.
+(`<div is="vue:Image" name="…" inline>`), never `:inline="true"` — `compileSafeTemplate`
+drops every `v-*`/`:prop`/`@event`/`#slot` attribute, so only a literal one survives.
 
 `PostTextImage.vue` (`text-image` marker, `textImages` shortcode) has one layout and one
 position field, `imgSide`. `left`/`right` put the picture in one of two equal columns on
