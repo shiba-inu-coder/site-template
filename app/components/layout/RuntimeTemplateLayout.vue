@@ -1,7 +1,9 @@
 <script setup lang="ts">
+import type { PropType } from "vue";
 import { computed } from "#imports";
 import ButtonRef from "#rc/components/post/PostButtonRef.vue";
 import { compileSafeTemplate } from "#shared/utils/safe-runtime-template";
+import type { ImageLayout } from "#shared/utils/image-sizes";
 
 // const MiniCasinoReview = defineLazyHydrationComponent(
 //   "visible",
@@ -84,9 +86,19 @@ const components = {
   // CasinoBonuses,
 };
 
-const { template = "" } = defineProps<{
-  template?: string;
-}>();
+const { template, imageLayout } = defineProps({
+  template: { type: String, default: "" },
+  // Раскладка вокруг тела — для `sizes` картинок в его блоках. Без неё блоки
+  // берут раскладку страницы (тело статьи без секций).
+  imageLayout: { type: Object as PropType<ImageLayout>, default: null },
+});
+
+if (imageLayout) {
+  provide(
+    IMAGE_LAYOUT_KEY,
+    computed(() => imageLayout),
+  );
+}
 
 const CompiledTemplate = computed(() => {
   if (!template) return null;

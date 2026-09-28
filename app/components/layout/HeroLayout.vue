@@ -6,15 +6,10 @@
       class="site-hero-inner relative z-20 mx-auto grid w-full max-w-7xl gap-4"
       :class="photo ? 'md:grid-cols-[1.2fr_1fr] md:items-center md:gap-7' : ''"
     >
-      <NuxtImg
-        v-if="photo"
-        provider="cloudinary"
-        width="auto"
-        height="auto"
+      <img
+        v-if="picture"
+        v-bind="picture"
         class="w-full rounded-primary object-cover md:order-last"
-        :src="photo.img.path"
-        :alt="photo.img.alt"
-        :modifiers="siteConfig.img.modifiers"
       />
 
       <div class="site-hero-text grid content-start gap-2">
@@ -53,12 +48,28 @@ import CtaButtonLayout from "#rc/components/layout/CtaButtonLayout.vue";
 import PostMetaLayout from "#rc/components/layout/PostMetaLayout.vue";
 import RuntimeTemplateLayout from "#rc/components/layout/RuntimeTemplateLayout.vue";
 import PostBiographyWriter from "#rc/components/post/PostBiographyWriter.vue";
+import { imageSizes } from "#shared/utils/image-sizes";
 
 const siteConfig = useSiteConfig();
 // Картинка хиро — не своя, а та, что редактор поставил в лид блоком
 // «картинка + текст»: отдельного поля под обложку в шаблоне нет. На телефоне
 // она идёт сверху, на десктопе уходит во вторую колонку.
 const { leadTitle, titleId, biography, photo, button } = useHeroContent();
+const layout = usePageImageLayout();
+const buildImage = useResponsiveImage();
+
+const picture = computed(() =>
+  photo.value
+    ? {
+        ...buildImage(
+          photo.value.img,
+          imageSizes({ kind: "hero" }, layout.value),
+          siteConfig.value.img.modifiers,
+        ),
+        alt: photo.value.img.alt,
+      }
+    : null,
+);
 
 const cta = computed(() => siteConfig.value.layout.header.cta);
 </script>
