@@ -6,21 +6,19 @@
       class="site-hero-inner relative z-20 mx-auto grid w-full max-w-7xl gap-4"
       :class="photo ? 'md:grid-cols-[1.2fr_1fr] md:items-center md:gap-7' : ''"
     >
-      <NuxtImg
-        v-if="photo"
-        provider="cloudinary"
-        width="auto"
-        height="auto"
+      <img
+        v-if="picture"
+        v-bind="picture"
         class="w-full rounded-primary object-cover md:order-last"
-        :src="photo.src"
-        :alt="photo.alt"
-        :modifiers="siteConfig.img.modifiers"
       />
 
       <div class="site-hero-text grid content-start gap-2">
         <PostMetaLayout></PostMetaLayout>
 
-        <h1 v-if="leadTitle">
+        <h1
+          v-if="leadTitle"
+          :id="titleId || undefined"
+        >
           {{ leadTitle }}
         </h1>
 
@@ -50,12 +48,37 @@ import CtaButtonLayout from "#rc/components/layout/CtaButtonLayout.vue";
 import PostMetaLayout from "#rc/components/layout/PostMetaLayout.vue";
 import RuntimeTemplateLayout from "#rc/components/layout/RuntimeTemplateLayout.vue";
 import PostBiographyWriter from "#rc/components/post/PostBiographyWriter.vue";
+import { imageLoading } from "#shared/utils/image-candidates";
+import { imageSizes } from "#shared/utils/image-sizes";
 
 const siteConfig = useSiteConfig();
 // Картинка хиро — не своя, а та, что редактор поставил в лид блоком
 // «картинка + текст»: отдельного поля под обложку в шаблоне нет. На телефоне
 // она идёт сверху, на десктопе уходит во вторую колонку.
-const { leadTitle, biography, photo, button } = useHeroContent();
+const { leadTitle, titleId, biography, photo, button } = useHeroContent();
+const priorityImage = usePriorityImage();
+const layout = usePageImageLayout();
+const buildImage = useResponsiveImage();
+
+const isPriority = computed(() => priorityImage.value?.place === "hero");
+
+const picture = computed(() =>
+  photo.value
+    ? {
+        ...buildImage(
+          photo.value.img,
+          imageSizes({ kind: "hero" }, layout.value),
+          siteConfig.value.img.modifiers,
+        ),
+        ...imageLoading(isPriority.value),
+        alt: photo.value.img.alt,
+      }
+    : null,
+);
+
+usePriorityImagePreload(
+  computed(() => (isPriority.value ? picture.value : null)),
+);
 
 const cta = computed(() => siteConfig.value.layout.header.cta);
 </script>

@@ -29,6 +29,7 @@
               :template="
                 index === 0 && heroEnabled ? leadBody : item.section.body
               "
+              :image-layout="item.imageLayout"
             />
           </section>
         </div>
@@ -50,6 +51,7 @@ const { sections } = defineProps<{
 
 const { enabled: heroEnabled, leadBody } = useHeroContent();
 const { theme } = useUiTheme();
+const pageLayout = usePageImageLayout();
 
 const CONTAINER = "px-2.5 md:px-4 xl:px-0 w-full max-w-7xl mx-auto";
 
@@ -69,13 +71,18 @@ const CLOUDINARY_CLOUD_NAME = useRuntimeConfig().public
   .CLOUDINARY_CLOUD_NAME as string;
 
 const sectionsWithBg = computed(() =>
-  sections.map((section) => ({
-    section,
-    bg: resolveSectionBg(
+  sections.map((section) => {
+    const bg = resolveSectionBg(
       section.layout,
       theme.value?.decor,
       CLOUDINARY_CLOUD_NAME,
-    ),
-  })),
+    );
+
+    return {
+      section,
+      bg,
+      imageLayout: { ...pageLayout.value, sectionBg: bg.target },
+    };
+  }),
 );
 </script>

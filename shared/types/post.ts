@@ -1,6 +1,15 @@
 import type { Document, Model, ObjectId } from "mongoose";
 import type { PostFrame } from "#shared/utils/ui-theme";
 
+// width/height — пиксели файла, их пишет панель при загрузке. У записей
+// старше этого их нет.
+export interface PostShortcodeImage {
+  path: string;
+  alt: string;
+  width?: number;
+  height?: number;
+}
+
 export interface PostGridCard {
   data: {
     uniqId: string;
@@ -21,10 +30,7 @@ export interface PostGridCard {
       buttonText: string;
       refLink: string;
       refLinkType: RefLinkType;
-      img: {
-        path: string;
-        alt: string;
-      } | null;
+      img: PostShortcodeImage | null;
     }[];
   };
 }
@@ -33,10 +39,7 @@ export interface PostTextImage {
   data: {
     uniqId: string;
     text: string;
-    img: {
-      path: string;
-      alt: string;
-    } | null;
+    img: PostShortcodeImage | null;
     imgHint: string;
     // full — значение старой записи, компонент читает его как top.
     imgSide: "left" | "right" | "top" | "bottom" | "full";

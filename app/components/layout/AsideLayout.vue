@@ -29,8 +29,11 @@
       v-if="showOffer && hasOffer"
       class="grid gap-2 rounded-primary border border-ui-card-border bg-ui-card-bg p-4 text-center"
     >
+      <!-- Колонка есть только с md, а на телефоне скрыта — ленивая картинка
+           там не скачается вовсе. -->
       <NuxtImg
         v-if="entity?.logo?.path"
+        loading="lazy"
         provider="cloudinary"
         width="auto"
         height="40"

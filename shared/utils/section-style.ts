@@ -142,9 +142,11 @@ export const sectionBackgroundImage = (
     return "";
   }
 
+  // У CSS-фона нет srcset, поэтому ширина одна — на полосу во всю ширину
+  // Full HD; c_limit не растягивает файл, который меньше.
   const url = /^https?:\/\//.test(image.path)
     ? image.path
-    : `${getCloudinaryBaseUrl(cloudName)}f_auto,q_auto/${image.path}`;
+    : `${getCloudinaryBaseUrl(cloudName)}f_auto,q_auto,w_1920,c_limit/${image.path}`;
 
   const overlay = clampPx(image.overlay, 100, 0);
   const layers: string[] = [];

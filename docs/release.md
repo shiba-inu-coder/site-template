@@ -34,3 +34,16 @@ git push --follow-tags
 After this, `template_ref: v1.1.0` on `sync_site_template.yml` checks out a
 tree where `TEMPLATE_VERSION` already reads `1.1.0` — no separate step needed
 on the site side.
+
+## After the deploy
+
+A release changes real pages, and the image rules (`docs/ui.md`, "Images") are only
+visible there. Once the new tag is live on the test site (69casino.cz today), check its home
+page from the SSR response:
+
+```bash
+node scripts/perf-smoke.mjs https://<test-site>/ --expect-priority
+```
+
+`--expect-priority` is for a page whose lead opens with a picture; on a page whose LCP is
+text, run it without the flag. A non-zero exit is a regression of this release, not noise.

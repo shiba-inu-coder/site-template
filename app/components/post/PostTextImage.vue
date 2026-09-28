@@ -1,20 +1,16 @@
 <template>
   <div
+    v-if="picture || data.text || data.buttonText"
     class="grid grid-cols-1 gap-4 md:gap-6 items-center"
     :class="gridColsClass"
   >
     <div
-      v-if="data.img"
+      v-if="picture"
       :class="IMAGE_ORDER[side]"
     >
-      <NuxtImg
-        loading="lazy"
-        provider="cloudinary"
+      <img
+        v-bind="picture"
         class="w-full h-auto"
-        :src="data.img.path"
-        :alt="data.img.alt"
-        :sizes="SIZES[side]"
-        :modifiers="{ roundCorner: data.imgRoundCorner }"
       />
     </div>
 
@@ -40,18 +36,22 @@
 <script setup lang="ts">
 import { computed } from "vue";
 import PostButtonRef from "#rc/components/post/PostButtonRef.vue";
+import { imageLoading } from "#shared/utils/image-candidates";
+import { imageSizes } from "#shared/utils/image-sizes";
 import { safeHTMLWrap } from "#shared/utils/safeHTMLWrap";
-
-type Side = "left" | "right" | "top" | "bottom";
+import { resolveTextImageSide, textImageRole } from "#shared/utils/text-image";
+import type { TextImageSide as Side } from "#shared/utils/text-image";
 
 const { uniqId } = defineProps<{ uniqId: string }>();
 const { getShortcode } = usePost();
+const { photo: heroPhoto } = useHeroContent();
+const priorityImage = usePriorityImage();
+const layout = useImageLayout();
+const buildImage = useResponsiveImage();
 
 // text приходит абзацами и инлайн-разметкой шире общего списка
 // safeHTMLWrap — extraTags расширяет allowlist только для этого вызова.
 const TEXT_TAGS = ["p", "em", "u", "s", "sup", "sub", "blockquote"];
-
-const SIDES: readonly string[] = ["left", "right", "top", "bottom"];
 
 // Классы перечислены целиком: tailwind.config.js сканирует только .vue,
 // контент из базы он не видит, поэтому собранные строкой классы
@@ -69,13 +69,6 @@ const IMAGE_ORDER: Record<Side, string> = {
   right: "order-first md:order-last",
   top: "order-first",
   bottom: "order-last",
-};
-
-const SIZES: Record<Side, string> = {
-  left: "xs:100vw md:50vw",
-  right: "xs:100vw md:50vw",
-  top: "xs:100vw xl:1280px",
-  bottom: "xs:100vw xl:1280px",
 };
 
 const FALLBACK: PostTextImage = {
@@ -99,22 +92,39 @@ const data = computed(
   () => (getShortcode({ uniqId, shortcode: "textImages" }) || FALLBACK).data,
 );
 
-// full писала панель, пока положение было модификатором вариантов: одна
-// колонка, картинка первой — это и есть top. Запись старше самой сетки может
-// не нести стороны вовсе.
-const side = computed<Side>(() => {
-  const raw = data.value.imgSide;
+const side = computed(() => resolveTextImageSide(data.value.imgSide));
 
-  if (raw === "full") {
-    return "top";
+const isPriority = computed(
+  () =>
+    priorityImage.value?.place === "lead" &&
+    priorityImage.value.uniqId === uniqId,
+);
+
+// Картинка, уехавшая в хиро, здесь не рисуется, а текст и кнопка блока
+// остаются в лиде.
+const picture = computed(() => {
+  const img = data.value.img;
+
+  if (!img?.path || heroPhoto.value?.uniqId === uniqId) {
+    return null;
   }
 
-  return SIDES.includes(raw) ? (raw as Side) : "right";
+  return {
+    ...buildImage(img, imageSizes(textImageRole(side.value), layout.value), {
+      roundCorner: data.value.imgRoundCorner,
+    }),
+    ...imageLoading(isPriority.value),
+    alt: img.alt,
+  };
 });
+
+usePriorityImagePreload(
+  computed(() => (isPriority.value ? picture.value : null)),
+);
 
 // Без картинки колонка всегда одна — иначе пустая вторая колонка осталась бы
 // рядом с текстом (старый блок с картинкой прямо в HTML текста).
 const gridColsClass = computed(() =>
-  data.value.img ? GRID_COLS[side.value] : "",
+  picture.value ? GRID_COLS[side.value] : "",
 );
 </script>

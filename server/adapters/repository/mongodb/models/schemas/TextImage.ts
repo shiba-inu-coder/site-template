@@ -35,6 +35,10 @@ export const TextImageSchema = [
             required: true,
             trim: true,
           },
+          // Пиксели самого файла — панель пишет их при загрузке, у записей
+          // старше этого их нет, и картинка рисуется без них, как раньше.
+          width: { type: Number },
+          height: { type: Number },
         },
         default: null,
       },

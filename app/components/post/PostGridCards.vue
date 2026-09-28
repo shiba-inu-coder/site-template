@@ -13,16 +13,10 @@
         v-bind="refAttrs(item)"
         class="block overflow-hidden rounded-primary border border-ui-card-border"
       >
-        <NuxtImg
-          v-if="item.img"
-          loading="lazy"
-          provider="cloudinary"
-          :width="imgWidth"
-          :height="imgHeight"
+        <img
+          v-if="item.img?.path"
+          v-bind="cardImage(item.img)"
           class="w-full h-full object-cover"
-          :alt="item.img.alt"
-          :src="item.img.path"
-          :modifiers="{ roundCorner: roundCorner }"
         />
       </component>
 
@@ -34,18 +28,12 @@
         :class="horizontal ? 'items-center' : 'flex-col'"
       >
         <div
-          v-if="item.img"
+          v-if="item.img?.path"
           :class="imgBoxClass"
         >
-          <NuxtImg
-            loading="lazy"
-            provider="cloudinary"
-            :width="imgWidth"
-            :height="imgHeight"
+          <img
+            v-bind="cardImage(item.img)"
             :class="imgFitClass"
-            :alt="item.img.alt"
-            :src="item.img.path"
-            :modifiers="{ roundCorner: roundCorner }"
           />
         </div>
         <span
@@ -61,18 +49,12 @@
         :class="horizontal ? '' : 'flex-col'"
       >
         <div
-          v-if="item.img"
+          v-if="item.img?.path"
           :class="imgBoxClass"
         >
-          <NuxtImg
-            loading="lazy"
-            provider="cloudinary"
-            :width="imgWidth"
-            :height="imgHeight"
+          <img
+            v-bind="cardImage(item.img)"
             :class="imgFitClass"
-            :alt="item.img.alt"
-            :src="item.img.path"
-            :modifiers="{ roundCorner: roundCorner }"
           />
         </div>
         <div class="flex flex-col gap-2 grow p-4">
@@ -106,6 +88,8 @@ import { safeHTMLWrap } from "#shared/utils/safeHTMLWrap";
 import { useFakeRefLink } from "#rc/composables/useFakeRefLink";
 import { resolveGridCardsLayout } from "#shared/utils/grid-cards-layout";
 import PostButtonRef from "#rc/components/post/PostButtonRef.vue";
+import { imageLoading } from "#shared/utils/image-candidates";
+import { imageSizes } from "#shared/utils/image-sizes";
 
 type GridCardItem = PostGridCard["data"]["data"][number];
 
@@ -166,24 +150,76 @@ const cardsPerRowDesktop = computed(() => {
   return data[list.value?.data.cardsPerRowDesktop ?? "1"];
 });
 
-function isNumber(value: string) {
-  return !isNaN(Number(value)) && value.trim() !== "";
-}
+const pixels = (raw: string | undefined) => {
+  const value = `${raw ?? ""}`.trim();
 
-const imgWidth = computed(() => {
-  const raw = list.value?.data.imgWidth ?? "auto";
-  return isNumber(raw) ? parseInt(raw) : raw;
-});
-const imgHeight = computed(() => {
-  const raw = list.value?.data.imgHeight ?? "auto";
-  return isNumber(raw) ? parseInt(raw) : raw;
-});
+  return /^\d+(\.\d+)?(px)?$/.test(value) ? parseInt(value) : undefined;
+};
+
+// imgWidth/imgHeight записи — размер, заданный оператором руками («auto» по
+// умолчанию), а не размер файла.
+const ownSize = computed(() => ({
+  width: pixels(list.value?.data.imgWidth),
+  height: pixels(list.value?.data.imgHeight),
+}));
 
 const roundCorner = computed(
   () =>
     list.value?.data.imgRoundCorner ||
     siteConfig.value.img.modifiers.roundCorner,
 );
+
+const $img = useCloudinaryImage();
+const imageLayout = useImageLayout();
+const buildImage = useResponsiveImage();
+
+const sizes = computed(() =>
+  imageSizes(
+    {
+      kind: "card",
+      perRow: Number(list.value?.data.cardsPerRowDesktop ?? 1),
+      horizontal: variant.value !== "image" && horizontal.value,
+    },
+    imageLayout.value,
+  ),
+);
+
+// Вертикальная карточка держит место своим aspect-video, и картинка в нём
+// вписывается целиком — размеры оригинала там ничего не решают. У
+// горизонтальной и у image высоту до загрузки держат только они.
+const withDimensions = computed(
+  () => variant.value === "image" || horizontal.value,
+);
+
+const cardImage = (img: PostShortcodeImage) => {
+  const { width, height } = ownSize.value;
+
+  // Размер задан руками — он же остаётся и в трансформации, как было при
+  // NuxtImg: 1x/2x от заданного вместо лестницы по оригиналу.
+  if (width || height) {
+    const { src, srcset } = $img.getSizes(img.path, {
+      provider: "cloudinary",
+      modifiers: { roundCorner: roundCorner.value, width, height },
+    });
+
+    return { src, srcset, width, height, ...imageLoading(false), alt: img.alt };
+  }
+
+  const {
+    width: fileWidth,
+    height: fileHeight,
+    ...attrs
+  } = buildImage(img, sizes.value, { roundCorner: roundCorner.value });
+
+  return {
+    ...attrs,
+    ...(withDimensions.value && fileWidth
+      ? { width: fileWidth, height: fileHeight }
+      : {}),
+    ...imageLoading(false),
+    alt: img.alt,
+  };
+};
 
 const globalRefLink = computed(() => list.value?.data.refLink ?? "");
 

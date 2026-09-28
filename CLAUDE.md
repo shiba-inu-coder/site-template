@@ -16,7 +16,13 @@ npm run build      # production build; vue-tsc type check runs as part of it
 npm run lint       # eslint + prettier --write
 npm run lintfix    # eslint --fix + prettier
 npm test           # node --test over tests/*.test.ts
+node scripts/perf-smoke.mjs <url> [--expect-priority]  # image rules on a live page's SSR
 ```
+
+- **After every release** that reaches the test site, run `perf-smoke` against it with
+  `--expect-priority` (`docs/release.md`, "After the deploy"). A non-zero exit means an image
+  rule broke on a real page: two priority images, a lazy LCP, a preload that disagrees with its
+  `<img>`, missing dimensions, a candidate wider than its file.
 
 - Tests cover pure functions — `shared/` plus `server/lib/cache-generations.ts`, written
   without Nitro imports so the purge races can be tested — no DB, no network, no components.
@@ -90,7 +96,12 @@ types/constants/utils). Aliases: `#sg` → `server/`, `#rc` → `app/`.
   `docs/ui.md`, "Site config from DB".
 - Trailing slashes everywhere (`site.trailingSlash`, NuxtLink `trailingSlash: "append"`,
   url_normalize 301) — keep all three in sync.
-- Images are Cloudinary public IDs rendered via `<NuxtImg provider="cloudinary">`. Raw URLs
+- Images are Cloudinary public IDs. Logos and icons render via `<NuxtImg provider="cloudinary">`;
+  article pictures (`text-image`, the hero photo, grid cards) are a plain `<img>` whose URLs
+  @nuxt/image still builds. Four rules there, see `docs/ui.md`, "Images": dimensions come from
+  the data, at most one priority image per page (`resolvePriorityImage`), candidates and
+  `sizes` only from the generator (`useResponsiveImage` + `imageSizes`, whose numbers mirror
+  the components' paddings and gaps), and no block hardcodes `loading`. Raw URLs
   (schema.org logo, CSS background) are built with `getCloudinaryBaseUrl(CLOUDINARY_CLOUD_NAME)` —
   never hardcode the cloud name. `logo.src` carries no file extension: Cloudinary `f_auto`
   serves whatever format was uploaded (svg/webp/png/jpg).
