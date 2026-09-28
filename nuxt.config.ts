@@ -99,7 +99,7 @@ export default defineNuxtConfig({
 
   vitalizer: {
     disablePrefetchLinks: true,
-    disablePreloadLinks: true,
+    disablePreloadLinks: false,
     // if set 'entry' as result fonts download will be twice
     disableStylesheets: true,
   },
