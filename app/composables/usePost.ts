@@ -1,5 +1,4 @@
 import { initialClientStatePost } from "#shared/constants/initial-states";
-import deepClone from "rfdc/default";
 
 export const usePost = <E>() => {
   const { $api } = useNuxtApp();
@@ -113,8 +112,12 @@ export const usePost = <E>() => {
   const setPost = (post: ObjectIdToStr<IPostBySlug<E>>) => {
     const { _id: _, isDeleted: ___, ...restPost } = post;
 
-    state.value.currentPost =
-      deepClone<ObjectIdToStr<IPostBySlug<E>>>(restPost);
+    // Вложенное — те же объекты, что в data у useAsyncData: devalue пишет
+    // общий объект в payload один раз, а глубокая копия удваивала всю
+    // структуру поста. Пост никто не мутирует — и не должен, копии больше нет.
+    // Состояние типизировано серверным IPostBySlug с ObjectId, по проводу
+    // приходят строки; раньше это расхождение прятал `any` из rfdc/default.
+    state.value.currentPost = restPost as unknown as IPostBySlug<E>;
   };
 
   // preview — токен из адреса страницы. Сам он сюда не долетает: $api это
