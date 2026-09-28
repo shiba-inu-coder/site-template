@@ -99,7 +99,12 @@ export default defineNuxtConfig({
 
   vitalizer: {
     disablePrefetchLinks: true,
-    disablePreloadLinks: false,
+    // Замер 28.09 на 69casino.cz (Lighthouse mobile, по 5 прогонов): с
+    // modulepreload цепочка запросов короче вдвое, но 24 чанка (~148 КБ gzip)
+    // отнимают канал у шрифтов и LCP-картинки — FCP 1273 → 1418 мс,
+    // LCP 2191 → 2312 мс, разброс LCP до 600 мс. Снимать флаг — только по
+    // новому замеру A/B.
+    disablePreloadLinks: true,
     // if set 'entry' as result fonts download will be twice
     disableStylesheets: true,
   },
