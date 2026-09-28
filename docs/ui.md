@@ -940,11 +940,20 @@ HTML, not through `PostTextImage.vue`, and stays as-is.
 
 A post written in the AppsPro constructor arrives as `sections[]` — an ordered list where each
 entry is an H2 with everything under it (`uid`, `title`, `body` **without** its own `<h2>`,
-plus `layout`). `BasePostView.vue` forks on `sections?.length`: with sections it renders
-`PostSections.vue` and **drops the global `max-w-7xl` wrapper**, without them it keeps the old
-single `RuntimeTemplateLayout` over `content`. Both fields are always populated — the panel
-also assembles the sections into flat HTML — so a site that has not been rebuilt yet keeps
-rendering the same article from `content` and notices nothing.
+plus `layout`). `BasePostView.vue` forks on `postNeedsContent` (`shared/utils/post-content.ts`):
+with sections it renders `PostSections.vue` and **drops the global `max-w-7xl` wrapper**,
+without them (no field, or an empty list) it keeps the old single `RuntimeTemplateLayout` over
+`content`. The panel writes both fields — it also assembles the sections into flat HTML — so a
+site on an older image keeps rendering the same article from `content`.
+
+**The public post answer carries `content` only for a post without sections.**
+`withoutUnusedContent` drops it in `PostUsecase` before the value is cached, for the preview
+path too: a page with sections never reads it, and in `__NUXT_DATA__` it was a second copy of
+the article next to `sections[].body`. The fork above, `resolvePriorityImage` and the server
+ask the same `postNeedsContent`, so they cannot disagree about which post needs it — and
+anything new that reads `content` gets `undefined` on a page with sections. The cache key and
+the purge are untouched; a value cached before a deploy is never read again anyway (a restart
+gets a new boot id, see "Cache purge").
 
 **A section's background comes from `layout.mode`, read on every render.** `"site"` takes the
 theme's own `decor.sectionBg` whole — `--ui-section-bg` **and** its `width` — the section's own
@@ -968,6 +977,17 @@ set) renders exactly as it did before this axis existed.
 Section bodies go through the same `RuntimeTemplateLayout`, so shortcodes work untouched:
 `shortcodesConfig` sits on the post as a whole and `uniqId` addresses a block across the
 entire article, not within one section.
+
+**Only the first section's body hydrates at once.** Every body below it is
+`RuntimeTemplateLayout` behind `defineLazyHydrationComponent("visible")`: the server renders it
+in full, as before, and the client compiles it when its section comes into view — hydration
+used to compile the whole article in one long task. The first stays eager because it is the
+first screen: the priority image is in it or in the hero, never in a later section
+(`resolvePriorityImage` reads only the lead). The headings are outside the lazy part, so an
+anchor or the table of contents lands on a section that has not hydrated yet, and it hydrates
+there. A block inside a lazy body keeps its own `visible` strategy on top — it wakes when both
+it and its section are in view. A client-side navigation renders everything at once; lazy
+hydration only exists on the first load.
 
 **`shared/utils/section-style.ts`'s `normalizeSectionLayout` fills in every field a record
 written before an axis existed does not carry** — `mode` defaults to `"site"`, the same

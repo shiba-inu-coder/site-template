@@ -334,7 +334,8 @@ export interface IPost<
   banner?: PostBanner;
   frame?: PostFrame;
   slug: string;
-  content: string;
+  // Публичный ответ поста с секциями его не несёт — `withoutUnusedContent`.
+  content?: string;
   sections: PostSection[];
   isActive: boolean;
   breadcrumbTitle: string;

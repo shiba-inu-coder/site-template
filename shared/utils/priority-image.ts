@@ -1,3 +1,4 @@
+import { postNeedsContent } from "./post-content.ts";
 import { splitShortcodeMarkers } from "./shortcode-markers.ts";
 import { resolveTextImageSide } from "./text-image.ts";
 import type { HeroContent } from "./hero-content.ts";
@@ -23,7 +24,7 @@ const BUTTON_TEXT = 60;
 export interface PriorityImageInput {
   hero: Pick<HeroContent, "enabled" | "photo" | "leadBody">;
   sections: { body?: string }[];
-  content: string;
+  content?: string;
   textImages: {
     data: {
       uniqId: string;
@@ -63,11 +64,11 @@ export const resolvePriorityImage = ({
     return { uniqId: hero.photo.uniqId, place: "hero" };
   }
 
-  const lead = sections.length
-    ? hero.enabled
+  const lead = postNeedsContent({ sections })
+    ? content || ""
+    : hero.enabled
       ? hero.leadBody
-      : sections[0].body || ""
-    : content || "";
+      : sections[0].body || "";
 
   let above = 0;
 

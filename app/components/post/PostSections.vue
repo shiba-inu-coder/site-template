@@ -24,7 +24,8 @@
             >
               {{ item.section.title }}
             </component>
-            <RuntimeTemplateLayout
+            <component
+              :is="index === 0 ? RuntimeTemplateLayout : LazySectionBody"
               :slug="slug"
               :template="
                 index === 0 && heroEnabled ? leadBody : item.section.body
@@ -48,6 +49,15 @@ const { sections } = defineProps<{
   sections: PostSection[];
   slug?: string;
 }>();
+
+// Гидрация компилировала тело каждой секции разом — одна длинная задача на
+// всю статью. Ниже первой тело компилируется, когда секция показалась; SSR
+// рисует его как раньше. Первая — сразу: это первый экран (лид, приоритетная
+// картинка), откладывать там нечего.
+const LazySectionBody = defineLazyHydrationComponent(
+  "visible",
+  () => import("#rc/components/layout/RuntimeTemplateLayout.vue"),
+);
 
 const { enabled: heroEnabled, leadBody } = useHeroContent();
 const { theme } = useUiTheme();
