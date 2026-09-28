@@ -28,5 +28,5 @@ logs
 # Runtime fs cache
 app-cache
 
-# Generated svg sprites
+# Generated svg sprite (modules/svg-sprite)
 app/assets/icons-gen

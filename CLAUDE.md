@@ -83,7 +83,11 @@ types/constants/utils). Aliases: `#sg` → `server/`, `#rc` → `app/`.
   `compile` from `vue`: a binding left in the HTML would run on the server during SSR. See
   `docs/ui.md`, "Shortcodes".
 - `app/plugins/api.ts` — thin `$api()` / `$apiAbort()` wrapper around `$fetch` (no auth).
-- SVG icons: `app/assets/icons/` compiled to sprites by nuxt-svg-sprite-icon (`<svg-icon>`).
+- SVG icons: `app/assets/icons/` → one sprite file by the local module `modules/svg-sprite`
+  (written to gitignored `app/assets/icons-gen/`, shipped as `/_nuxt/icons.<hash>.svg`).
+  `<svg-icon name="client/star">` renders `<use href="…/icons.<hash>.svg#client-star">` in SSR,
+  so icons draw without JS and nothing is inserted at runtime. The sprite is parsed as XML, not
+  HTML: one malformed icon file blanks every icon on the site.
 
 ### Conventions & gotchas
 

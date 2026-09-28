@@ -792,7 +792,7 @@ disabling the easing) survived in two places at once. It cannot render an intern
 Other things worth reusing before writing them again: `BreadcrumbsLayout` (also emits the
 BreadcrumbList schema.org), `PostShowOnScroll` (scroll-reveal slot wrapper),
 `ButtonFastUpLayout`, `PostProsConsBase`, and the global `<svg-icon name="client/star" />`
-registered by nuxt-svg-sprite-icon.
+registered by `modules/svg-sprite` (see CLAUDE.md for how the sprite is shipped).
 
 ## Strings
 

@@ -47,7 +47,6 @@ export default defineNuxtConfig({
     "@nuxt/eslint",
     "nuxt-vitalizer",
     "@nuxt/fonts",
-    "nuxt-svg-sprite-icon",
   ],
 
   hooks: {
@@ -87,14 +86,6 @@ export default defineNuxtConfig({
       styles: ["normal"],
       weights: [300, 400, 500, 600, 700],
     },
-  },
-
-  svgSprite: {
-    input: "./app/assets/icons",
-    output: "./app/assets/icons-gen",
-    defaultSprite: "icons",
-    elementClass: "svg-icon",
-    optimize: false,
   },
 
   vitalizer: {
