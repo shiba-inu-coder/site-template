@@ -45,6 +45,7 @@ import type { TextImageSide as Side } from "#shared/utils/text-image";
 const { uniqId } = defineProps<{ uniqId: string }>();
 const { getShortcode } = usePost();
 const { photo: heroPhoto } = useHeroContent();
+const priorityImage = usePriorityImage();
 const layout = useImageLayout();
 const buildImage = useResponsiveImage();
 
@@ -93,6 +94,12 @@ const data = computed(
 
 const side = computed(() => resolveTextImageSide(data.value.imgSide));
 
+const isPriority = computed(
+  () =>
+    priorityImage.value?.place === "lead" &&
+    priorityImage.value.uniqId === uniqId,
+);
+
 // Картинка, уехавшая в хиро, здесь не рисуется, а текст и кнопка блока
 // остаются в лиде.
 const picture = computed(() => {
@@ -106,10 +113,14 @@ const picture = computed(() => {
     ...buildImage(img, imageSizes(textImageRole(side.value), layout.value), {
       roundCorner: data.value.imgRoundCorner,
     }),
-    ...imageLoading(false),
+    ...imageLoading(isPriority.value),
     alt: img.alt,
   };
 });
+
+usePriorityImagePreload(
+  computed(() => (isPriority.value ? picture.value : null)),
+);
 
 // Без картинки колонка всегда одна — иначе пустая вторая колонка осталась бы
 // рядом с текстом (старый блок с картинкой прямо в HTML текста).

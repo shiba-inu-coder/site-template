@@ -48,6 +48,7 @@ import CtaButtonLayout from "#rc/components/layout/CtaButtonLayout.vue";
 import PostMetaLayout from "#rc/components/layout/PostMetaLayout.vue";
 import RuntimeTemplateLayout from "#rc/components/layout/RuntimeTemplateLayout.vue";
 import PostBiographyWriter from "#rc/components/post/PostBiographyWriter.vue";
+import { imageLoading } from "#shared/utils/image-candidates";
 import { imageSizes } from "#shared/utils/image-sizes";
 
 const siteConfig = useSiteConfig();
@@ -55,8 +56,11 @@ const siteConfig = useSiteConfig();
 // «картинка + текст»: отдельного поля под обложку в шаблоне нет. На телефоне
 // она идёт сверху, на десктопе уходит во вторую колонку.
 const { leadTitle, titleId, biography, photo, button } = useHeroContent();
+const priorityImage = usePriorityImage();
 const layout = usePageImageLayout();
 const buildImage = useResponsiveImage();
+
+const isPriority = computed(() => priorityImage.value?.place === "hero");
 
 const picture = computed(() =>
   photo.value
@@ -66,9 +70,14 @@ const picture = computed(() =>
           imageSizes({ kind: "hero" }, layout.value),
           siteConfig.value.img.modifiers,
         ),
+        ...imageLoading(isPriority.value),
         alt: photo.value.img.alt,
       }
     : null,
+);
+
+usePriorityImagePreload(
+  computed(() => (isPriority.value ? picture.value : null)),
 );
 
 const cta = computed(() => siteConfig.value.layout.header.cta);
