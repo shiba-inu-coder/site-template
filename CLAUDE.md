@@ -27,6 +27,11 @@ npm test           # node --test over tests/*.test.ts
   The flag also means npm never installs optional peers on its own: `zod` is one for
   `nuxt-schema-org`, needed only by its `@nuxt/content` integration, so it is not in
   `dependencies` — wiring `@nuxt/content` in means adding `zod` back.
+  `unhead` is the opposite case: it IS in `dependencies`, pinned to the version Nuxt ships.
+  nuxt-schema-org picks its bundled schema.org plugin by Nuxt's unhead major, and that plugin
+  imports `unhead` from the root `node_modules`. A plugin for the wrong major does not fail —
+  the `ld+json` tag goes out empty. Bumping Nuxt means bumping `unhead` with it;
+  `tests/schema-org-unhead.test.ts` catches a mismatch.
 - Deploy: GitHub Actions builds the image with **no build args** → VPS Docker Swarm.
   `docker/entrypoint.mjs` reads the site's Vault record at container start and exports every
   key as `NUXT_*` before importing Nitro; on an unreachable Vault it falls back to the cached

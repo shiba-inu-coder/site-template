@@ -28,12 +28,13 @@
     "mongoose": "8.8.4",
     "mongoose-unique-validator": "6.1.0",
     "nuxt": "4.5.2",
-    "nuxt-schema-org": "5.0.10",
+    "nuxt-schema-org": "6.3.2",
     "nuxt-vitalizer": "2.0.0",
     "path-to-regexp": "8.2.0",
     "pino": "9.5.0",
     "rfdc": "1.4.1",
-    "tailwindcss": "4.3.3"
+    "tailwindcss": "4.3.3",
+    "unhead": "3.4.0"
   },
   "devDependencies": {
     "@nuxt/eslint": "1.17.0",
