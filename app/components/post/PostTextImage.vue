@@ -1,18 +1,19 @@
 <template>
   <div
+    v-if="img || data.text || data.buttonText"
     class="grid grid-cols-1 gap-4 md:gap-6 items-center"
     :class="gridColsClass"
   >
     <div
-      v-if="data.img"
+      v-if="img"
       :class="IMAGE_ORDER[side]"
     >
       <NuxtImg
         loading="lazy"
         provider="cloudinary"
         class="w-full h-auto"
-        :src="data.img.path"
-        :alt="data.img.alt"
+        :src="img.path"
+        :alt="img.alt"
         :sizes="SIZES[side]"
         :modifiers="{ roundCorner: data.imgRoundCorner }"
       />
@@ -46,6 +47,7 @@ type Side = "left" | "right" | "top" | "bottom";
 
 const { uniqId } = defineProps<{ uniqId: string }>();
 const { getShortcode } = usePost();
+const { photo: heroPhoto } = useHeroContent();
 
 // text приходит абзацами и инлайн-разметкой шире общего списка
 // safeHTMLWrap — extraTags расширяет allowlist только для этого вызова.
@@ -112,9 +114,15 @@ const side = computed<Side>(() => {
   return SIDES.includes(raw) ? (raw as Side) : "right";
 });
 
+// Картинка, уехавшая в хиро, здесь не рисуется, а текст и кнопка блока
+// остаются в лиде.
+const img = computed(() =>
+  heroPhoto.value?.uniqId !== uniqId && data.value.img?.path
+    ? data.value.img
+    : null,
+);
+
 // Без картинки колонка всегда одна — иначе пустая вторая колонка осталась бы
 // рядом с текстом (старый блок с картинкой прямо в HTML текста).
-const gridColsClass = computed(() =>
-  data.value.img ? GRID_COLS[side.value] : "",
-);
+const gridColsClass = computed(() => (img.value ? GRID_COLS[side.value] : ""));
 </script>

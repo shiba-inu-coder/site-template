@@ -25,6 +25,9 @@ export const usePost = <E>() => {
   const createdAt = computed(() => state.value.currentPost.createdAt);
   const updatedAt = computed(() => state.value.currentPost.updatedAt);
   const faq = computed(() => state.value.currentPost.shortcodesConfig.faq);
+  const textImages = computed(
+    () => state.value.currentPost.shortcodesConfig.textImages ?? [],
+  );
   const breadcrumbs = computed(() => state.value.currentPost.breadcrumbs);
   const postDated = computed(
     () =>
@@ -143,6 +146,7 @@ export const usePost = <E>() => {
     breadcrumbs,
     getShortcode,
     faq,
+    textImages,
     title,
     updatedAt,
     createdAt,

@@ -12,15 +12,18 @@
         width="auto"
         height="auto"
         class="w-full rounded-primary object-cover md:order-last"
-        :src="photo.src"
-        :alt="photo.alt"
+        :src="photo.img.path"
+        :alt="photo.img.alt"
         :modifiers="siteConfig.img.modifiers"
       />
 
       <div class="site-hero-text grid content-start gap-2">
         <PostMetaLayout></PostMetaLayout>
 
-        <h1 v-if="leadTitle">
+        <h1
+          v-if="leadTitle"
+          :id="titleId || undefined"
+        >
           {{ leadTitle }}
         </h1>
 
@@ -55,7 +58,7 @@ const siteConfig = useSiteConfig();
 // Картинка хиро — не своя, а та, что редактор поставил в лид блоком
 // «картинка + текст»: отдельного поля под обложку в шаблоне нет. На телефоне
 // она идёт сверху, на десктопе уходит во вторую колонку.
-const { leadTitle, biography, photo, button } = useHeroContent();
+const { leadTitle, titleId, biography, photo, button } = useHeroContent();
 
 const cta = computed(() => siteConfig.value.layout.header.cta);
 </script>
