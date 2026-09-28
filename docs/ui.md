@@ -432,6 +432,15 @@ Where the frame parts are drawn:
   its own — the white-over-brand-surface look an inverted header used to force by hand now
   falls out of the scheme automatically. A `frame.header`/`frame.headerInverted` still stored
   in an older theme record is not read.
+  **On a phone the header is one row and never wider than the screen.** Nothing is hidden:
+  below `md` the buttons lose most of their side padding (`px-4` instead of `px-7`), gaps
+  drop to `gap-2`, and an empty group is `max-md:empty:hidden` so it does not cost a gap.
+  The logo is what gives way — its link is `min-w-0` and the picture's cap is
+  `max-w-[min(100%,200px)]`, so it shrinks into whatever the buttons leave (≈70 px at 320
+  with two Ukrainian buttons). The buttons are `whitespace-nowrap` and do not shrink, so a
+  label never breaks mid-word; putting `min-w-0` on the groups instead would let them shrink
+  under their buttons and the logo would be drawn over them. Labels long enough to fill
+  the row alone still overflow — that is data to shorten in the panel.
   The header is `sticky top-0`, not `fixed`: it keeps its own height in the flow, so nothing
   below it needs a top offset. A `fixed` header plus `mt-18` on `#article` drifted — the real
   header is 80 px with the default buttons and changes with a brand's items and the fluid
@@ -662,7 +671,7 @@ composable and its callers already hold the resolved config:
 <NuxtImg
   provider="cloudinary"
   v-bind="logoSize(siteConfig.logo, 36, 200)"
-  class="h-auto w-auto max-h-9 max-w-[200px] object-contain"
+  class="h-auto w-auto max-h-9 max-w-[min(100%,200px)] object-contain"
   …
 />
 ```

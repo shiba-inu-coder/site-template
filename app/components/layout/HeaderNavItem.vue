@@ -60,12 +60,12 @@
     v-else-if="item.kind === 'logo' && siteConfig.logo.src"
     to="/"
     data-id="ref_link"
-    class="logo"
+    class="logo flex min-w-0"
   >
     <NuxtImg
       provider="cloudinary"
       v-bind="logoSize(siteConfig.logo, 36, 200)"
-      class="h-auto w-auto max-h-9 max-w-[200px] object-contain"
+      class="h-auto w-auto max-h-9 max-w-[min(100%,200px)] object-contain"
       :alt="siteConfig.logo.alt"
       :src="siteConfig.logo.src"
     />
@@ -75,7 +75,7 @@
     v-else-if="item.kind === 'logo'"
     to="/"
     data-id="ref_link"
-    class="logo font-bold text-step-3 text-ui-heading whitespace-nowrap"
+    class="logo min-w-0 truncate font-bold text-step-3 text-ui-heading"
   >
     {{ siteConfig.site.name }}
   </nuxt-link>
@@ -102,12 +102,12 @@ const refLink = computed(() => useFakeRefLink(siteConfig.value.site.brandSlug));
 // собранный из строки (`bg-${x}-200`), в сборке не появится.
 const styleClassMap: Record<HeaderItem["style"], string> = {
   primary:
-    "font-bold bg-ui-panel-bg transition ease-in-out duration-500 hover:bg-ui-card-bg px-7 py-3 rounded-primary",
+    "font-bold bg-ui-panel-bg transition ease-in-out duration-500 hover:bg-ui-card-bg whitespace-nowrap px-4 md:px-7 py-3 rounded-primary",
   active:
-    "font-bold bg-ui-cta-bg text-ui-cta-text transition ease-in-out duration-500 hover:bg-ui-cta-hover px-7 py-3 rounded-primary",
+    "font-bold bg-ui-cta-bg text-ui-cta-text transition ease-in-out duration-500 hover:bg-ui-cta-hover whitespace-nowrap px-4 md:px-7 py-3 rounded-primary",
   outline:
-    "font-bold border border-ui-link text-ui-link transition ease-in-out duration-500 hover:border-ui-link-hover hover:text-ui-link-hover px-7 py-3 rounded-primary",
-  link: "transition ease-in-out duration-500 hover:text-ui-link font-semibold",
+    "font-bold border border-ui-link text-ui-link transition ease-in-out duration-500 hover:border-ui-link-hover hover:text-ui-link-hover whitespace-nowrap px-4 md:px-7 py-3 rounded-primary",
+  link: "whitespace-nowrap transition ease-in-out duration-500 hover:text-ui-link font-semibold",
 };
 
 const itemClass = computed(

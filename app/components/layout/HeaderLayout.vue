@@ -1,22 +1,22 @@
 <template>
   <nav
-    class="site-header bg-ui-header-bg sticky top-0 z-50 flex w-full items-center justify-between gap-3 p-primary-1 px-3 md:px-8"
+    class="site-header bg-ui-header-bg sticky top-0 z-50 flex w-full items-center justify-between gap-2 md:gap-3 p-primary-1 px-3 md:px-8"
   >
-    <div class="flex items-center gap-3">
+    <div class="flex items-center gap-2 md:gap-3 max-md:empty:hidden">
       <HeaderNavItem
         v-for="(item, i) in leftItems"
         :key="i"
         :item="item"
       />
     </div>
-    <div class="flex items-center gap-3">
+    <div class="flex items-center gap-2 md:gap-3 max-md:empty:hidden">
       <HeaderNavItem
         v-for="(item, i) in centerItems"
         :key="i"
         :item="item"
       />
     </div>
-    <div class="flex items-center gap-3.5">
+    <div class="flex items-center gap-2 md:gap-3.5 max-md:empty:hidden">
       <HeaderNavItem
         v-for="(item, i) in rightItems"
         :key="i"
