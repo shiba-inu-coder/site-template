@@ -635,6 +635,20 @@ self-hosted at runtime instead, and the browser never talks to Google:
   stored or served — a file read while another request is still writing it would otherwise
   go out as `immutable` for a year. `url-normalize` skips the prefix, so a font path is
   never lowercased.
+- **A fallback face holds the lines while the font loads.** The same endpoint also returns
+  `fallback` (`fontFallback`, `shared/utils/theme-fonts.ts`): per family and per weight of
+  the Google request, an `@font-face "<Family> Fallback: Arial"` over `local("Arial")` (or
+  Times New Roman / Courier New by the family's category, plus their Liberation/Croscore
+  metric twins) with `size-adjust` and ascent/descent/line-gap overrides, so the swap does
+  not re-break lines. Weights ≥ 600 use the local bold with its own `size-adjust`. The faces
+  go into the same SSR-only `<style id="ui-theme-fonts">`; the stacks go into
+  `useState("ui-theme-font-stacks")`, because `themeToCssVars` runs on the client too and has
+  to produce the exact SSR string — otherwise unhead would rewrite `<style id="ui-theme">` after
+  hydration. Metrics come from `server/lib/font-metrics.json`, a table generated from the
+  `@capsizecss/metrics` devDependency (`node scripts/font-metrics.mjs`); the package itself
+  stays out of the image. A family missing from the table gets no face and no stack, and the
+  panel, which never passes stacks, keeps writing `"Name", sans-serif`. The width data is Latin
+  only: Cyrillic text lands within a few per cent, not exactly.
 
 A family name goes through `normalizeFontFamily` on both of its ways out. Records hold both
 a bare name (`Raleway`) and a ready CSS value (`"Raleway", sans-serif`); the second, taken as

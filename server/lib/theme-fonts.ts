@@ -1,11 +1,17 @@
 import { SettingComposition } from "#sg/settings";
-import { themeFontsHref } from "#shared/utils/ui-theme";
+import { themeFontAxes, themeFontsHref } from "#shared/utils/ui-theme";
 import {
   THEME_FONTS_PREFIX,
+  fontFallback,
   isCompleteWoff2,
   rewriteFontFaceUrls,
 } from "#shared/utils/theme-fonts";
-import type { ThemeFonts } from "#shared/utils/theme-fonts";
+import type {
+  FontFallback,
+  FontMetricsRow,
+  ThemeFonts,
+} from "#shared/utils/theme-fonts";
+import fontMetrics from "./font-metrics.json";
 
 // css2 подбирает ответ под User-Agent: без него отдаёт TTF одним файлом на
 // начертание, а современному Chrome — woff2, нарезанный по unicode-range.
@@ -68,6 +74,19 @@ export const themeFontsCss = async (): Promise<ThemeFonts> => {
     failedAt.set(href, Date.now());
     throw error;
   }
+};
+
+const FONT_METRICS = new Map(
+  Object.entries(fontMetrics as unknown as Record<string, FontMetricsRow>),
+);
+
+// Только таблица в памяти: Google для этого не нужен, и запасной шрифт стоит
+// в странице, даже когда сам шрифт темы сервер не достал.
+export const themeFontFallback = async (): Promise<FontFallback> => {
+  const settings = await SettingComposition.GetPublicSettings();
+  const { families, weights } = themeFontAxes(settings?.uiTheme);
+
+  return fontFallback(families, weights, (family) => FONT_METRICS.get(family));
 };
 
 // Скачанный файл отдаётся без сверки с темой: HTML в кеше nginx может ещё

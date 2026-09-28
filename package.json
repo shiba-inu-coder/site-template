@@ -37,6 +37,7 @@
     "unhead": "3.4.0"
   },
   "devDependencies": {
+    "@capsizecss/metrics": "4.3.0",
     "@nuxt/eslint": "1.17.0",
     "@types/mongoose-unique-validator": "1.0.9",
     "@types/rfdc": "1.2.0",
