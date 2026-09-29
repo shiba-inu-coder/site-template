@@ -190,11 +190,7 @@ export default defineNuxtConfig({
   },
 
   vue: {
-    // Тело статьи рисует stored-html.ts, компилятор клиенту не нужен. Замер
-    // 28.09 на данных 69casino.cz (CDP, 4× CPU, по 14 прогонов): JS главной
-    // на загрузке 159 → 142 КБ gzip, длинная задача ~54 мс при гидрации ушла.
-    // `true` вернёт компилятор в бандл целиком.
-    runtimeCompiler: false,
+    runtimeCompiler: true,
   },
 
   devtools: { enabled: false },

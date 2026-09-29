@@ -2,12 +2,7 @@
 import type { PropType } from "vue";
 import { computed } from "#imports";
 import ButtonRef from "#rc/components/post/PostButtonRef.vue";
-import {
-  defineShortcodes,
-  parseStoredHtml,
-  renderStoredHtml,
-} from "#shared/utils/stored-html";
-import { ARTICLE_SHORTCODE_ATTRS } from "#shared/constants/shortcodes";
+import { compileSafeTemplate } from "#shared/utils/safe-runtime-template";
 import type { ImageLayout } from "#shared/utils/image-sizes";
 
 // const MiniCasinoReview = defineLazyHydrationComponent(
@@ -73,7 +68,7 @@ const TextImage = defineLazyHydrationComponent(
 //   () => import("#rc/components/post/PostBonuses/PostBookmakerBonuses.vue"),
 // );
 
-const shortcodes = defineShortcodes(ARTICLE_SHORTCODE_ATTRS, {
+const components = {
   ButtonRef,
   BiographyWriter,
   TableContent,
@@ -89,7 +84,7 @@ const shortcodes = defineShortcodes(ARTICLE_SHORTCODE_ATTRS, {
   // MiniBookmakerReview,
   // BookmakerBonuses,
   // CasinoBonuses,
-});
+};
 
 const { template, imageLayout } = defineProps({
   template: { type: String, default: "" },
@@ -105,21 +100,21 @@ if (imageLayout) {
   );
 }
 
-const Body = computed(() => {
+const CompiledTemplate = computed(() => {
   if (!template) return null;
 
-  // Без onError парсер Vue бросает — незакрытый тег из панели клал бы всю
-  // статью в 500 вместо того, чтобы не отрисовать один блок. Свой onError
-  // гасит throw для того, что парсер умеет восстановить сам; try/catch —
-  // страховка на случай, если не умеет.
+  // В прод-сборке onError не задан по умолчанию, и компилятор бросает —
+  // незакрытый тег из панели клал бы всю статью в 500 вместо того, чтобы не
+  // отрисовать один блок. Свой onError гасит throw для того, что парсер умеет
+  // восстановить сам; try/catch — страховка на случай, если не умеет.
   try {
-    const nodes = parseStoredHtml(`<div>${template}</div>`, (error) => {
-      console.error("[RuntimeTemplateLayout] template parse error", error);
+    const render = compileSafeTemplate(`<div>${template}</div>`, (error) => {
+      console.error("[RuntimeTemplateLayout] template compile error", error);
     });
 
-    return { render: () => renderStoredHtml(nodes, shortcodes) };
+    return { render, components };
   } catch (error) {
-    console.error("[RuntimeTemplateLayout] template parse failed", error);
+    console.error("[RuntimeTemplateLayout] template compile failed", error);
 
     return null;
   }
@@ -128,7 +123,7 @@ const Body = computed(() => {
 
 <template>
   <component
-    :is="Body"
-    v-if="Body"
+    :is="CompiledTemplate"
+    v-if="CompiledTemplate"
   />
 </template>

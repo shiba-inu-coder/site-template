@@ -794,45 +794,21 @@ reaches a real site.
 
 ## Shortcodes
 
-Article bodies arrive as HTML from Mongo and are rendered without the Vue compiler —
-`vue.runtimeCompiler` is `false`, and the client bundle carries only Vue's parser.
-`parseStoredHtml` (`shared/utils/stored-html.ts`) parses the HTML with that parser — the same one,
-on the server and in the browser, that fed the compiler before, so the tree is the same node for
-node — keeps what the allowlists let through, and `renderStoredHtml` turns it into `h()` calls.
-There is no codegen and no `new Function`: a binding that reached the database past the panel is
-dropped from the tree, never evaluated — on the server that would be the process holding the Vault
-token and the site's database. `{{`/`}}` in text are collapsed to single braces first, so they stay
-text. The allowlists are checked on the parser's tree, not on the source: a regex disagrees with
-the parser about where a tag ends (`title=">"`), and that disagreement is the bypass.
+Article bodies arrive as HTML from Mongo and are compiled at runtime
+(`vue.runtimeCompiler: true`, which is load-bearing). A marker looks like
+`<div class="shortcode" is="vue:text-image" uniq-id="…">` and is resolved by the component map
+in `app/components/layout/RuntimeTemplateLayout.vue` — Vue camelises `vue:text-image` into the
+key `TextImage`.
 
-A marker looks like `<div class="shortcode" is="vue:text-image" uniq-id="…">`. The contract:
-
-- **A component comes only from a marker, and only from the caller's registry** —
-  `defineShortcodes` in `RuntimeTemplateLayout.vue` and in `PostDataTableRuntime.vue`. The name is
-  looked up the three ways `resolveComponent` did (`text-image`, `textImage`, `TextImage`), among
-  the registry's own keys only. An unknown marker — a retired block, `vue:script`,
-  `vue:constructor` — renders nothing. A tag name is never a component: `<faq>` in text is an
-  unknown tag.
-- **A marker passes `class`, `uniq-id`, `data-*`, `aria-*` and the attributes listed for its block
-  in `shared/constants/shortcodes.ts`**, nothing else — an attribute the panel starts writing needs
-  a line there. A bare attribute arrives as `""`, which Vue itself turns into `true` for a Boolean
-  prop (`inline`); do not replace empty values with `true`, a String prop would stop being empty.
-- **The marker's content is its `default` slot.** Most blocks ignore it (it is the panel's
-  `&nbsp;`); `PostButtonRef` with an empty `name` and the table's `RefLink`/`RefLinkBtn` draw it as
-  the link text.
-- **Tags, attributes and URL schemes are allowlists.** An unknown tag is unwrapped and its text
-  stays; `script`, `style`, `template`, `iframe`, `svg`, `math`, `textarea` and the like go with
-  their content. An element keeps the global attributes (`class`, `id`, `title`, `lang`, `dir`,
-  `role`, `data-*`, `aria-*`) and its own (`href` on `a`, `src`/`srcset`/`alt`/… on `img`,
-  `colspan` on cells). A URL is `http`, `https`, `mailto`, `tel`, relative or `data:image/…`.
-  `style` keeps only text, colour and box properties, with no function but `rgb`/`hsl`/`calc`.
-  `innerHTML`, `key`, `ref`, `is` and any `on*` never reach a vnode. The lists are wider than what
-  the panel writes today, because they also cover `content` saved before the panel cleaned it.
-- **A subtree without markers is flagged static, as the compiler's `cacheStatic` flagged it.**
-  Production hydration skips such a subtree and keeps the DOM the browser parsed. Where Vue's parser
-  and the browser build different trees — an unclosed `<li>`, `<tr>` without `<tbody>` — dropping
-  the flag turns each into a hydration mismatch that Vue repairs by re-rendering, which the old path
-  never did.
+**Stored HTML is compiled only through `compileSafeTemplate`**
+(`shared/utils/safe-runtime-template.ts`), never through `compile` from `vue`. A binding in the
+HTML is an expression the compiler runs — on the server during SSR, with the Vault token and the
+site's database in the same process. `compileSafeTemplate` parses the HTML with Vue's own parser
+and drops every directive, interpolation, `on*`/`srcdoc` attribute and `javascript:`/`vbscript:`
+URL from the tree before codegen; `{{`/`}}` in text are collapsed to single braces first, so they
+stay text. It is the same parser that compiles the result — a regex over the source disagrees with
+it about where a tag ends (`title=">"`), and that disagreement is the bypass. A marker survives
+because it is static attributes only.
 
 The registry on the other side lives in `appspro/shared/constants/shortcodes.js`. Adding a
 shortcode means touching both repositories, and the props must agree: `button-ref` still
@@ -923,15 +899,15 @@ The axes a variant does **not** read: `geometry.borders`/`shadow` arrive as `dat
 attributes on the page root, so a component must not hardcode a border or a shadow where
 those are meant to reach it.
 
-**A `data-table` cell is its own second stored-HTML surface.** `row[column.name]` goes
+**A `data-table` cell is its own second runtime-compile surface.** `row[column.name]` goes
 through `PostDataTableRuntime.vue` the same way the article body goes through
-`RuntimeTemplateLayout.vue` — same `stored-html.ts`, its own small registry
+`RuntimeTemplateLayout.vue` — same `compileSafeTemplate`, its own small component map
 (`Image` → `PostDataTableImg.vue`, plus `RefLink`, `RefLinkBtn`). `Image`'s `inline` prop
 swaps the default centered 70px block for a 20px icon sitting in the text flow
 (`inline-flex`, `align-middle`, margin on the right), for a cell that reads as an icon next
 to a name rather than an icon above one. It has to be written as a bare attribute
-(`<div is="vue:Image" name="…" inline>`), never `:inline="true"` — the renderer drops every
-`v-*`/`:prop`/`@event`/`#slot` attribute, so only a literal one survives.
+(`<div is="vue:Image" name="…" inline>`), never `:inline="true"` — `compileSafeTemplate`
+drops every `v-*`/`:prop`/`@event`/`#slot` attribute, so only a literal one survives.
 
 `PostTextImage.vue` (`text-image` marker, `textImages` shortcode) has one layout and one
 position field, `imgSide`. `left`/`right` put the picture in one of two equal columns on
@@ -1004,8 +980,8 @@ entire article, not within one section.
 
 **Only the first section's body hydrates at once.** Every body below it is
 `RuntimeTemplateLayout` behind `defineLazyHydrationComponent("visible")`: the server renders it
-in full, as before, and the client hydrates it when its section comes into view — hydrating
-the whole article at once used to be one long task. The first stays eager because it is the
+in full, as before, and the client compiles it when its section comes into view — hydration
+used to compile the whole article in one long task. The first stays eager because it is the
 first screen: the priority image is in it or in the hero, never in a later section
 (`resolvePriorityImage` reads only the lead). The headings are outside the lazy part, so an
 anchor or the table of contents lands on a section that has not hydrated yet, and it hydrates
@@ -1041,11 +1017,8 @@ remote, nothing GitHub tracks. `sync_site_template.yml` (shipped in this
 template, so every new site repo gets it automatically; an existing repo has
 it added by the panel) is the only thing that reconnects the two: dispatched
 with a `template_ref` tag, it checks out that tag of `shiba-inu-coder/site-template`
-and `rsync -a --checksum --delete`s it over the site repo, committing the
-result only if something actually changed. `--checksum` is not optional:
-without it rsync trusts size and mtime to the second, and the two checkouts
-write their files within the same second often enough — the v1.10.0 sync of
-69casino.cz left `TEMPLATE_VERSION` at `1.9.12`, same length, silently. There is no exclude list beyond `.git` and the
+and `rsync -a --delete`s it over the site repo, committing the result only if
+something actually changed. There is no exclude list beyond `.git` and the
 checkout's own working directory — **sync overwrites everything**, on the
 premise that a site carries no code of its own (see "Site config from DB"
 above). If that ever stops being true and a site gains its own `site/`
