@@ -2,35 +2,30 @@
 import PostDataTableImg from "./components/PostDataTableImg.vue";
 import PostDataTableRefLink from "./components/PostDataTableRefLink.vue";
 import PostDataTableRefLinkBtn from "./components/PostDataTableRefLinkBtn.vue";
-import {
-  defineShortcodes,
-  parseStoredHtml,
-  renderStoredHtml,
-} from "#shared/utils/stored-html";
-import { TABLE_CELL_SHORTCODE_ATTRS } from "#shared/constants/shortcodes";
+import { compileSafeTemplate } from "#shared/utils/safe-runtime-template";
 const { template = "" } = defineProps<{
   template?: string;
 }>();
 
-const shortcodes = defineShortcodes(TABLE_CELL_SHORTCODE_ATTRS, {
+const components = {
   Image: PostDataTableImg,
   RefLink: PostDataTableRefLink,
   RefLinkBtn: PostDataTableRefLinkBtn,
-});
+};
 
 const DataTableRuntime = computed(() => {
   if (!template) return null;
 
-  // Та же ловушка, что в RuntimeTemplateLayout: без onError парсер бросает на
-  // битой разметке, а на таблицу зовётся по разу на ячейку.
+  // Та же ловушка, что в RuntimeTemplateLayout: без onError компилятор в
+  // проде бросает на битой разметке, а на таблицу зовётся по разу на ячейку.
   try {
-    const nodes = parseStoredHtml(`<span>${template}</span>`, (error) => {
-      console.error("[PostDataTableRuntime] template parse error", error);
+    const render = compileSafeTemplate(`<span>${template}</span>`, (error) => {
+      console.error("[PostDataTableRuntime] template compile error", error);
     });
 
-    return { render: () => renderStoredHtml(nodes, shortcodes) };
+    return { render, components };
   } catch (error) {
-    console.error("[PostDataTableRuntime] template parse failed", error);
+    console.error("[PostDataTableRuntime] template compile failed", error);
 
     return null;
   }

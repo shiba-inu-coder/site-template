@@ -77,11 +77,11 @@ types/constants/utils). Aliases: `#sg` → `server/`, `#rc` → `app/`.
 
 - `app/pages/[...slug].vue` and `app/pages/index.vue` — all content pages; both render
   `views/BasePostView.vue`. Affiliate redirects are a Nitro route, `server/routes/go/[...slug].ts`.
-- `app/components/layout/RuntimeTemplateLayout.vue` renders post HTML from the DB without the Vue
-  compiler: `shared/utils/stored-html.ts` walks the tree of Vue's own parser into `h()` through
-  allowlists, and a component comes only from an `is="vue:…"` marker in the caller's registry.
-  `vue.runtimeCompiler` is `false` — the client has no compiler, so a `template:` string or
-  `compile` from `vue` renders nothing in production. See `docs/ui.md`, "Shortcodes".
+- `app/components/layout/RuntimeTemplateLayout.vue` compiles post HTML from the DB at runtime —
+  `vue.runtimeCompiler: true` in nuxt.config is REQUIRED; removing it silently breaks every post body.
+  Stored HTML goes through `compileSafeTemplate` (`shared/utils/safe-runtime-template.ts`), never
+  `compile` from `vue`: a binding left in the HTML would run on the server during SSR. See
+  `docs/ui.md`, "Shortcodes".
 - `app/plugins/api.ts` — thin `$api()` / `$apiAbort()` wrapper around `$fetch` (no auth).
 - SVG icons: `app/assets/icons/` compiled to sprites by nuxt-svg-sprite-icon (`<svg-icon>`).
 
