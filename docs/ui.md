@@ -301,8 +301,8 @@ Two details that look like noise and are not:
   equal `:root` rules won — and a lazily hydrated block (FAQ, pros/cons, grid cards)
   carries `entry.css` in its chunk's dependencies, so Vite's loader appended a `<link>` to
   the end of `<head>` on scroll and the brand flipped back to the slate defaults. The tag
-  is still pushed with `tagPriority: 65` (after the stylesheets at 60), but nothing depends
-  on that order any more.
+  is still pushed with `tagPriority: 65` (after the stylesheets at 60, before the preloads
+  at 70), but nothing depends on that order any more.
 - **The theme's fonts are self-hosted at runtime, not at build.** `@nuxt/fonts` scans CSS
   at build time and knows nothing about a family that arrives from Mongo, and a
   `<link rel="stylesheet">` to Google Fonts was a render-blocking request to a third
@@ -635,20 +635,6 @@ self-hosted at runtime instead, and the browser never talks to Google:
   stored or served — a file read while another request is still writing it would otherwise
   go out as `immutable` for a year. `url-normalize` skips the prefix, so a font path is
   never lowercased.
-- **A fallback face holds the lines while the font loads.** The same endpoint also returns
-  `fallback` (`fontFallback`, `shared/utils/theme-fonts.ts`): per family and per weight of
-  the Google request, an `@font-face "<Family> Fallback: Arial"` over `local("Arial")` (or
-  Times New Roman / Courier New by the family's category, plus their Liberation/Croscore
-  metric twins) with `size-adjust` and ascent/descent/line-gap overrides, so the swap does
-  not re-break lines. Weights ≥ 600 use the local bold with its own `size-adjust`. The faces
-  go into the same SSR-only `<style id="ui-theme-fonts">`; the stacks go into
-  `useState("ui-theme-font-stacks")`, because `themeToCssVars` runs on the client too and has
-  to produce the exact SSR string — otherwise unhead would rewrite `<style id="ui-theme">` after
-  hydration. Metrics come from `server/lib/font-metrics.json`, a table generated from the
-  `@capsizecss/metrics` devDependency (`node scripts/font-metrics.mjs`); the package itself
-  stays out of the image. A family missing from the table gets no face and no stack, and the
-  panel, which never passes stacks, keeps writing `"Name", sans-serif`. The width data is Latin
-  only: Cyrillic text lands within a few per cent, not exactly.
 
 A family name goes through `normalizeFontFamily` on both of its ways out. Records hold both
 a bare name (`Raleway`) and a ready CSS value (`"Raleway", sans-serif`); the second, taken as
@@ -736,9 +722,7 @@ Four rules:
   The chosen block gets `loading="eager"` + `fetchpriority="high"` and puts the preload into
   the head itself (`usePriorityImagePreload`) from the very attributes its `<img>` carries, so
   `imagesrcset`/`imagesizes` cannot drift from the picture. NuxtImg's `preload` prop is not
-  used for this: it builds its own set. The link goes out with `tagPriority: 55`, above every
-  `<style>` (60): by default unhead puts a preload at 70, behind the ~50 KB that
-  `features.inlineStyles` writes into the head, and the browser met it that much later.
+  used for this: it builds its own set.
 - **Candidates and `sizes` come only from the generator.** `candidateWidths`
   (`shared/utils/image-candidates.ts`) cuts the 320…2560 ladder at the original's width and
   offers the original itself last; with no width on record the ladder stops at 1920. Every
@@ -794,7 +778,7 @@ disabling the easing) survived in two places at once. It cannot render an intern
 Other things worth reusing before writing them again: `BreadcrumbsLayout` (also emits the
 BreadcrumbList schema.org), `PostShowOnScroll` (scroll-reveal slot wrapper),
 `ButtonFastUpLayout`, `PostProsConsBase`, and the global `<svg-icon name="client/star" />`
-registered by `modules/svg-sprite` (see CLAUDE.md for how the sprite is shipped).
+registered by nuxt-svg-sprite-icon.
 
 ## Strings
 

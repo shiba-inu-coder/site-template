@@ -1,5 +1,5 @@
 import { getCloudinaryBaseUrl } from "#rc/utils/get-cloudinary-base-url";
-import type { ThemeFontsResponse } from "#shared/utils/theme-fonts";
+import type { ThemeFonts } from "#shared/utils/theme-fonts";
 
 // Тема сайта приезжает из базы, а не из сборки, поэтому её некому применить
 // раньше первого рендера — отсюда `enforce: "pre"` и `await`. Плагин работает
@@ -12,7 +12,7 @@ export default defineNuxtPlugin({
     const runtimeConfig = useRuntimeConfig();
     const { setSettings } = useSettings();
     const siteConfig = useSiteConfig();
-    const { mode, cssVars, fontStacks, fontsHref } = useUiTheme();
+    const { mode, cssVars, fontsHref } = useUiTheme();
 
     // Фавикон приезжает public id Cloudinary, а не файлом: `public/favicon.ico`
     // в шаблоне нет и панель его больше не коммитит. Пока id пуст, ссылки нет
@@ -98,7 +98,7 @@ export default defineNuxtPlugin({
 
     // Параллельно с настройками: сервер читает тему из того же кеша сам.
     const themeFonts = import.meta.server
-      ? $fetch<ThemeFontsResponse>("/api/v1/public/settings/theme-fonts").catch(
+      ? $fetch<ThemeFonts>("/api/v1/public/settings/theme-fonts").catch(
           () => null,
         )
       : null;
@@ -123,14 +123,8 @@ export default defineNuxtPlugin({
     const fonts = await themeFonts;
 
     if (fonts?.css) {
+      fontFaceCss.value = fonts.css;
       inlinedFontsHref.value = fonts.href;
-    }
-
-    if (fonts) {
-      fontFaceCss.value = [fonts.css, fonts.fallback.css]
-        .filter(Boolean)
-        .join("\n");
-      fontStacks.value = fonts.fallback.stacks;
     }
   },
 });

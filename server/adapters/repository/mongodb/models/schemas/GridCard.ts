@@ -90,9 +90,6 @@ export const GridCardSchema = [
           },
           img: {
             type: {
-              // Иначе Mongoose на каждом чтении выдумывает картинке `_id` (и
-              // `id`), и payload одной и той же страницы каждый раз разный.
-              _id: false,
               path: {
                 type: String,
                 required: true,

@@ -40,11 +40,6 @@ export const usePriorityImagePreload = (
               imagesrcset: image.srcset,
               imagesizes: image.sizes,
               fetchpriority: "high",
-              // Числом, а не "critical": unhead ставит preload на 70, а
-              // встроенные `features.inlineStyles` стили — на 60, и алиас
-              // (−8) оставил бы ссылку за ~50 КБ CSS. 55 поднимает её над
-              // всеми `<style>`, но не выше title и importmap.
-              tagPriority: 55,
             },
           ],
         }

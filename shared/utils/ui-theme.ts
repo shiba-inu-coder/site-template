@@ -328,20 +328,11 @@ export const normalizeFontFamily = (value: unknown): string => {
 };
 
 // Без кавычек `--font-primary: Source Sans 3` делает `font-family`
-// невалидным целиком: «3» — не идентификатор CSS. Стек с запасным шрифтом
-// под метрики темы приходит только от сервера сайта (`fontFallback`), панель
-// его не знает и пишет голое `sans-serif`.
-const fontFamilyCss = (
-  value: unknown,
-  stacks: Record<string, string>,
-): string => {
+// невалидным целиком: «3» — не идентификатор CSS.
+const fontFamilyCss = (value: unknown): string => {
   const name = normalizeFontFamily(value);
 
-  if (!name) {
-    return "";
-  }
-
-  return Object.hasOwn(stacks, name) ? stacks[name] : `"${name}", sans-serif`;
+  return name ? `"${name}", sans-serif` : "";
 };
 
 // Шкала Tailwind 4.3.3 (`tailwindcss/theme.css`) плюс none/full. Старые
@@ -382,10 +373,7 @@ export const resolveRadius = (value: unknown): string => {
 
 // Цвета + радиус + шрифты + отступы + фон секций по умолчанию. Остальной
 // декор (variants/decor.h2) сюда не попадает: его рендерят другие слои.
-export const themeToCssVars = (
-  theme: UiTheme,
-  fontStacks: Record<string, string> = {},
-): string => {
+export const themeToCssVars = (theme: UiTheme): string => {
   const resolved = resolveScheme(theme);
 
   // Девять цветов бренда нужны не только схеме `ui-*`: фон секции «Цвет»
@@ -406,8 +394,8 @@ export const themeToCssVars = (
   // Ось, которой в записи нет или которая не прошла проверку, не
   // переопределяется пустотой: значение из `tailwind.css` остаётся жить.
   const radius = resolveRadius(theme.geometry?.radius);
-  const bodyFont = fontFamilyCss(theme.type?.body?.family, fontStacks);
-  const displayFont = fontFamilyCss(theme.type?.display?.family, fontStacks);
+  const bodyFont = fontFamilyCss(theme.type?.body?.family);
+  const displayFont = fontFamilyCss(theme.type?.display?.family);
 
   if (radius) {
     lines.push(`  --radius-primary: ${radius};`);
@@ -479,38 +467,20 @@ export const googleFontsHref = (
   return `https://fonts.googleapis.com/css2?${query}&display=swap`;
 };
 
-// Семейства и веса, которые страница берёт у Google, — от них же строится
-// запасной шрифт: грань без пары у настоящего шрифта ничего бы не подгоняла.
-export const themeFontAxes = (
-  theme: UiTheme | null | undefined,
-): { families: string[]; weights: number[] } => {
-  if (!isUiThemeConfigured(theme)) {
-    return { families: [], weights: [] };
-  }
-
-  const type = theme.type;
-
-  return {
-    families: [
-      ...new Set(
-        [type?.body?.family, type?.display?.family]
-          .map(normalizeFontFamily)
-          .filter(Boolean),
-      ),
-    ],
-    weights: type?.display?.weight
-      ? [...GOOGLE_FONT_WEIGHTS, type.display.weight]
-      : GOOGLE_FONT_WEIGHTS,
-  };
-};
-
 // Один расчёт на сервер и страницу: сервер встраивает @font-face по этому
 // адресу, а страница сверяет с ним свой. Разойдись они — сайт тянул бы тот же
 // шрифт ещё и ссылкой на Google.
 export const themeFontsHref = (theme: UiTheme | null | undefined): string => {
-  const { families, weights } = themeFontAxes(theme);
+  if (!isUiThemeConfigured(theme)) {
+    return "";
+  }
 
-  return googleFontsHref(families, weights);
+  const type = theme.type;
+  const weights = type?.display?.weight
+    ? [...GOOGLE_FONT_WEIGHTS, type.display.weight]
+    : GOOGLE_FONT_WEIGHTS;
+
+  return googleFontsHref([type?.body?.family, type?.display?.family], weights);
 };
 
 // Дефолт шаблона до 6a/5b: тот же primary/active/accent, что сейчас в
