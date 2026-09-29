@@ -46,7 +46,10 @@ jobs:
         env:
           TEMPLATE_REF: ${{ inputs.template_ref }}
         run: |
-          rsync -a --delete ./.template/ ./ --exclude .git --exclude .template
+          # --checksum: без него rsync сверяет только размер и время до секунды,
+          # а оба checkout выше пишут файлы почти одновременно — при синке
+          # v1.10.0 TEMPLATE_VERSION той же длины (1.9.12) так и остался старым.
+          rsync -a --checksum --delete ./.template/ ./ --exclude .git --exclude .template
           rm -rf .template
           git add -A
 

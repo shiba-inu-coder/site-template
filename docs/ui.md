@@ -1041,8 +1041,11 @@ remote, nothing GitHub tracks. `sync_site_template.yml` (shipped in this
 template, so every new site repo gets it automatically; an existing repo has
 it added by the panel) is the only thing that reconnects the two: dispatched
 with a `template_ref` tag, it checks out that tag of `shiba-inu-coder/site-template`
-and `rsync -a --delete`s it over the site repo, committing the result only if
-something actually changed. There is no exclude list beyond `.git` and the
+and `rsync -a --checksum --delete`s it over the site repo, committing the
+result only if something actually changed. `--checksum` is not optional:
+without it rsync trusts size and mtime to the second, and the two checkouts
+write their files within the same second often enough — the v1.10.0 sync of
+69casino.cz left `TEMPLATE_VERSION` at `1.9.12`, same length, silently. There is no exclude list beyond `.git` and the
 checkout's own working directory — **sync overwrites everything**, on the
 premise that a site carries no code of its own (see "Site config from DB"
 above). If that ever stops being true and a site gains its own `site/`
