@@ -25,6 +25,16 @@ export interface ISetting {
 
   previewGrants: SettingPreviewGrant[];
   uiTheme: UiTheme;
+  draft?: ISettingDraft | null;
+}
+
+// Неопубликованное оформление из панели. Наружу не отдаётся никогда: стенд
+// получает его уже наложенным на опубликованное (`overlaySettingsDraft`).
+export interface ISettingDraft {
+  brand?: DeepPartial<SiteBrand> | null;
+  layout?: DeepPartial<SiteLayout> | null;
+  strings?: DeepPartial<SiteStrings> | null;
+  uiTheme?: UiTheme | null;
 }
 
 // Всё, что приходит сайту в рантайме, необязательно: сайт, которому панель
@@ -34,6 +44,11 @@ export type ISettingPublic = Pick<ISetting, "redirectsRoutes"> & {
   layout?: DeepPartial<SiteLayout> | null;
   strings?: DeepPartial<SiteStrings> | null;
   uiTheme?: UiTheme | null;
+};
+
+// То, что репозиторий отдаёт usecase'у: публичная часть плюс черновик.
+export type ISettingStoredPublic = ISettingPublic & {
+  draft?: ISettingDraft | null;
 };
 
 export interface ISettingDocument extends ISetting, Document {}

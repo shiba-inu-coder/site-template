@@ -3,7 +3,7 @@ export type ISettingsPublic = ISetting;
 export type ISettingRepository = {
   get(): Promise<ISetting>;
   setup(setting: ISetting): Promise<ISetting>;
-  getPublic(): Promise<ISettingPublic>;
+  getPublic(): Promise<ISettingStoredPublic>;
 };
 export type ISettingUsecase = {
   get: () => Promise<ISetting>;
