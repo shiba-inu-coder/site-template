@@ -187,6 +187,17 @@ test("хиро с кадром: H1 в хиро несёт id первой сек
   }
 });
 
+test("хиро с кадром: у лида свой якорь — H1 несёт его, а не uid", () => {
+  const hero = resolveHeroContent({
+    style: "band",
+    sections: [{ ...SECTIONS[0], anchor: "betonred-casino" }, SECTIONS[1]],
+    textImages: TEXT_IMAGES,
+    headerCtaLabel: "",
+  });
+
+  assert.equal(hero.titleId, "betonred-casino");
+});
+
 test("removeShortcodeMarkers: из двух копий с одним uniq-id убирается только найденная", () => {
   const html = buttonRef("btn-1", "Первая") + buttonRef("btn-1", "Копия");
   const [first] = findShortcodeMarkers(html);

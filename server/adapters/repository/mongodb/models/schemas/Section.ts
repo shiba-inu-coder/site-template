@@ -99,6 +99,9 @@ const SectionChildSchema = new Schema(
 export const SectionSchema = new Schema(
   {
     uid: { type: String, default: "", trim: true },
+    // id заголовка на странице вместо uid; пустой у секций, которым панель
+    // его не выдала (sectionAnchorId).
+    anchor: { type: String, default: "", trim: true },
     title: { type: String, default: "", trim: true },
     // Бриф и план подзаголовков читателю не показываются: они нужны только
     // конструктору, чтобы секцию можно было перегенерировать поодиночке.
