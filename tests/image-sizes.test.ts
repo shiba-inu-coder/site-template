@@ -31,7 +31,7 @@ const slot = (sizes: string, viewport: number): number => {
   throw new Error(`sizes без значения по умолчанию: ${sizes}`);
 };
 
-const PLAIN: ImageLayout = { sidebar: false, narrow: false, sectionBg: "none" };
+const PLAIN: ImageLayout = { narrow: false, sectionBg: "none" };
 
 // Доли округлены до сотых процента, отступы — до пикселя: слот может
 // разойтись с вёрсткой на пиксель, не больше.
@@ -57,12 +57,6 @@ test("sizes: колонка статьи — вьюпорт минус отст�
   assertWidth(COLUMN, {}, 1350, 1280);
 });
 
-test("sizes: сайдбар забирает 300px и gap только с md — на телефоне его нет", () => {
-  assertWidth(COLUMN, { sidebar: true }, 390, 370);
-  assertWidth(COLUMN, { sidebar: true }, 1024, 628);
-  assertWidth(COLUMN, { sidebar: true }, 1350, 916);
-});
-
 test("sizes: узкая колонка упирается в 52rem", () => {
   assertWidth(COLUMN, { narrow: true }, 800, 768);
   assertWidth(COLUMN, { narrow: true }, 1024, 800);
@@ -85,7 +79,6 @@ test("sizes: картинка сбоку — половина колонки м�
 
   assertWidth(half, {}, 390, 370);
   assertWidth(half, {}, 1350, 628);
-  assertWidth(half, { sidebar: true }, 1350, 446);
 });
 
 test("sizes: карточка — доля ряда за вычетом gap, горизонтальная — 36% от неё", () => {
@@ -96,19 +89,6 @@ test("sizes: карточка — доля ряда за вычетом gap, г�
   assertWidth(four, {}, 1350, 296);
   assertWidth(wide, {}, 1350, 461);
   assertWidth(wide, {}, 390, 133);
-});
-
-test("sizes: фото хиро — вторая колонка 1fr из 2.2fr, сайдбар статьи его не сужает", () => {
-  const hero: ImageRole = { kind: "hero" };
-
-  assertWidth(hero, {}, 390, 366);
-  assertWidth(hero, {}, 1024, 424);
-  assertWidth(hero, {}, 1400, 569);
-  assert.equal(
-    imageSizes(hero, { ...PLAIN, sidebar: true }),
-    imageSizes(hero, PLAIN),
-  );
-  assertWidth(hero, { narrow: true }, 1400, 365);
 });
 
 test("sizes: кроме calc() и px в значениях ничего нет", () => {
@@ -122,12 +102,8 @@ test("sizes: кроме calc() и px в значениях ничего нет",
   }
 });
 
-test("pageImageLayout: узкая колонка не включается при сайдбаре, сайдбар — без секций", () => {
-  assert.deepEqual(pageImageLayout({ sidebar: "toc", width: "narrow" }, true), {
-    sidebar: true,
-    narrow: false,
-    sectionBg: "none",
-  });
-  assert.equal(pageImageLayout({ sidebar: "toc" }, false).sidebar, false);
-  assert.equal(pageImageLayout({ width: "narrow" }, true).narrow, true);
+test("pageImageLayout: узкая колонка — только по ширине темы", () => {
+  assert.equal(pageImageLayout({ width: "narrow" }).narrow, true);
+  assert.equal(pageImageLayout({ width: "wide" }).narrow, false);
+  assert.equal(pageImageLayout({}).narrow, false);
 });

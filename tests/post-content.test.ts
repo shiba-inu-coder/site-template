@@ -1,6 +1,5 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { resolveHeroContent } from "../shared/utils/hero-content.ts";
 import {
   postNeedsContent,
   withoutUnusedContent,
@@ -78,16 +77,8 @@ test("content: приоритетная картинка поста с секц�
     content: sections.map((item) => item.body).join(""),
     sections,
   };
-  const hero = resolveHeroContent({
-    style: "none",
-    sections,
-    textImages,
-    headerCtaLabel: "",
-  });
-
-  const before = resolvePriorityImage({ hero, textImages, ...full });
+  const before = resolvePriorityImage({ textImages, ...full });
   const after = resolvePriorityImage({
-    hero,
     textImages,
     ...withoutUnusedContent(full),
   });

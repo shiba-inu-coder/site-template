@@ -44,7 +44,6 @@ import type { TextImageSide as Side } from "#shared/utils/text-image";
 
 const { uniqId } = defineProps<{ uniqId: string }>();
 const { getShortcode } = usePost();
-const { photo: heroPhoto } = useHeroContent();
 const priorityImage = usePriorityImage();
 const layout = useImageLayout();
 const buildImage = useResponsiveImage();
@@ -100,12 +99,10 @@ const isPriority = computed(
     priorityImage.value.uniqId === uniqId,
 );
 
-// Картинка, уехавшая в хиро, здесь не рисуется, а текст и кнопка блока
-// остаются в лиде.
 const picture = computed(() => {
   const img = data.value.img;
 
-  if (!img?.path || heroPhoto.value?.uniqId === uniqId) {
+  if (!img?.path) {
     return null;
   }
 

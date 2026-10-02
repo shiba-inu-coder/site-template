@@ -5,11 +5,9 @@ import { resolvePriorityImage } from "#shared/utils/priority-image";
 /** Какая картинка страницы приоритетная — одна или ни одной. */
 export const usePriorityImage = () => {
   const { sections, content, textImages } = usePost();
-  const { content: hero } = useHeroContent();
 
   return computed(() =>
     resolvePriorityImage({
-      hero: hero.value,
       sections: sections.value,
       content: content.value,
       textImages: textImages.value,

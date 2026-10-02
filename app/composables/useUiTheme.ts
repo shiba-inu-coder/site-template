@@ -8,7 +8,7 @@ import {
   themeToCssVars,
 } from "#shared/utils/ui-theme";
 import type {
-  UiFrame,
+  PageFrame,
   UiTheme,
   UiThemeMode,
   UiVariants,
@@ -33,10 +33,9 @@ export const useUiTheme = () => {
 
   const fontsHref = computed(() => themeFontsHref(theme.value));
 
-  // Каркас читают компоненты, а не только CSS: от `frame.hero` зависит, кто
-  // рисует H1, а от `frame.sidebar` — рендерится ли колонка вообще.
-  // `resolvePageFrame` берёт все четыре оси с поста — тема каркас не несёт.
-  const frame = computed<UiFrame>(() => resolvePageFrame(postFrame.value));
+  const frame = computed<PageFrame>(() =>
+    resolvePageFrame(theme.value, postFrame.value),
+  );
 
   const contrast = computed<ContrastReportEntry[]>(() =>
     theme.value ? contrastReport(resolveScheme(theme.value)) : [],
@@ -52,9 +51,8 @@ export const useUiTheme = () => {
   // переменными: по ним блок `/* UI axes */` в `tailwind.css` разводит вёрстку
   // через `[data-*]`-селекторы. Оси, которой в записи нет, нет и в атрибутах —
   // без атрибута сайт рисует свой дефолт, а не пустое значение. Каркас
-  // (`data-hero`, `data-sidebar`, `data-width`, `data-sticky`) идёт из
-  // `frame.value`, а не из `theme.value` напрямую — с поста он есть и без
-  // настроенной темы.
+  // (`data-width`, `data-sticky`) идёт из `frame.value`: sticky с поста
+  // есть и без настроенной темы.
   const frameAttrs = computed<Record<string, string>>(() => {
     const value = theme.value;
     const frameValue = frame.value;
@@ -62,8 +60,6 @@ export const useUiTheme = () => {
     const attrs: Record<string, unknown> = {
       "data-borders": value?.geometry?.borders,
       "data-shadow": value?.geometry?.shadow,
-      "data-hero": frameValue.hero,
-      "data-sidebar": frameValue.sidebar,
       "data-width": frameValue.width,
       "data-sticky": frameValue.sticky,
       "data-h2": value?.decor?.h2,

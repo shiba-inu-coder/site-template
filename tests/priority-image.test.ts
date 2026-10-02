@@ -1,6 +1,5 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { resolveHeroContent } from "../shared/utils/hero-content.ts";
 import {
   FIRST_SCREEN_TEXT,
   resolvePriorityImage,
@@ -22,16 +21,8 @@ const picture = (uniqId: string, extra: Record<string, unknown> = {}) => ({
   },
 });
 
-const NO_HERO = resolveHeroContent({
-  style: "none",
-  sections: [],
-  textImages: [],
-  headerCtaLabel: "",
-});
-
 const lead = (body: string, textImages: ReturnType<typeof picture>[]) =>
   resolvePriorityImage({
-    hero: NO_HERO,
     sections: [
       { body },
       { body: marker("text-image", "later") + paragraph(50) },
@@ -129,58 +120,10 @@ test("приоритет: в лиде нет картинки — текстов
 
 test("приоритет: старая статья без секций ищет картинку в content", () => {
   const found = resolvePriorityImage({
-    hero: NO_HERO,
     sections: [],
     content: `<h1>Заголовок</h1>${marker("text-image", "lead")}${paragraph(900)}`,
     textImages: [picture("lead")],
   });
 
   assert.deepEqual(found, { uniqId: "lead", place: "lead" });
-});
-
-test("приоритет: фото хиро — всегда оно, одна картинка на страницу", () => {
-  const sections = [
-    {
-      uid: "s1",
-      title: "H1",
-      body: marker("text-image", "first") + marker("text-image", "second"),
-    },
-  ];
-  const textImages = [picture("first"), picture("second")];
-  const hero = resolveHeroContent({
-    style: "photo",
-    sections,
-    textImages,
-    headerCtaLabel: "",
-  });
-
-  assert.deepEqual(
-    resolvePriorityImage({ hero, sections, content: "", textImages }),
-    { uniqId: "first", place: "hero" },
-  );
-});
-
-test("приоритет: текстовое хиро забирает автора из лида — он больше не над картинкой", () => {
-  const body =
-    marker("biography-writer", "w") +
-    paragraph(FIRST_SCREEN_TEXT - 100) +
-    marker("text-image", "lead");
-  const sections = [{ uid: "s1", title: "H1", body }];
-  const textImages = [picture("lead")];
-  const band = resolveHeroContent({
-    style: "band",
-    sections,
-    textImages,
-    headerCtaLabel: "",
-  });
-
-  assert.equal(
-    resolvePriorityImage({ hero: NO_HERO, sections, content: "", textImages }),
-    null,
-  );
-  assert.equal(
-    resolvePriorityImage({ hero: band, sections, content: "", textImages })
-      ?.place,
-    "lead",
-  );
 });

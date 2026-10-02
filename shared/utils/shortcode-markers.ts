@@ -1,7 +1,6 @@
 /**
- * Разбор маркеров шорткодов в теле секции. Читают двое: хиро, который
- * забирает из лида строку автора, картинку и кнопку, и выбор приоритетной
- * картинки, которому нужен порядок блоков и текста в лиде.
+ * Разбор маркеров шорткодов в теле секции для выбора приоритетной картинки:
+ * ему нужен порядок блоков и текста в лиде.
  *
  * Обход со счётчиком глубины, а не нежадный regex до первого `</div>`: тело
  * блока само может содержать вложенные `<div>` (редактор заворачивает в них
@@ -81,40 +80,4 @@ export const splitShortcodeMarkers = (html: string): ShortcodePart[] => {
         }
       : part.html,
   );
-};
-
-export const findShortcodeMarkers = (html: string): ShortcodeMarker[] =>
-  splitShortcodeMarkers(html).filter(
-    (part): part is ShortcodeMarker => typeof part !== "string",
-  );
-
-/**
- * Убирает ровно те экземпляры, что найдены в этой же строке, а не все маркеры
- * того же имени: у лида бывает два автора и две кнопки, и в хиро уезжает
- * только первый.
- */
-export const removeShortcodeMarkers = (
-  html: string,
-  markers: ShortcodeMarker[],
-): string => {
-  if (!markers.length) {
-    return html || "";
-  }
-
-  return splitShortcodeMarkers(html)
-    .map((part) => {
-      if (typeof part === "string") {
-        return part;
-      }
-
-      const moved = markers.some(
-        (marker) =>
-          marker.index === part.index &&
-          marker.name === part.name &&
-          marker.uniqId === part.uniqId,
-      );
-
-      return moved ? "" : part.html;
-    })
-    .join("");
 };

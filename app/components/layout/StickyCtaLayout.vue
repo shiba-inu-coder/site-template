@@ -25,8 +25,8 @@
 <script setup lang="ts">
 import CtaButtonLayout from "#rc/components/layout/CtaButtonLayout.vue";
 
-// Липкая панель живёт только на телефоне: на десктопе её перекрывает сайдбар
-// и кнопки самой статьи, и место внизу экрана там не дефицит.
+// Липкая панель живёт только на телефоне: на десктопе хватает кнопок самой
+// статьи, и место внизу экрана там не дефицит.
 const { variant } = defineProps<{
   variant: "bar" | "button";
 }>();
