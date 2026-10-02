@@ -35,6 +35,50 @@ const deepMerge = <T>(base: T, patch: unknown): T => {
   return result as T;
 };
 
+/**
+ * Черновик оформления поверх опубликованного — только у сайта на стенде
+ * (флаг `SETTINGS_DRAFT`). Панель пишет черновик точечными путями
+ * `draft.brand.*`, так что частичный `brand` без лого обязан не стереть
+ * опубликованное лого: бренд, макет и строки накладываются глубоко, тем же
+ * правилом, что и запись поверх шаблона. Тема — целиком: панель пишет её
+ * одним ключом, и смешивать две темы по полям значило бы показать ни ту, ни
+ * другую.
+ */
+export const overlaySettingsDraft = <T extends ISettingPublic>(
+  published: T,
+  draft?: ISettingDraft | null,
+): T => {
+  if (!isPlainObject(draft)) {
+    return published;
+  }
+
+  const draftTheme = isPlainObject(draft.uiTheme) ? draft.uiTheme : null;
+
+  return {
+    ...published,
+    brand: deepMerge(published.brand, draft.brand),
+    layout: deepMerge(published.layout, draft.layout),
+    strings: deepMerge(published.strings, draft.strings),
+    uiTheme:
+      draftTheme && Object.keys(draftTheme).length
+        ? draftTheme
+        : published.uiTheme,
+  };
+};
+
+/**
+ * Публичный ответ настроек из того, что лежит в базе: черновик накладывается
+ * только у стенда (`showDraft`) и наружу не уходит ни с флагом, ни без.
+ */
+export const resolvePublicSettings = (
+  stored: ISettingStoredPublic,
+  { showDraft = false }: { showDraft?: boolean } = {},
+): ISettingPublic => {
+  const { draft, ...published } = stored;
+
+  return showDraft ? overlaySettingsDraft(published, draft) : published;
+};
+
 // Форма, которой обязан обладать конфиг, чем бы ни оказался `seo.conf.ts`:
 // до этапа 5d панель переписывает этот файл целиком по своему фиксированному
 // шаблону, и ключей, заведённых здесь, в переписанном файле не будет.

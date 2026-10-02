@@ -254,6 +254,17 @@ Two rules inside the merge, both deliberate:
   panel stops rewriting that file from its own fixed template, a key added here can vanish
   from it, and `config.favicon.src` must not throw on such a file.
 
+**A staging slot also shows the panel's unpublished draft.** `settings.draft` holds the same
+four parts — `brand`, `layout`, `strings`, `uiTheme` — and the panel writes it in `draft.*`
+paths while «Опубликовать» writes the live fields and drops it. Only a container started with
+`NUXT_SETTINGS_DRAFT=true` (the slot service in `main-server/stack.staging.yml`) lays it over
+the published record, in `resolvePublicSettings` (`shared/utils/site-config.ts`), after the
+settings cache: brand, layout and strings deep, by the same "empty does not override" rule, so
+a partial draft brand without a logo keeps the published logo; the theme whole, because the
+panel writes it as one key. `draft` itself never leaves the server — not with the flag, not
+without it. Production and the slot read one database, which is why the draft is a layer and
+not a copy.
+
 What is left in the repository: the neutral defaults themselves, and `site.theme` — the
 light/dark mode a site falls back to when it has no `uiTheme` record. That one is a property
 of the image, not of the site, which is why `settings.brand` has no field for it.

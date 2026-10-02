@@ -16,7 +16,8 @@ export class SettingRepository implements ISettingRepository {
         layout: data.layout,
         strings: data.strings,
         uiTheme: data.uiTheme,
-      } satisfies ISettingPublic;
+        draft: data.draft ?? null,
+      } satisfies ISettingStoredPublic;
     } catch (e: any) {
       throw AppError.handleMongoError(e);
     }

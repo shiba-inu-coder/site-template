@@ -152,6 +152,10 @@ export default defineNuxtConfig({
     MONGO_DB_NAME: process.env.DB_NAME,
     CACHE_PURGE_SECRET: process.env.CACHE_PURGE_SECRET,
     TEMPLATE_VERSION,
+    // Показывать черновик оформления из панели поверх опубликованного. Только
+    // у стейджинг-слота: его выставляет main-server/stack.staging.yml через
+    // NUXT_SETTINGS_DRAFT, у боевого сайта его нет.
+    SETTINGS_DRAFT: false,
     site: {
       url: process.env.SITE_URL,
       name: process.env.DOMAIN_NAME,

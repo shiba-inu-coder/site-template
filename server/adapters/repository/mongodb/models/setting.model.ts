@@ -44,6 +44,19 @@ const ModelSchema = new Schema<ISettingDocument, ISettingModel>(
       type: UiThemeSchema,
       default: () => ({}),
     },
+    // Черновик оформления из панели: те же подсхемы, что у опубликованных
+    // полей. Без default — у сайта без черновика поля нет вовсе.
+    draft: {
+      type: new Schema(
+        {
+          brand: BrandSchema,
+          layout: LayoutSchema,
+          strings: StringsSchema,
+          uiTheme: UiThemeSchema,
+        },
+        { _id: false },
+      ),
+    },
   },
   {
     timestamps: false,
