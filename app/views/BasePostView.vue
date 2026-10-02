@@ -2,29 +2,15 @@
   <div id="article">
     <slot>
       <template v-if="!needsContent">
-        <HeroLayout v-if="heroEnabled"></HeroLayout>
         <div
-          v-else
           class="px-2.5 md:px-4 xl:px-0 w-full max-w-7xl mx-auto pt-4 md:pt-6"
         >
           <PostMetaLayout></PostMetaLayout>
         </div>
-        <div
-          :class="
-            hasSidebar
-              ? 'md:grid md:grid-cols-[minmax(0,1fr)_300px] md:gap-8 md:max-w-7xl md:mx-auto md:px-4'
-              : ''
-          "
-        >
-          <PostSections
-            :sections="sections"
-            :slug="slug"
-          />
-          <AsideLayout
-            v-if="hasSidebar"
-            :show-offer="frame.sidebar === 'toc-offer'"
-          ></AsideLayout>
-        </div>
+        <PostSections
+          :sections="sections"
+          :slug="slug"
+        />
       </template>
       <div
         v-else
@@ -44,8 +30,6 @@
   </div>
 </template>
 <script setup lang="ts">
-import AsideLayout from "#rc/components/layout/AsideLayout.vue";
-import HeroLayout from "#rc/components/layout/HeroLayout.vue";
 import PostMetaLayout from "#rc/components/layout/PostMetaLayout.vue";
 import RuntimeTemplateLayout from "#rc/components/layout/RuntimeTemplateLayout.vue";
 import StickyCtaLayout from "#rc/components/layout/StickyCtaLayout.vue";
@@ -62,13 +46,10 @@ const { createdAt, updatedAt, content, sections, slug, metaTags, title } =
 
 const siteConfig = useSiteConfig();
 const { frame } = useUiTheme();
-const { enabled: heroEnabled } = useHeroContent();
 
 const needsContent = computed(() =>
   postNeedsContent({ sections: sections.value }),
 );
-
-const hasSidebar = computed(() => (frame.value.sidebar || "none") !== "none");
 
 const stickyVariant = computed(() =>
   pickVariant(["none", "bar", "button"] as const, "none", frame.value.sticky),

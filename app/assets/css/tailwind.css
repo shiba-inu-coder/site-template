@@ -482,11 +482,7 @@ button:not(:disabled),
   font-family: var(--font-heading);
 }
 
-#site[data-width="narrow"]:not([data-sidebar="toc"]):not(
-    [data-sidebar="toc-offer"]
-  )
-  #article
-  .max-w-7xl {
+#site[data-width="narrow"] #article .max-w-7xl {
   max-width: 52rem;
 }
 
@@ -573,12 +569,6 @@ button:not(:disabled),
     0 12px 34px color-mix(in srgb, var(--color-ui-cta-bg) 22%, transparent);
 }
 
-/* Подложка хиро — всегда дефолтная (panel-bg + нижняя рамка), без осей. */
-.site-hero {
-  background: var(--color-ui-panel-bg);
-  border-bottom: 1px solid var(--color-ui-card-border);
-}
-
 /* Текст шапки — всегда header-text (сама схема решает, «инвертирован» он
    или нет: resolveRef подбирает контрастный цвет к header-bg). muted/
    card-border/panel-border/input-bg — те же доли, что раньше давал
@@ -608,14 +598,6 @@ button:not(:disabled),
     var(--color-ui-header-text) 10%,
     transparent
   );
-}
-
-@media (min-width: 48rem) {
-  /* Оглавление уехало в колонку — в потоке страницы оно только на телефоне. */
-  #site[data-sidebar="toc"] .toc-block,
-  #site[data-sidebar="toc-offer"] .toc-block {
-    display: none;
-  }
 }
 
 @media (max-width: 47.99rem) {

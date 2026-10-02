@@ -2,13 +2,12 @@
  * `sizes` для браузера — ширина места под картинкой, а не доля вьюпорта.
  * Проп `sizes` у NuxtImg понимает только `px`/`vw` по брейкпоинтам и теряет
  * `calc()`, а колонка статьи — это вьюпорт минус отступы контейнера, минус
- * сайдбар, минус padding секции с фоном. Поэтому ширина считается здесь, по
+ * padding секции с фоном. Поэтому ширина считается здесь, по
  * кускам: на каждом диапазоне вьюпорта она линейна (`a·100vw + b`).
  *
  * Числа — из классов компонентов, и меняются вместе с ними:
- * BasePostView (сайдбар), PostSections (CONTAINER и фон секции),
- * PostTextImage, PostGridCards, HeroLayout, `data-width="narrow"` в
- * tailwind.css.
+ * PostSections (CONTAINER и фон секции), PostTextImage, PostGridCards,
+ * `data-width="narrow"` в tailwind.css.
  */
 
 const MD = 768;
@@ -20,46 +19,25 @@ const NARROW_MAX = 832; // 52rem
 const containerPadding = (from: number) =>
   from >= XL ? 0 : from >= MD ? 32 : 20;
 
-// md:px-4 у сетки, колонка 300px и md:gap-8 между ними
-const SIDEBAR_TAKES = 32 + 300 + 32;
-
 const SECTION_PADDING = 16; // p-primary-1: 8px с каждой стороны
 const TEXT_IMAGE_GAP = 24; // md:gap-6
 const CARD_GAP = 32; // gap-8
 const CARD_HORIZONTAL_SHARE = 0.36; // w-[36%]
 
-const heroPadding = (from: number) => (from >= MD ? 64 : 24); // px-3 md:px-8
-const HERO_GAP = 28; // md:gap-7
-const HERO_PHOTO_SHARE = 1 / 2.2; // md:grid-cols-[1.2fr_1fr]
-
 export type ImageRole =
   | { kind: "column" }
   | { kind: "half" }
-  | { kind: "hero" }
   | { kind: "card"; perRow: number; horizontal: boolean };
 
 export interface ImageLayout {
-  sidebar: boolean;
   narrow: boolean;
   sectionBg: "none" | "wrap" | "box";
 }
 
-/**
- * Узкая колонка в CSS не включается при сайдбаре (`:not([data-sidebar=…])`),
- * а сам сайдбар есть только у статьи с секциями.
- */
-export const pageImageLayout = (
-  frame: { sidebar?: string; width?: string },
-  hasSections: boolean,
-): ImageLayout => {
-  const sidebar = (frame.sidebar || "none") !== "none";
-
-  return {
-    sidebar: sidebar && hasSections,
-    narrow: frame.width === "narrow" && !sidebar,
-    sectionBg: "none",
-  };
-};
+export const pageImageLayout = (frame: { width?: string }): ImageLayout => ({
+  narrow: frame.width === "narrow",
+  sectionBg: "none",
+});
 
 interface Piece {
   from: number;
@@ -110,40 +88,20 @@ const cap = (width: Width, max: number): Width =>
   });
 
 const articleColumn = (layout: ImageLayout): Width => {
-  let outer = layout.sidebar
-    ? map(
-        cap(VIEWPORT, CONTAINER_MAX),
-        (piece) => ({ ...piece, b: piece.b - SIDEBAR_TAKES }),
-        MD,
-      )
-    : VIEWPORT;
+  let outer = VIEWPORT;
 
   // Полоса во всю ширину несёт padding сама, контейнер стоит внутри неё.
   if (layout.sectionBg === "wrap") {
     outer = map(outer, (piece) => ({ ...piece, b: piece.b - SECTION_PADDING }));
   }
 
-  const max = layout.narrow && !layout.sidebar ? NARROW_MAX : CONTAINER_MAX;
+  const max = layout.narrow ? NARROW_MAX : CONTAINER_MAX;
   const column = minus(cap(outer, max), containerPadding);
 
   // Коробка с фоном — сама <section> внутри контейнера, padding у неё.
   return layout.sectionBg === "box"
     ? map(column, (piece) => ({ ...piece, b: piece.b - SECTION_PADDING }))
     : column;
-};
-
-const heroPhoto = (layout: ImageLayout): Width => {
-  const max = layout.narrow && !layout.sidebar ? NARROW_MAX : CONTAINER_MAX;
-
-  return map(
-    cap(minus(VIEWPORT, heroPadding), max),
-    (piece) => ({
-      ...piece,
-      a: piece.a * HERO_PHOTO_SHARE,
-      b: (piece.b - HERO_GAP) * HERO_PHOTO_SHARE,
-    }),
-    MD,
-  );
 };
 
 // Ниже md сетка всегда в одну колонку: и половинка, и карточка там — вся
@@ -161,8 +119,6 @@ const columns = (width: Width, count: number, gap: number): Width =>
 
 const roleWidth = (role: ImageRole, layout: ImageLayout): Width => {
   switch (role.kind) {
-    case "hero":
-      return heroPhoto(layout);
     case "half":
       return columns(articleColumn(layout), 2, TEXT_IMAGE_GAP);
     case "card": {

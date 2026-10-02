@@ -96,19 +96,18 @@ export interface UiGeometry {
   paragraphGap?: string;
 }
 
-// Поля страницы, не темы — у каждой страницы свой каркас, и
-// `resolvePageFrame` берёт эти четыре оси с поста, не с темы (`UiTheme`
-// больше не несёт `frame` вовсе).
+// Ширина — одна на сайт и живёт в теме; sticky — у каждой страницы своя.
+// Старые `post.frame.hero/sidebar/width` в базах остаются, но не читаются:
+// их пишут и читают сайты ниже v1.11.0.
 export interface UiFrame {
-  hero?: "none" | "band" | "photo";
-  sidebar?: "none" | "toc" | "toc-offer";
   width?: "narrow" | "wide";
+}
+
+export interface PostFrame {
   sticky?: "none" | "bar" | "button";
 }
 
-// Каркас страницы: `IPost.frame` в `shared/types/post.ts` берёт этот тип
-// напрямую, чтобы набор значений не разъехался с `UiFrame`.
-export type PostFrame = Pick<UiFrame, "hero" | "sidebar" | "width" | "sticky">;
+export type PageFrame = UiFrame & PostFrame;
 
 // Вариант темы остался у четырёх блоков; остальные рисуются одним видом, и
 // их старые ключи в базе просто не читаются.
@@ -146,6 +145,7 @@ export interface UiTheme {
   geometry: UiGeometry;
   variants: UiVariants;
   decor: UiDecor;
+  frame?: UiFrame;
   updatedAt: Date;
 }
 
@@ -265,8 +265,6 @@ export const isUiThemeConfigured = (
     RAMP_SHADES.every((shade) => Boolean(theme.colors[family]?.[shade])),
   );
 
-const HERO_VALUES = ["none", "band", "photo"] as const;
-const SIDEBAR_VALUES = ["none", "toc", "toc-offer"] as const;
 const WIDTH_VALUES = ["narrow", "wide"] as const;
 const STICKY_VALUES = ["none", "bar", "button"] as const;
 
@@ -278,17 +276,14 @@ const knownOrUndefined = <T extends string>(
     ? value
     : undefined;
 
-// Хиро/сайдбар/ширина/sticky читаются только с поста — тема каркас больше не
-// несёт вовсе. Мусор или значение из другой эпохи (`toc-offer` после того,
-// как панель перестала его предлагать, всё ещё валиден и здесь пропускается
-// как есть) схлопывается в `undefined`, а не протекает в `data-*`: без
-// атрибута сайт рисует свой дефолт (см. `frameAttrs`), а не рисует мусор.
+// Ширина — с темы, sticky — с поста; `post.frame.width` старой эпохи сюда
+// не доходит. Мусор схлопывается в `undefined`, а не протекает в `data-*`:
+// без атрибута сайт рисует свой дефолт (см. `frameAttrs`).
 export const resolvePageFrame = (
+  theme: Pick<UiTheme, "frame"> | null | undefined,
   postFrame: PostFrame | null | undefined,
-): UiFrame => ({
-  hero: knownOrUndefined(HERO_VALUES, postFrame?.hero),
-  sidebar: knownOrUndefined(SIDEBAR_VALUES, postFrame?.sidebar),
-  width: knownOrUndefined(WIDTH_VALUES, postFrame?.width),
+): PageFrame => ({
+  width: knownOrUndefined(WIDTH_VALUES, theme?.frame?.width),
   sticky: knownOrUndefined(STICKY_VALUES, postFrame?.sticky),
 });
 

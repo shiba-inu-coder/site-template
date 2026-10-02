@@ -97,7 +97,7 @@ types/constants/utils). Aliases: `#sg` → `server/`, `#rc` → `app/`.
 - Trailing slashes everywhere (`site.trailingSlash`, NuxtLink `trailingSlash: "append"`,
   url_normalize 301) — keep all three in sync.
 - Images are Cloudinary public IDs. Logos and icons render via `<NuxtImg provider="cloudinary">`;
-  article pictures (`text-image`, the hero photo, grid cards) are a plain `<img>` whose URLs
+  article pictures (`text-image`, grid cards) are a plain `<img>` whose URLs
   @nuxt/image still builds. Four rules there, see `docs/ui.md`, "Images": dimensions come from
   the data, at most one priority image per page (`resolvePriorityImage`), candidates and
   `sizes` only from the generator (`useResponsiveImage` + `imageSizes`, whose numbers mirror

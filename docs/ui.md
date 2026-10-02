@@ -136,7 +136,7 @@ brand or surface ref it resolves to, the same string `shared/utils/ui-theme.ts` 
 | `ui-table-row-border` | `primary-100`      | data-table outer border                                                                        |
 | `ui-badge-bg`         | `accent-200`       | author/position badge background                                                               |
 | `ui-badge-text`       | `surface-on-brand` | text on `ui-badge-bg`                                                                          |
-| `ui-marker`           | `accent-200`       | `#article` list markers, author avatar ring, `data-h2`/hero decor                              |
+| `ui-marker`           | `accent-200`       | `#article` list markers, author avatar ring, `data-h2` decor                                   |
 | `ui-accent-strong`    | `accent-300`       | rating score, entity ribbon cutout                                                             |
 | `ui-accent-soft`      | `accent-100`       | bonus amount (needs the lighter shade for contrast — same reason as the old `text-accent-100`) |
 
@@ -166,10 +166,9 @@ The full per-site theme form (`shared/utils/ui-theme.ts`, mirrored by the admin 
 ten axes, and all of them are read now: `colors`, `scheme`, `type`, `geometry` and
 `variants` (see "Shortcodes") by the components and the runtime `:root`, and `decor` plus
 the non-family parts of `type`/`geometry` as `data-*` attributes on the page root (see
-"Frame"). There is no theme-level `frame`/`accents` axis any more: page framing
-(`hero`/`sidebar`/`width`/`sticky`) lives on the **post**, not the theme, and header
-inversion, hero background style, section bands and the badge shape variant were removed
-outright, not moved anywhere else (see "Frame"):
+"Frame"). `frame` carries one axis, `width`, for the whole site; `sticky` lives on the
+**post**. Header inversion, hero, sidebar, section bands and the badge shape variant were
+removed outright, not moved anywhere else (see "Frame"):
 
 ```ts
 UiTheme = {
@@ -180,6 +179,7 @@ UiTheme = {
   geometry: { radius, borders?, shadow?, blockGap?, paragraphGap? },
   variants: { toc?, gridCards?, faq?, buttonRef? }, // see "Shortcodes"
   decor: { h2?, sectionBg? }, // see "Frame"
+  frame?: { width? }, // see "Frame"
   updatedAt,
 }
 ```
@@ -353,8 +353,7 @@ problem, not this module's.
 
 `useUiTheme()` is where a component asks about the theme: `theme` (the record or `null`),
 `mode`, `cssVars`, `fontsHref`, `contrast`, `variantFor(key)` (the block-variant lookup, see
-"Shortcodes"), `frame` (the frame a component has to branch on — who draws the H1, whether
-the sidebar column exists at all) and `frameAttrs` (the `data-*` attributes for the page
+"Shortcodes"), `frame` (`{ width, sticky }`, see "Frame") and `frameAttrs` (the `data-*` attributes for the page
 root, see "Frame"). `setTheme()` replaces the theme in state; the head is described as a
 getter, so the style tag, `data-theme`, the font link and the attributes all repaint without
 a reload. `isPreview`, `panelOrigins` and `notifyPanel(message)` are the same preview-bridge
@@ -382,17 +381,18 @@ or the live URL of the same page — must not be able to repaint a production si
 
 **The page around the article is a set of variants, not a fixed layout** — except for the
 header, the breadcrumbs and the footer, which have one look each and no theme key (see below).
-All four frame axes — `hero`, `sidebar`, `width`, `sticky` — live on the **post**
-(`IPost.frame`, `shared/types/post.ts`), not the theme: every page picks its own, and a post
-with no `frame` at all gets the same defaults the site drew before this existed. `UiTheme`
-carries no `frame` axis at all any more — `headerInverted`, `heroStyle` and `bands` were
-removed outright, not moved anywhere else: header text now always resolves through the
-`header-text` scheme token (`resolveRef` picks a colour that contrasts with `header-bg` on
-its own, so an "inverted" header falls out of the scheme instead of a separate flag), the
-hero background is always the same default surface, and sections are never banded.
-`resolvePageFrame(postFrame)` (`shared/utils/ui-theme.ts`) reads only the post now — there is
-no theme argument any more — dropping a value that isn't one of the axis's own — old data
-from another era, a typo — rather than let it reach the CSS; `useUiTheme().frameAttrs` then
+Two frame axes are left. `width` is one for the whole site and lives in the theme
+(`uiTheme.frame.width`, set in the panel's "Кастомизация"); `sticky` is per page and lives on
+the **post** (`IPost.frame.sticky`, `shared/types/post.ts`). There is no hero and no sidebar:
+the page is always breadcrumbs, the date line and one column of sections, and a table of
+contents is only the `table-content` block in the text. Posts written for sites below v1.11.0
+still carry `frame.hero`/`sidebar`/`width` in the database — the panel keeps them on save for
+those sites — and this template does not read them. `headerInverted`, `heroStyle` and `bands`
+are long gone too: header text always resolves through the `header-text` scheme token
+(`resolveRef` picks a colour that contrasts with `header-bg` on its own), and sections are
+never banded. `resolvePageFrame(theme, postFrame)` (`shared/utils/ui-theme.ts`) takes the
+width from the theme and sticky from the post, dropping a value that isn't one of the axis's
+own — old data, a typo — rather than let it reach the CSS; `useUiTheme().frameAttrs` then
 turns the result into `data-*` attributes on the page root — `<div id="site">` in
 `layouts/default.vue` **and in `error.vue`**, because a 404 is not drawn by the layout and
 would otherwise lose the frame.
@@ -401,16 +401,14 @@ would otherwise lose the frame.
 | ----------------------- | ------------------------------- | --------------------------------------------------------------- | --------------- |
 | `data-borders`          | `uiTheme.geometry.borders`      | `0` / `1` / `2`                                                 | `1`             |
 | `data-shadow`           | `uiTheme.geometry.shadow`       | `none` / `soft` / `glow`                                        | `none`          |
-| `data-width`            | **post** `frame.width`          | `narrow` / `wide`                                               | `wide`          |
-| `data-hero`             | **post** `frame.hero`           | `none` / `band` / `photo`                                       | `none`          |
-| `data-sidebar`          | **post** `frame.sidebar`        | `none` / `toc` / `toc-offer`                                    | `none`          |
+| `data-width`            | `uiTheme.frame.width`           | `narrow` / `wide`                                               | `wide`          |
 | `data-sticky`           | **post** `frame.sticky`         | `none` / `bar` / `button`                                       | `none`          |
 | `data-h2`               | `uiTheme.decor.h2`              | `none`/`underline`/`left-rule`/`dot`/`gradient`/`number`/`line` | `none`          |
 | `data-section-bg-width` | `uiTheme.decor.sectionBg.width` | `container` / `full`                                            | none            |
 
-There is no `data-header-inverted`, `data-hero-style`, `data-bands` or `data-badge`
-attribute any more — the theme-level `frame`/`accents` axis they used to read is gone from
-`UiTheme`, not just unused, and nothing in `tailwind.css` selects on them.
+There is no `data-hero`, `data-sidebar`, `data-header-inverted`, `data-hero-style`,
+`data-bands` or `data-badge` attribute any more, and nothing in `tailwind.css` selects on
+them.
 
 **An axis nothing carries is not written as an attribute at all**, and the `/* UI axes */`
 block in `tailwind.css` only ever styles a _deviation_ — so a page with no frame and a site
@@ -456,29 +454,6 @@ Where the frame parts are drawn:
   below it needs a top offset. A `fixed` header plus `mt-18` on `#article` drifted — the real
   header is 80 px with the default buttons and changes with a brand's items and the fluid
   font size, so the date line slid 8 px under it.
-- **Hero** — `HeroLayout.vue`, rendered by `BasePostView.vue` above the sections when the
-  post's own `frame.hero !== "none"`. Breadcrumbs, the date line, the first section's H1, the author
-  line (`PostBiographyWriter` with `compact`) and a CTA move into it; with `hero: "photo"`
-  the picture of the lead's first `text-image` that has one moves too. **What moves is
-  decided once**, by `resolveHeroContent` (`shared/utils/hero-content.ts`) behind
-  `useHeroContent()`, and `PostSections.vue` reads the same decision — it drops the first
-  section's H1 and renders its body with the moved markers removed, or the author would
-  appear twice. A marker moves **as an instance**, not by name: the first author and the first
-  `button-ref` go to the hero, a second author and a second button stay in the lead
-  (`removeShortcodeMarkers` matches the found marker's position and `uniq-id`). From a
-  `text-image` **only the picture** moves: its marker stays in the lead, and `PostTextImage`
-  renders the text and the button there without the picture — before, the whole block went
-  and its text and button were lost. The hero's H1 carries the first section's id
-  (`sectionAnchorId`, below) as its `id`, so the table of contents' first anchor still lands.
-  The hero background itself has no variant any more: `.site-hero` in `tailwind.css` is
-  always the same default surface (`panel-bg` plus a bottom border) — there is no
-  `heroStyle` axis left to switch it.
-- **Sidebar** — `AsideLayout.vue`, `md+` only, from the post's own `frame.sidebar`. The
-  article's own table of contents, or one
-  assembled from the section titles when the article has no `table-content` block, plus the
-  offer card under `toc-offer`. The in-flow table of contents is hidden on desktop when a
-  sidebar exists (`.toc-block` in the axes block) and stays in the page on a phone, where
-  there is no sidebar at all.
 - **Sticky CTA** — `StickyCtaLayout.vue`, phone only, `bar` (bonus line plus button) or
   `button`, from the post's own `frame.sticky`. It **replaced `BonusLayout.vue`**, the
   floating gift that used to sit in the corner of every page; a page with no `frame.sticky`
@@ -490,8 +465,7 @@ Where the frame parts are drawn:
   `layout.breadcrumbs.homeLabel` only answer on a template no brand has been applied to. The
   BreadcrumbList schema.org carries the same labels.
   Breadcrumbs and the "last updated" line are one component, `PostMetaLayout.vue` (crumbs
-  first, date under them), used by both the hero and the page without one — two copies of
-  that markup had already drifted into opposite orders. `BreadcrumbsLayout` carries no outer
+  first, date under them), drawn by `BasePostView.vue` above the sections. `BreadcrumbsLayout` carries no outer
   margin; the parent sets it.
 - **Heading → first block** — a shortcode that opens a section body right under its H1/H2
   loses its top `--block-gap` (`tailwind.css`, next to `.shortcode`), so the heading's own
@@ -508,7 +482,7 @@ Where the frame parts are drawn:
   as "domain © year rights" when a brand is applied, so its year is the year of the last apply
   — a site with no brand record gets `© <year> <DOMAIN_NAME>`.
 
-The offer behind the sidebar card and the sticky bar is `usePageOffer()`: there is no "offer"
+The offer behind the sticky bar is `usePageOffer()`: there is no "offer"
 record in an article, so it is assembled from what the page already has — the banner's casino
 (logo, title, bonus text) — and falls back to `layout.header.cta`.
 
@@ -594,8 +568,7 @@ scale to grow again. They do take `--font-heading`.
 Nothing under the header carries a top offset: it is `sticky`, not `fixed`, and keeps its
 own height in the flow (see "Frame").
 
-Z-index has no scale yet; the values in use are `z-20` (the hero's content over its
-decorations, the back-to-top button), `z-30` (the sticky CTA), `z-50` (the sticky header) and
+Z-index has no scale yet; the values in use are `z-20` (the back-to-top button), `z-30` (the sticky CTA), `z-50` (the sticky header) and
 `z-[999]` (a drawer). Pick from those rather than inventing a fifth.
 
 ## Fonts
@@ -704,13 +677,13 @@ render a broken one.
 
 ## Images
 
-**Article pictures — the `text-image` block, the hero photo, grid cards — are a plain `<img>`,
+**Article pictures — the `text-image` block, grid cards — are a plain `<img>`,
 not `<NuxtImg>`.** @nuxt/image still builds every URL (`useResponsiveImage()`,
 `app/composables/useResponsiveImage.ts`, over `useImage()`); what it no longer decides is the
 candidate set and `sizes`, because it gets both wrong here. It writes the descriptor it asked
 for, not the width of the file: `w_2560` of a 1344 px original is 2560 px of upscaled blur,
 advertised as `2560w`. And its `sizes` prop understands only `px`/`vw` per breakpoint, so the
-real slot — `calc(100vw - 396px)` next to a sidebar — cannot be said at all. Logos and small
+real slot — `calc(100vw - 32px)` inside the container — cannot be said at all. Logos and small
 icons stay on `NuxtImg`.
 
 Four rules:
@@ -723,8 +696,7 @@ Four rules:
   the picture is `object-contain`ed into it, so the original's dimensions say nothing there.
   A horizontal card and the `image` variant get them.
 - **At most one priority image per page.** `resolvePriorityImage`
-  (`shared/utils/priority-image.ts`) picks it once: the hero photo under `hero: "photo"`;
-  otherwise the lead's first `text-image` that has a picture, **if it is on the first screen**
+  (`shared/utils/priority-image.ts`) picks it once: the lead's first `text-image` that has a picture, **if it is on the first screen**
   — no more than `FIRST_SCREEN_TEXT` (300) characters of text above it, a `button-ref` or an
   author card counted at their height, and any other block above it (a table of contents, a
   table, cards) pushes it off. `bottom` puts the picture under the block's own text, so that
@@ -740,16 +712,14 @@ Four rules:
   candidate carries `c_limit`: a width on record is the panel's claim, and a wrong one must not
   upscale either. `imageSizes(role, layout)` (`shared/utils/image-sizes.ts`) returns the slot
   as a `calc()` per breakpoint range, and **its numbers are the components' own classes** —
-  `CONTAINER`'s padding, the sidebar's 300 px plus gap, `data-width="narrow"`'s 52rem,
-  `p-primary-1` of a section with a background, the grid gaps, a horizontal card's 36 %, the
-  hero's `1.2fr_1fr`. A padding or a gap changed in `BasePostView`, `PostSections`,
-  `HeroLayout`, `PostTextImage` or `PostGridCards` is changed there too, or `sizes` quietly
+  `CONTAINER`'s padding, `data-width="narrow"`'s 52rem, `p-primary-1` of a section with a
+  background, the grid gaps, a horizontal card's 36 %. A padding or a gap changed in
+  `PostSections`, `PostTextImage` or `PostGridCards` is changed there too, or `sizes` quietly
   asks for the wrong file. A section's background reaches the block through
   `RuntimeTemplateLayout`'s `imageLayout` prop (`IMAGE_LAYOUT_KEY`); a body rendered without
   it takes the page's layout.
 - **A block never hardcodes `loading`.** It takes `imageLoading(isPriority)` — lazy for all but
-  the one. Chrome is outside the rule: the header logo loads eagerly, the footer logo and the
-  sidebar offer logo are `lazy` (the sidebar does not exist on a phone at all).
+  the one. Chrome is outside the rule: the header logo loads eagerly, the footer logo is `lazy`.
 
 A grid-cards record with a numeric `imgWidth`/`imgHeight` — a size the operator typed by hand
 — keeps the old 1x/2x pair built from those numbers: that is a transformation someone asked
@@ -847,18 +817,17 @@ panel or an older theme left there is simply not looked at.
 | `faq`           | `faq`            | `list`, `accordion`                          | —                                           |
 | `button-ref`    | `buttonRef`      | `outline`, `solid`                           | `size`; `link` is a prop, not a theme value |
 
-| Block              | The one view                                                                  | Modifiers                                     |
-| ------------------ | ----------------------------------------------------------------------------- | --------------------------------------------- |
-| `data-table`       | a text table; icons in a cell and buttons in the last column are cell content | `density`, `head`, `striped`                  |
-| `text-image`       | picture and text, see below                                                   | `imgSide`                                     |
-| `pros-cons`        | two columns, one on a phone                                                   | —                                             |
-| `biography-writer` | a card: photo 96px on the left, then name, position, about                    | a `compact` **prop** — the hero's author line |
-| `contact-us`       | title, subtitle (`translates.contacts.title`/`subtitle`), the form            | — (no record)                                 |
+| Block              | The one view                                                                  | Modifiers                    |
+| ------------------ | ----------------------------------------------------------------------------- | ---------------------------- |
+| `data-table`       | a text table; icons in a cell and buttons in the last column are cell content | `density`, `head`, `striped` |
+| `text-image`       | picture and text, see below                                                   | `imgSide`                    |
+| `pros-cons`        | two columns, one on a phone                                                   | —                            |
+| `biography-writer` | a card: photo 96px on the left, then name, position, about                    | —                            |
+| `contact-us`       | title, subtitle (`translates.contacts.title`/`subtitle`), the form            | — (no record)                |
 
 A modifier is not a variant: it stacks on top of whichever view is drawn, and it lives on the
 record rather than in the theme, because two tables in the same article legitimately want
-different densities. `compact` on the author block is a prop for the same kind of reason —
-it is a place on the page (the hero's line under the H1), not something the theme chooses.
+different densities.
 
 **The default comes from the theme, one block overrides it.** A block with a variant
 resolves `entry.data.variant ?? uiTheme.variants.<key> ?? <the block's own default>` through
@@ -889,8 +858,7 @@ and the picture keeps `object-cover` there (`imgFitClass`). `image` has no box a
 The header, the breadcrumbs and the footer have no key here: each has one look, see "Frame".
 
 **The table of contents' accordion is `<details>`/`<summary>`** — no script, closed until
-clicked, and the links are in the HTML either way. The sidebar (`AsideLayout.vue`) renders
-the same component, so the theme's `toc` reaches it too. Neither view numbers the items.
+clicked, and the links are in the HTML either way. Neither view numbers the items.
 
 **Every prop a block reads is optional.** A record written before this stage carries no
 `variant`, no `horizontal`, no `density` — and has to render. That is why the Mongoose
@@ -960,8 +928,8 @@ entry is an H2 with everything under it (`uid`, `title`, `body` **without** its 
 plus `layout`).
 
 **A heading's `id` is `anchor || uid`, through `sectionAnchorId`
-(`shared/utils/section-anchor.ts`)** — `PostSections`, the hero's H1 and the aside's own
-table of contents all read it. `anchor` is a readable id the panel issues per section
+(`shared/utils/section-anchor.ts`)** — `PostSections` and the
+`table-content` block both read it. `anchor` is a readable id the panel issues per section
 (`betonred-login` instead of `s3`); `uid` stays the panel's internal key and never changes.
 The panel builds the flat `content` and the table-of-contents entries by the same rule, so
 a template that knows `anchor` and a panel that writes it have to ship together: the panel
@@ -1008,7 +976,7 @@ entire article, not within one section.
 `RuntimeTemplateLayout` behind `defineLazyHydrationComponent("visible")`: the server renders it
 in full, as before, and the client compiles it when its section comes into view — hydration
 used to compile the whole article in one long task. The first stays eager because it is the
-first screen: the priority image is in it or in the hero, never in a later section
+first screen: the priority image is in it, never in a later section
 (`resolvePriorityImage` reads only the lead). The headings are outside the lazy part, so an
 anchor or the table of contents lands on a section that has not hydrated yet, and it hydrates
 there. A block inside a lazy body keeps its own `visible` strategy on top — it wakes when both

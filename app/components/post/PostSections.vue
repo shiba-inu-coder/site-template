@@ -19,7 +19,7 @@
                  ставит запасной HTML-путь в панели. -->
             <component
               :is="index === 0 ? 'h1' : 'h2'"
-              v-if="item.section.title && !(index === 0 && heroEnabled)"
+              v-if="item.section.title"
               :id="item.id || undefined"
             >
               {{ item.section.title }}
@@ -27,9 +27,7 @@
             <component
               :is="index === 0 ? RuntimeTemplateLayout : LazySectionBody"
               :slug="slug"
-              :template="
-                index === 0 && heroEnabled ? leadBody : item.section.body
-              "
+              :template="item.section.body"
               :image-layout="item.imageLayout"
             />
           </section>
@@ -60,7 +58,6 @@ const LazySectionBody = defineLazyHydrationComponent(
   () => import("#rc/components/layout/RuntimeTemplateLayout.vue"),
 );
 
-const { enabled: heroEnabled, leadBody } = useHeroContent();
 const { theme } = useUiTheme();
 const pageLayout = usePageImageLayout();
 

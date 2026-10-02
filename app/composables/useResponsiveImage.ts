@@ -12,11 +12,8 @@ export const IMAGE_LAYOUT_KEY: InjectionKey<ComputedRef<ImageLayout>> =
 
 export const usePageImageLayout = () => {
   const { frame } = useUiTheme();
-  const { sections } = usePost();
 
-  return computed(() =>
-    pageImageLayout(frame.value, sections.value.length > 0),
-  );
+  return computed(() => pageImageLayout(frame.value));
 };
 
 export const useImageLayout = () =>

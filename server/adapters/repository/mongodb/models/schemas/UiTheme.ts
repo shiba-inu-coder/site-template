@@ -65,6 +65,9 @@ export const UiThemeSchema = new Schema(
 
     variants: { type: VariantsSchema, default: () => ({}) },
     decor: { type: Schema.Types.Mixed, default: () => ({}) },
+    frame: {
+      width: { type: String },
+    },
 
     updatedAt: { type: Date, default: () => new Date() },
   },
