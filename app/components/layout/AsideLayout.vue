@@ -13,10 +13,10 @@
       <ol class="not-format grid list-decimal gap-1.5 pl-5">
         <li
           v-for="item in autoToc"
-          :key="item.uid"
+          :key="item.id"
         >
           <a
-            :href="`#${item.uid}`"
+            :href="`#${item.id}`"
             class="text-ui-link transition duration-500 ease-in-out hover:text-ui-link-hover"
           >
             {{ item.title }}
@@ -65,6 +65,7 @@
 <script setup lang="ts">
 import CtaButtonLayout from "#rc/components/layout/CtaButtonLayout.vue";
 import PostTableContent from "#rc/components/post/PostTableContent.vue";
+import { sectionAnchorId } from "#shared/utils/section-anchor";
 
 const { showOffer = false } = defineProps<{
   // `toc-offer` против `toc`: колонка либо только оглавление, либо ещё и
@@ -87,7 +88,10 @@ const autoToc = computed(() =>
     ? []
     : sections.value
         .slice(1)
-        .filter((section) => section.uid && section.title)
-        .map((section) => ({ uid: section.uid, title: section.title })),
+        .filter((section) => sectionAnchorId(section) && section.title)
+        .map((section) => ({
+          id: sectionAnchorId(section),
+          title: section.title,
+        })),
 );
 </script>

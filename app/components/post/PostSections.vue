@@ -20,7 +20,7 @@
             <component
               :is="index === 0 ? 'h1' : 'h2'"
               v-if="item.section.title && !(index === 0 && heroEnabled)"
-              :id="item.section.uid || undefined"
+              :id="item.id || undefined"
             >
               {{ item.section.title }}
             </component>
@@ -43,6 +43,7 @@
 import { computed } from "vue";
 import RuntimeTemplateLayout from "#rc/components/layout/RuntimeTemplateLayout.vue";
 import { resolveSectionBg } from "#shared/utils/section-style";
+import { sectionAnchorId } from "#shared/utils/section-anchor";
 import type { SectionBgPlacement } from "#shared/utils/section-style";
 
 const { sections } = defineProps<{
@@ -90,6 +91,7 @@ const sectionsWithBg = computed(() =>
 
     return {
       section,
+      id: sectionAnchorId(section),
       bg,
       imageLayout: { ...pageLayout.value, sectionBg: bg.target },
     };

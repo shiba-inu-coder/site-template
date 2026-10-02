@@ -140,6 +140,8 @@ export interface PostSectionChild {
 
 export interface PostSection {
   uid: string;
+  // id заголовка вместо uid — у секций, которым панель его выдала.
+  anchor?: string;
   title: string;
   comment: string;
   children: PostSectionChild[];

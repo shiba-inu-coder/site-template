@@ -3,6 +3,7 @@ import {
   removeShortcodeMarkers,
 } from "./shortcode-markers.ts";
 import type { ShortcodeMarker } from "./shortcode-markers.ts";
+import { sectionAnchorId } from "./section-anchor.ts";
 
 export type HeroStyle = "none" | "band" | "photo";
 
@@ -15,7 +16,7 @@ export interface HeroImage {
 
 export interface HeroInput {
   style: string | undefined;
-  sections: { uid?: string; title?: string; body?: string }[];
+  sections: { uid?: string; anchor?: string; title?: string; body?: string }[];
   textImages: { data: { uniqId: string; img: HeroImage | null } }[] | undefined;
   headerCtaLabel: string;
 }
@@ -74,7 +75,7 @@ export const resolveHeroContent = ({
     enabled: false,
     style: heroStyle,
     title: lead?.title || "",
-    titleId: lead?.uid || "",
+    titleId: sectionAnchorId(lead),
     biography: null,
     button: null,
     photo: null,

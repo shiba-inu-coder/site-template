@@ -457,8 +457,8 @@ Where the frame parts are drawn:
   (`removeShortcodeMarkers` matches the found marker's position and `uniq-id`). From a
   `text-image` **only the picture** moves: its marker stays in the lead, and `PostTextImage`
   renders the text and the button there without the picture — before, the whole block went
-  and its text and button were lost. The hero's H1 carries the first section's `uid` as its
-  `id`, so the table of contents' first anchor still lands.
+  and its text and button were lost. The hero's H1 carries the first section's id
+  (`sectionAnchorId`, below) as its `id`, so the table of contents' first anchor still lands.
   The hero background itself has no variant any more: `.site-hero` in `tailwind.css` is
   always the same default surface (`panel-bg` plus a bottom border) — there is no
   `heroStyle` axis left to switch it.
@@ -940,7 +940,16 @@ HTML, not through `PostTextImage.vue`, and stays as-is.
 
 A post written in the AppsPro constructor arrives as `sections[]` — an ordered list where each
 entry is an H2 with everything under it (`uid`, `title`, `body` **without** its own `<h2>`,
-plus `layout`). `BasePostView.vue` forks on `postNeedsContent` (`shared/utils/post-content.ts`):
+plus `layout`).
+
+**A heading's `id` is `anchor || uid`, through `sectionAnchorId`
+(`shared/utils/section-anchor.ts`)** — `PostSections`, the hero's H1 and the aside's own
+table of contents all read it. `anchor` is a readable id the panel issues per section
+(`betonred-login` instead of `s3`); `uid` stays the panel's internal key and never changes.
+The panel builds the flat `content` and the table-of-contents entries by the same rule, so
+a template that knows `anchor` and a panel that writes it have to ship together: the panel
+gates anchor generation on this template's version, and an older site keeps answering
+with `uid`. `BasePostView.vue` forks on `postNeedsContent` (`shared/utils/post-content.ts`):
 with sections it renders `PostSections.vue` and **drops the global `max-w-7xl` wrapper**,
 without them (no field, or an empty list) it keeps the old single `RuntimeTemplateLayout` over
 `content`. The panel writes both fields — it also assembles the sections into flat HTML — so a
