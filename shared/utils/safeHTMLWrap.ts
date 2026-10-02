@@ -27,6 +27,6 @@ export const safeHTMLWrap = (val?: string, extraTags?: string[]) =>
   DOMPurify.sanitize(val ?? "", {
     ALLOWED_TAGS,
     ADD_TAGS: extraTags ?? [],
-    ALLOWED_ATTR: ["href"],
+    ALLOWED_ATTR: ["href", "rel", "target"],
     ALLOWED_URI_REGEXP: HTTP_OR_RELATIVE_URI,
   });

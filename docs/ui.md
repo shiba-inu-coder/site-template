@@ -932,6 +932,12 @@ it went with the variants.
 passes `p`/`em`/`u`/`s`/`sup`/`sub`/`blockquote` because its `text` carries real paragraphs —
 without `p` on the allowlist DOMPurify unwraps the tag instead of keeping it.
 
+Attributes are fixed for every call: `href`, `rel`, `target`. `rel` is there because the
+panel's generator marks links to other hosts `noopener noreferrer nofollow`, and the leading
+paragraphs of a section move into the Text + Image block — without `rel` on the list the
+same link would be nofollow in the body and dofollow in the block. `href` passes only
+http(s) and relative URLs, so a `mailto:` link keeps its text and loses the address.
+
 `.article-img*` in `tailwind.css` is an unrelated, older legacy: floated figures baked directly
 into article body HTML rather than a shortcode record. It renders through the article's own
 HTML, not through `PostTextImage.vue`, and stays as-is.
