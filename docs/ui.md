@@ -817,13 +817,13 @@ panel or an older theme left there is simply not looked at.
 | `faq`           | `faq`            | `list`, `accordion`                          | —                                           |
 | `button-ref`    | `buttonRef`      | `outline`, `solid`                           | `size`; `link` is a prop, not a theme value |
 
-| Block              | The one view                                                                  | Modifiers                    |
-| ------------------ | ----------------------------------------------------------------------------- | ---------------------------- |
-| `data-table`       | a text table; icons in a cell and buttons in the last column are cell content | `density`, `head`, `striped` |
-| `text-image`       | picture and text, see below                                                   | `imgSide`                    |
-| `pros-cons`        | two columns, one on a phone                                                   | —                            |
-| `biography-writer` | a card: photo 96px on the left, then name, position, about                    | —                            |
-| `contact-us`       | title, subtitle (`translates.contacts.title`/`subtitle`), the form            | — (no record)                |
+| Block              | The one view                                                                  | Modifiers                                   |
+| ------------------ | ----------------------------------------------------------------------------- | ------------------------------------------- |
+| `data-table`       | a text table; icons in a cell and buttons in the last column are cell content | `density`, `head`, `striped`, `mobileCards` |
+| `text-image`       | picture and text, see below                                                   | `imgSide`                                   |
+| `pros-cons`        | two columns, one on a phone                                                   | —                                           |
+| `biography-writer` | a card: photo 96px on the left, then name, position, about                    | —                                           |
+| `contact-us`       | title, subtitle (`translates.contacts.title`/`subtitle`), the form            | — (no record)                               |
 
 A modifier is not a variant: it stacks on top of whichever view is drawn, and it lives on the
 record rather than in the theme, because two tables in the same article legitimately want
@@ -887,6 +887,27 @@ swaps the default centered 70px block for a 20px icon sitting in the text flow
 to a name rather than an icon above one. It has to be written as a bare attribute
 (`<div is="vue:Image" name="…" inline>`), never `:inline="true"` — `compileSafeTemplate`
 drops every `v-*`/`:prop`/`@event`/`#slot` attribute, so only a literal one survives.
+
+`Image`'s `logo` flag (a bare attribute too) puts the picture in a fixed 120×60 frame: the
+file is contained whole and centred (`object-contain`, both `max-*-full`), asked from
+Cloudinary at height 120 for a retina screen. A square logo stands 60×60 in the middle, a wide
+one takes the frame's width, and the column is the same in every row with the space held before
+the file loads. The frame needs no size from the file — a casino card does not store one. A
+cell with `logo` and no `inline` is the only thing it changes; old records render as before.
+
+**`mobileCards` turns the same table into cards below `sm`.** The flag lives on the record
+(an unchecked table is untouched; the schema declares it or Mongoose strips it on read).
+`PostDataTableGrid.vue` does it with classes alone — one DOM for both views, since a
+conditional render would disagree at hydration: the head is hidden, a row is a bordered block,
+a cell is "label left, value right" with the label from `data-label` through
+`before:content-[attr(data-label)]`. What a cell is comes from its template
+(`dataTableCellKind`, `shared/utils/data-table-cell.ts`): a `logo` image and a `ref-link-btn`
+stand full width with no label (the button's `<a>` takes the whole card), a column without a
+title has no label either. Cells keep the column order; nothing is moved. The classes are
+literal for the same `@config` reason as everywhere.
+
+A header item of kind `ref` carries its own casino in `link` (`/go/<slug>/`); an empty `link`
+falls back to the site's `brandSlug` as before.
 
 `PostTextImage.vue` (`text-image` marker, `textImages` shortcode) has one layout and one
 position field, `imgSide`. `left`/`right` put the picture in one of two equal columns on

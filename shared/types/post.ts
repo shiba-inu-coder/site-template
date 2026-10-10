@@ -178,6 +178,7 @@ export interface PostDataTable {
     density?: string;
     head?: string;
     striped?: boolean;
+    mobileCards?: boolean;
     btnName?: string;
     refLink?: string;
     showTableHead: boolean;

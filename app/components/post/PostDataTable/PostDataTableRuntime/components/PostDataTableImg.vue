@@ -13,6 +13,20 @@
     ></NuxtImg>
   </span>
   <div
+    v-else-if="logo"
+    class="mx-auto flex h-[60px] w-[120px] max-w-full items-center justify-center"
+  >
+    <NuxtImg
+      provider="cloudinary"
+      width="auto"
+      height="120"
+      class="h-auto w-auto max-h-full max-w-full object-contain"
+      :alt="altImg"
+      :src="srcImg"
+      :modifiers="siteConfig.img.modifiers"
+    ></NuxtImg>
+  </div>
+  <div
     v-else
     class="flex justify-center items-center"
   >
@@ -29,12 +43,15 @@
 <script lang="ts" setup>
 const siteConfig = useSiteConfig();
 
-const { name, alt, width, height, inline } = defineProps<{
+// `logo` — рамка 120×60 под лого казино: квадратное и вытянутое лого стоят в
+// одинаковой колонке, место занято до загрузки файла.
+const { name, alt, width, height, inline, logo } = defineProps<{
   name: string;
   alt?: string;
   width?: string;
   height?: string;
   inline?: boolean;
+  logo?: boolean;
 }>();
 
 const srcImg = computed(() => name);
