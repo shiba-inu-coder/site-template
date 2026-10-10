@@ -820,7 +820,7 @@ panel or an older theme left there is simply not looked at.
 | Block              | The one view                                                                  | Modifiers                                   |
 | ------------------ | ----------------------------------------------------------------------------- | ------------------------------------------- |
 | `data-table`       | a text table; icons in a cell and buttons in the last column are cell content | `density`, `head`, `striped`, `mobileCards` |
-| `text-image`       | picture and text, see below                                                   | `imgSide`                                   |
+| `text-image`       | picture and text, see below                                                   | `imgSide`, `imgWidth`, `imgHeight`          |
 | `pros-cons`        | two columns, one on a phone                                                   | —                                           |
 | `biography-writer` | a card: photo 96px on the left, then name, position, about                    | —                                           |
 | `contact-us`       | title, subtitle (`translates.contacts.title`/`subtitle`), the form            | — (no record)                               |
@@ -921,6 +921,16 @@ literal objects keyed by side — **every variant's classes are literal for the 
 which is why a component carries a `Record<variant, string>` map instead of building a class
 from the stored value. `sizes` is not a map any more: a side picks a role (`left`/`right` a
 half, `top`/`bottom` the whole column), and `imageSizes` does the rest (see "Images").
+
+`imgWidth`/`imgHeight` are strings, not numbers: a count of pixels (`"320"`, `"320px"`) or
+`"auto"`, and anything that is not a count reads as `auto` (`parsePixelSize`,
+`shared/utils/pixel-size.ts` — grid cards read theirs through it too). `auto`/`auto` is the
+old picture: the column's full width, height by proportion. A width alone sets that width
+(never wider than the column on a phone) and asks Cloudinary for 1x/2x of it — the
+transformation someone asked for, like grid cards' own size — instead of the width ladder. A
+height alone keeps the full column width and crops by height (`object-cover`). Both: a
+fixed pair, cropped (`fit: cover`), and the proportion survives a shrink on a phone through
+`aspect-ratio`. A record older than v1.13.0 has neither field, which is `auto`.
 
 A record with no `img` at all — text-only, or an old block whose picture lives in the body
 HTML instead — collapses the grid to a single column rather than leaving an empty second one

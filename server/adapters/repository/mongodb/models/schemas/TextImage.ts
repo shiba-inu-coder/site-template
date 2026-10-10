@@ -70,6 +70,17 @@ export const TextImageSchema = [
         type: String,
         default: "0",
       },
+      // Пиксели («320») или «auto» — строкой, а не числом.
+      imgWidth: {
+        type: String,
+        trim: true,
+        default: "auto",
+      },
+      imgHeight: {
+        type: String,
+        trim: true,
+        default: "auto",
+      },
       // Из дошорткодовой эпохи: кнопка была отдельным полем записи, пока
       // текст не поглотил её в шорткоде 2a. Старые записи ещё несут оба поля.
       buttonText: {
