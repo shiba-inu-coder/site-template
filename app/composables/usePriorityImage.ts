@@ -1,5 +1,4 @@
 import type { ComputedRef } from "vue";
-import type { ResponsiveImageAttrs } from "#shared/utils/image-candidates";
 import { resolvePriorityImage } from "#shared/utils/priority-image";
 
 /** Какая картинка страницы приоритетная — одна или ни одной. */
@@ -22,7 +21,11 @@ export const usePriorityImage = () => {
  * свой набор.
  */
 export const usePriorityImagePreload = (
-  picture: ComputedRef<ResponsiveImageAttrs | null>,
+  picture: ComputedRef<{
+    src: string;
+    srcset: string;
+    sizes?: string;
+  } | null>,
 ) =>
   useHead(() => {
     const image = picture.value;

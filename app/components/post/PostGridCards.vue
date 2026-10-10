@@ -90,6 +90,7 @@ import { resolveGridCardsLayout } from "#shared/utils/grid-cards-layout";
 import PostButtonRef from "#rc/components/post/PostButtonRef.vue";
 import { imageLoading } from "#shared/utils/image-candidates";
 import { imageSizes } from "#shared/utils/image-sizes";
+import { parsePixelSize } from "#shared/utils/pixel-size";
 
 type GridCardItem = PostGridCard["data"]["data"][number];
 
@@ -150,17 +151,11 @@ const cardsPerRowDesktop = computed(() => {
   return data[list.value?.data.cardsPerRowDesktop ?? "1"];
 });
 
-const pixels = (raw: string | undefined) => {
-  const value = `${raw ?? ""}`.trim();
-
-  return /^\d+(\.\d+)?(px)?$/.test(value) ? parseInt(value) : undefined;
-};
-
 // imgWidth/imgHeight записи — размер, заданный оператором руками («auto» по
 // умолчанию), а не размер файла.
 const ownSize = computed(() => ({
-  width: pixels(list.value?.data.imgWidth),
-  height: pixels(list.value?.data.imgHeight),
+  width: parsePixelSize(list.value?.data.imgWidth),
+  height: parsePixelSize(list.value?.data.imgHeight),
 }));
 
 const roundCorner = computed(

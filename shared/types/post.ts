@@ -44,6 +44,9 @@ export interface PostTextImage {
     // full — значение старой записи, компонент читает его как top.
     imgSide: "left" | "right" | "top" | "bottom" | "full";
     imgRoundCorner: string;
+    // Пиксели или «auto»; у записей старше v1.13.0 полей нет — это «auto».
+    imgWidth?: string;
+    imgHeight?: string;
     buttonText: string;
     buttonPosition: "left" | "center" | "right";
     buttonSize: "small" | "small-medium" | "medium" | "medium-big" | "big";

@@ -10,7 +10,8 @@
     >
       <img
         v-bind="picture"
-        class="w-full h-auto"
+        :class="imgClass"
+        :style="imgStyle"
       />
     </div>
 
@@ -36,8 +37,9 @@
 <script setup lang="ts">
 import { computed } from "vue";
 import PostButtonRef from "#rc/components/post/PostButtonRef.vue";
-import { imageLoading } from "#shared/utils/image-candidates";
+import { imageDimensions, imageLoading } from "#shared/utils/image-candidates";
 import { imageSizes } from "#shared/utils/image-sizes";
+import { parsePixelSize } from "#shared/utils/pixel-size";
 import { safeHTMLWrap } from "#shared/utils/safeHTMLWrap";
 import { resolveTextImageSide, textImageRole } from "#shared/utils/text-image";
 import type { TextImageSide as Side } from "#shared/utils/text-image";
@@ -47,6 +49,7 @@ const { getShortcode } = usePost();
 const priorityImage = usePriorityImage();
 const layout = useImageLayout();
 const buildImage = useResponsiveImage();
+const $img = useCloudinaryImage();
 
 // text приходит абзацами и инлайн-разметкой шире общего списка
 // safeHTMLWrap — extraTags расширяет allowlist только для этого вызова.
@@ -78,6 +81,8 @@ const FALLBACK: PostTextImage = {
     imgHint: "",
     imgSide: "right",
     imgRoundCorner: "0",
+    imgWidth: "auto",
+    imgHeight: "auto",
     buttonText: "",
     buttonPosition: "left",
     buttonSize: "small",
@@ -99,6 +104,13 @@ const isPriority = computed(
     priorityImage.value.uniqId === uniqId,
 );
 
+// imgWidth/imgHeight — размер, вписанный оператором («auto» — как решает
+// раскладка), а не размер файла.
+const ownSize = computed(() => ({
+  width: parsePixelSize(data.value.imgWidth),
+  height: parsePixelSize(data.value.imgHeight),
+}));
+
 const picture = computed(() => {
   const img = data.value.img;
 
@@ -106,13 +118,85 @@ const picture = computed(() => {
     return null;
   }
 
-  return {
-    ...buildImage(img, imageSizes(textImageRole(side.value), layout.value), {
-      roundCorner: data.value.imgRoundCorner,
-    }),
+  const { width, height } = ownSize.value;
+  const roundCorner = data.value.imgRoundCorner;
+  const own = {
     ...imageLoading(isPriority.value),
     alt: img.alt,
   };
+
+  // Заданная ширина остаётся и в трансформации (1x/2x от неё), а не лестница
+  // по оригиналу: файл шире места на странице тут не нужен. Обе стороны
+  // сразу — обрезка, поэтому fit: cover.
+  if (width) {
+    const { src, srcset } = $img.getSizes(img.path, {
+      provider: "cloudinary",
+      modifiers: {
+        roundCorner,
+        width,
+        height,
+        ...(height ? { fit: "cover" } : {}),
+      },
+    });
+    const file = imageDimensions(img);
+    const attrHeight =
+      height ?? (file && Math.round((width * file.height) / file.width));
+
+    return {
+      src,
+      srcset,
+      width,
+      ...(attrHeight ? { height: attrHeight } : {}),
+      ...own,
+    };
+  }
+
+  const {
+    width: fileWidth,
+    height: fileHeight,
+    ...attrs
+  } = buildImage(img, imageSizes(textImageRole(side.value), layout.value), {
+    roundCorner,
+  });
+
+  // Высота без ширины режет картинку по высоте: размеры файла в атрибутах
+  // обещали бы другую пропорцию, и браузер резервировал бы не то место.
+  return {
+    ...attrs,
+    ...(!height && fileWidth ? { width: fileWidth, height: fileHeight } : {}),
+    ...own,
+  };
+});
+
+// Классы перечислены целиком по той же причине, что и GRID_COLS. Ширина в
+// пикселях не умещается в колонку на телефоне — max-w-full её сжимает, а
+// aspect-ratio держит пропорцию заданной пары.
+const imgClass = computed(() => {
+  const { width, height } = ownSize.value;
+
+  if (width && height) {
+    return "max-w-full h-auto object-cover";
+  }
+
+  if (width) {
+    return "max-w-full h-auto";
+  }
+
+  return height ? "w-full object-cover" : "w-full h-auto";
+});
+
+const imgStyle = computed(() => {
+  const { width, height } = ownSize.value;
+
+  if (width && height) {
+    return { width: `${width}px`, aspectRatio: `${width} / ${height}` };
+  }
+
+  if (width) {
+    return { width: `${width}px` };
+  }
+
+  return height ? { height: `${height}px` } : undefined;
 });
 
 usePriorityImagePreload(
