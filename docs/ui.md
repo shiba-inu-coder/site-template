@@ -926,7 +926,7 @@ half, `top`/`bottom` the whole column), and `imageSizes` does the rest (see "Ima
 `"auto"`, and anything that is not a count reads as `auto` (`parsePixelSize`,
 `shared/utils/pixel-size.ts` — grid cards read theirs through it too). `auto`/`auto` is the
 old picture: the column's full width, height by proportion. A width alone sets that width
-(never wider than the column on a phone) and asks Cloudinary for 1x/2x of it — the
+(never wider than the column on a phone, centred in its column when narrower) and asks Cloudinary for 1x/2x of it — the
 transformation someone asked for, like grid cards' own size — instead of the width ladder. A
 height alone keeps the full column width and crops by height (`object-cover`). Both: a
 fixed pair, cropped (`fit: cover`), and the proportion survives a shrink on a phone through
