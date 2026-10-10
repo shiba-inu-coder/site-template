@@ -170,16 +170,17 @@ const picture = computed(() => {
 
 // Классы перечислены целиком по той же причине, что и GRID_COLS. Ширина в
 // пикселях не умещается в колонку на телефоне — max-w-full её сжимает, а
-// aspect-ratio держит пропорцию заданной пары.
+// aspect-ratio держит пропорцию заданной пары. Картинка уже своей колонки
+// встаёт по её центру, а не к левому краю.
 const imgClass = computed(() => {
   const { width, height } = ownSize.value;
 
   if (width && height) {
-    return "max-w-full h-auto object-cover";
+    return "block mx-auto max-w-full h-auto object-cover";
   }
 
   if (width) {
-    return "max-w-full h-auto";
+    return "block mx-auto max-w-full h-auto";
   }
 
   return height ? "w-full object-cover" : "w-full h-auto";
