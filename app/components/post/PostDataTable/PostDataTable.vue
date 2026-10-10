@@ -36,6 +36,7 @@
 
 <script setup lang="ts">
 import PostDataTableGrid from "./components/PostDataTableGrid.vue";
+import { dataTableImageSize } from "#shared/utils/data-table-image-size";
 
 const siteConfig = useSiteConfig();
 
@@ -71,6 +72,13 @@ const density = computed(() => data.value.density || "regular");
 const head = computed(() => data.value.head || "solid");
 const striped = computed(() => data.value.striped !== false);
 const mobileCards = computed(() => data.value.mobileCards === true);
+
+provide(
+  DATA_TABLE_IMAGE_SIZE_KEY,
+  computed(() =>
+    dataTableImageSize(data.value.imageWidth, data.value.imageHeight),
+  ),
+);
 
 const formatedRows = computed(() => data.value.rows.slice(0, count.value));
 const isShowMoreBtn = computed(() => data.value.rows.length > count.value);

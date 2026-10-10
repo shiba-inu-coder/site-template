@@ -2,6 +2,7 @@ import type { ComputedRef, InjectionKey } from "vue";
 import { responsiveImage } from "#shared/utils/image-candidates";
 import { pageImageLayout } from "#shared/utils/image-sizes";
 import type { ImageLayout } from "#shared/utils/image-sizes";
+import type { DataTableImageSize } from "#shared/utils/data-table-image-size";
 
 /**
  * Фон секции знает только PostSections, а картинку рисует блок внутри
@@ -9,6 +10,14 @@ import type { ImageLayout } from "#shared/utils/image-sizes";
  */
 export const IMAGE_LAYOUT_KEY: InjectionKey<ComputedRef<ImageLayout>> =
   Symbol("image-layout");
+
+/**
+ * Размер задаёт запись таблицы, а картинку рисует ячейка, скомпилированная из
+ * строки: пропсами до неё дотянуться нельзя.
+ */
+export const DATA_TABLE_IMAGE_SIZE_KEY: InjectionKey<
+  ComputedRef<DataTableImageSize>
+> = Symbol("data-table-image-size");
 
 export const usePageImageLayout = () => {
   const { frame } = useUiTheme();

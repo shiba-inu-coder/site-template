@@ -182,6 +182,8 @@ export interface PostDataTable {
     head?: string;
     striped?: boolean;
     mobileCards?: boolean;
+    imageWidth?: string;
+    imageHeight?: string;
     btnName?: string;
     refLink?: string;
     showTableHead: boolean;

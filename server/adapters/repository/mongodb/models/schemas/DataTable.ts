@@ -33,6 +33,16 @@ export const DataTableSchema = [
         type: Boolean,
         default: false,
       },
+      imageWidth: {
+        type: String,
+        trim: true,
+        default: "",
+      },
+      imageHeight: {
+        type: String,
+        trim: true,
+        default: "",
+      },
       showTableHead: {
         type: Boolean,
         default: true,
