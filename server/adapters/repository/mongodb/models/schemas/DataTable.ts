@@ -29,6 +29,10 @@ export const DataTableSchema = [
         type: Boolean,
         default: true,
       },
+      mobileCards: {
+        type: Boolean,
+        default: false,
+      },
       showTableHead: {
         type: Boolean,
         default: true,

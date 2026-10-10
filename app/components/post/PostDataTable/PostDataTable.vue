@@ -6,6 +6,7 @@
       :density="density"
       :head="head"
       :striped="striped"
+      :mobile-cards="mobileCards"
       :show-table-head="data.showTableHead"
     />
 
@@ -69,6 +70,7 @@ const data = computed(
 const density = computed(() => data.value.density || "regular");
 const head = computed(() => data.value.head || "solid");
 const striped = computed(() => data.value.striped !== false);
+const mobileCards = computed(() => data.value.mobileCards === true);
 
 const formatedRows = computed(() => data.value.rows.slice(0, count.value));
 const isShowMoreBtn = computed(() => data.value.rows.length > count.value);

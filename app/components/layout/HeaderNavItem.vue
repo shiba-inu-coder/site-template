@@ -16,7 +16,7 @@
       <a
         v-for="(child, i) in item.children.filter((c) => c.kind === 'ref')"
         :key="`ref-${i}`"
-        :href="refLink"
+        :href="child.link || refLink"
         target="_blank"
         rel="nofollow noopener"
         data-id="ref_link"
@@ -47,7 +47,7 @@
 
   <a
     v-else-if="item.kind === 'ref'"
-    :href="refLink"
+    :href="item.link || refLink"
     target="_blank"
     rel="nofollow noopener"
     data-id="ref_link"
