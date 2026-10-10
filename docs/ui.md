@@ -882,9 +882,13 @@ those are meant to reach it.
 through `PostDataTableRuntime.vue` the same way the article body goes through
 `RuntimeTemplateLayout.vue` — same `compileSafeTemplate`, its own small component map
 (`Image` → `PostDataTableImg.vue`, plus `RefLink`, `RefLinkBtn`). `Image`'s `inline` prop
-swaps the default centered 70px block for a 20px icon sitting in the text flow
+swaps the default centered 70px block for an icon sitting in the text flow
 (`inline-flex`, `align-middle`, margin on the right), for a cell that reads as an icon next
-to a name rather than an icon above one. It has to be written as a bare attribute
+to a name rather than an icon above one. Its size is the table's, not the picture's: the
+record's `imageWidth`/`imageHeight` reach the cell through `DATA_TABLE_IMAGE_SIZE_KEY`
+(`dataTableImageSize`, `shared/utils/data-table-image-size.ts`). Both empty — height 40,
+width by proportion; one side set — the other follows the proportion; both set — a fixed
+frame with the file contained whole (`object-contain`). Values are clamped to 12–400. It has to be written as a bare attribute
 (`<div is="vue:Image" name="…" inline>`), never `:inline="true"` — `compileSafeTemplate`
 drops every `v-*`/`:prop`/`@event`/`#slot` attribute, so only a literal one survives.
 
