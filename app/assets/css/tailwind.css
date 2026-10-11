@@ -29,7 +29,6 @@
      токен стоит за каждым, решает блок "UI scheme" в :root ниже. */
   --color-ui-page-bg: var(--color-ui-page-bg);
   --color-ui-header-bg: var(--color-ui-header-bg);
-  --color-ui-header-text: var(--color-ui-header-text);
   --color-ui-footer-bg: var(--color-ui-footer-bg);
   --color-ui-footer-bg-alt: var(--color-ui-footer-bg-alt);
 
@@ -43,12 +42,8 @@
   --color-ui-input-bg: var(--color-ui-input-bg);
   --color-ui-input-border: var(--color-ui-input-border);
 
-  --color-ui-highlight-bg: var(--color-ui-highlight-bg);
-  --color-ui-highlight-text: var(--color-ui-highlight-text);
-
   --color-ui-heading: var(--color-ui-heading);
   --color-ui-text: var(--color-ui-text);
-  --color-ui-muted: var(--color-ui-muted);
 
   --color-ui-link: var(--color-ui-link);
   --color-ui-link-hover: var(--color-ui-link-hover);
@@ -63,12 +58,8 @@
   --color-ui-table-row-alt: var(--color-ui-table-row-alt);
   --color-ui-table-row-border: var(--color-ui-table-row-border);
 
-  --color-ui-badge-bg: var(--color-ui-badge-bg);
-  --color-ui-badge-text: var(--color-ui-badge-text);
   --color-ui-marker: var(--color-ui-marker);
-
-  --color-ui-accent-strong: var(--color-ui-accent-strong);
-  --color-ui-accent-soft: var(--color-ui-accent-soft);
+  --color-ui-h2-decor: var(--color-ui-h2-decor);
 }
 
 @theme {
@@ -156,9 +147,6 @@
        text/cta-text остаются тем, что переворачивается вместе с темой. */
     --color-ui-page-bg: var(--color-primary-300);
     --color-ui-header-bg: var(--color-primary-300);
-    /* Сайт без темы (или тема без явной ссылки — resolveRef решает "auto" сам)
-       выглядит как раньше: текст шапки — просто текст страницы. */
-    --color-ui-header-text: var(--color-surface-text);
     --color-ui-footer-bg: var(--color-primary-200);
     --color-ui-footer-bg-alt: var(--color-primary-300);
 
@@ -172,12 +160,8 @@
     --color-ui-input-bg: var(--color-primary-100);
     --color-ui-input-border: var(--color-primary-100);
 
-    --color-ui-highlight-bg: var(--color-active-100);
-    --color-ui-highlight-text: var(--color-primary-300);
-
     --color-ui-heading: var(--color-accent-200);
     --color-ui-text: var(--color-surface-text);
-    --color-ui-muted: var(--color-surface-muted);
 
     --color-ui-link: var(--color-active-200);
     --color-ui-link-hover: var(--color-active-300);
@@ -192,12 +176,8 @@
     --color-ui-table-row-alt: var(--color-primary-300);
     --color-ui-table-row-border: var(--color-primary-100);
 
-    --color-ui-badge-bg: var(--color-accent-200);
-    --color-ui-badge-text: var(--color-surface-on-brand);
     --color-ui-marker: var(--color-accent-200);
-
-    --color-ui-accent-strong: var(--color-accent-300);
-    --color-ui-accent-soft: var(--color-accent-100);
+    --color-ui-h2-decor: var(--color-accent-200);
   }
 
   /* Светлая тема. Переворачивается только нейтраль: шкала primary — это уже
@@ -492,7 +472,7 @@ button:not(:disabled),
   width: 44px;
   height: 3px;
   margin-top: 8px;
-  background: var(--color-ui-marker);
+  background: var(--color-ui-h2-decor);
 }
 
 #site[data-h2="left-rule"] #article h2 {
@@ -508,7 +488,7 @@ button:not(:disabled),
   margin-right: 10px;
   border-radius: 50%;
   vertical-align: middle;
-  background: var(--color-ui-marker);
+  background: var(--color-ui-h2-decor);
 }
 
 #site[data-h2="gradient"] #article h2,
@@ -516,7 +496,7 @@ button:not(:disabled),
   background: linear-gradient(
     90deg,
     var(--color-ui-heading),
-    var(--color-ui-marker)
+    var(--color-ui-h2-decor)
   );
   background-clip: text;
   color: transparent;
@@ -537,12 +517,12 @@ button:not(:disabled),
   letter-spacing: 0.12em;
   vertical-align: middle;
   font-family: var(--font-primary);
-  color: var(--color-ui-marker);
+  color: var(--color-ui-h2-decor);
 }
 
 #site[data-h2="line"] #article h2 {
   padding-bottom: 6px;
-  border-bottom: 2px solid var(--color-ui-marker);
+  border-bottom: 2px solid var(--color-ui-h2-decor);
 }
 
 #site[data-borders="0"] #article .border-ui-card-border,
@@ -569,33 +549,27 @@ button:not(:disabled),
     0 12px 34px color-mix(in srgb, var(--color-ui-cta-bg) 22%, transparent);
 }
 
-/* Текст шапки — всегда header-text (сама схема решает, «инвертирован» он
-   или нет: resolveRef подбирает контрастный цвет к header-bg). muted/
-   card-border/panel-border/input-bg — те же доли, что раньше давал
-   rgb(255 255 255 / …) поверх гарантированно тёмной подложки; color-mix
-   держит их верными и на светлом header-text. */
+/* Текст шапки — основной текст страницы: схема его отдельно не подбирает, и
+   тёмная шапка на светлом сайте провалит контраст — это видно в блоке
+   «Контраст» панели. card-border/panel-border/input-bg — те же доли, что
+   раньше давал rgb(255 255 255 / …) поверх гарантированно тёмной подложки;
+   color-mix держит их верными и при светлом тексте. */
 .site-header {
-  --color-ui-text: var(--color-ui-header-text);
-  --color-ui-heading: var(--color-ui-header-text);
-  --color-ui-link: var(--color-ui-header-text);
-  --color-ui-muted: color-mix(
-    in srgb,
-    var(--color-ui-header-text) 72%,
-    transparent
-  );
+  --color-ui-heading: var(--color-ui-text);
+  --color-ui-link: var(--color-ui-text);
   --color-ui-card-border: color-mix(
     in srgb,
-    var(--color-ui-header-text) 18%,
+    var(--color-ui-text) 18%,
     transparent
   );
   --color-ui-panel-border: color-mix(
     in srgb,
-    var(--color-ui-header-text) 22%,
+    var(--color-ui-text) 22%,
     transparent
   );
   --color-ui-input-bg: color-mix(
     in srgb,
-    var(--color-ui-header-text) 10%,
+    var(--color-ui-text) 10%,
     transparent
   );
 }

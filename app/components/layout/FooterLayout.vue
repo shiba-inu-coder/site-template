@@ -53,7 +53,7 @@
 
     <p
       v-if="copyright"
-      class="bg-ui-footer-bg-alt px-5 py-3 text-center text-step-9 text-ui-muted md:px-8"
+      class="bg-ui-footer-bg-alt px-5 py-3 text-center text-step-9 text-ui-text md:px-8"
     >
       {{ copyright }}
     </p>

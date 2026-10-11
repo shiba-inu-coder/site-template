@@ -33,9 +33,9 @@ Three things that are always bugs, and all three were in this repo:
 - a hover equal to its base (`bg-accent-200 hover:bg-accent-200`);
 - a hover that skips a step (`bg-active-300 hover:bg-active-100`).
 
-Text on a surface may use the 100 shade when 200 does not have the contrast — the bonus
-amount in `PostCasinoRatingBonus.vue` is `text-ui-accent-soft` (default `accent-100`) for
-exactly that reason. Family first, shade second.
+Text on a surface may use the 100 shade when 200 does not have the contrast. Family first,
+shade second. The rating score, the entity ribbon and the bonus amount follow the headings
+(`ui-heading`) rather than a shade of their own.
 
 ## Light and dark
 
@@ -104,47 +104,42 @@ brand or surface ref it resolves to, the same string `shared/utils/ui-theme.ts` 
 | `ui-footer-bg`     | `primary-200` | footer background                  |
 | `ui-footer-bg-alt` | `primary-300` | footer copyright line              |
 
-| Token               | Default       | Role                                              |
-| ------------------- | ------------- | ------------------------------------------------- |
-| `ui-card-bg`        | `primary-100` | `PostGridCards` boxed card, error page background |
-| `ui-card-border`    | `primary-300` | card border, bonus-icon border                    |
-| `ui-card-title`     | `accent-200`  | `PostGridCards` item title                        |
-| `ui-panel-bg`       | `primary-200` | rating/bonus card body, drawer, FAQ/pros-cons box |
-| `ui-panel-border`   | `primary-300` | panel/drawer/biography border                     |
-| `ui-input-bg`       | `primary-100` | form input background                             |
-| `ui-input-border`   | `primary-100` | form input border, small logo/divider borders     |
-| `ui-highlight-bg`   | `active-100`  | no consumer (see below)                           |
-| `ui-highlight-text` | `primary-300` | no consumer (see below)                           |
+| Token             | Default       | Role                                              |
+| ----------------- | ------------- | ------------------------------------------------- |
+| `ui-card-bg`      | `primary-100` | `PostGridCards` boxed card, error page background |
+| `ui-card-border`  | `primary-300` | card border, bonus-icon border                    |
+| `ui-card-title`   | `accent-200`  | `PostGridCards` item title                        |
+| `ui-panel-bg`     | `primary-200` | rating/bonus card body, drawer, FAQ/pros-cons box |
+| `ui-panel-border` | `primary-300` | panel/drawer/biography border                     |
+| `ui-input-bg`     | `primary-100` | form input background                             |
+| `ui-input-border` | `primary-100` | form input border, small logo/divider borders     |
 
-| Token           | Default            | Role                                                 |
-| --------------- | ------------------ | ---------------------------------------------------- |
-| `ui-heading`    | `accent-200`       | `#article h1`–`h6`, eyebrow labels, gift/bonus icons |
-| `ui-text`       | `surface-text`     | body text                                            |
-| `ui-muted`      | `surface-muted`    | secondary text (breadcrumb chevron, card hint)       |
-| `ui-link`       | `active-200`       | inline links, outline-button text/border             |
-| `ui-link-hover` | `active-300`       | hover/focus target for `ui-link`                     |
-| `ui-cta-bg`     | `active-200`       | solid CTA background (`PostButtonRef` solid)         |
-| `ui-cta-hover`  | `active-300`       | hover/focus target for `ui-cta-bg`                   |
-| `ui-cta-text`   | `surface-on-brand` | text/icon sitting on `ui-cta-bg`                     |
+| Token           | Default            | Role                                                                                                       |
+| --------------- | ------------------ | ---------------------------------------------------------------------------------------------------------- |
+| `ui-heading`    | `accent-200`       | `#article h1`–`h6`, eyebrow labels, gift/bonus icons, rating score, ribbon, mini-review tint, bonus amount |
+| `ui-text`       | `surface-text`     | body text, header text, captions and the copyright                                                         |
+| `ui-link`       | `active-200`       | inline links, outline-button text/border                                                                   |
+| `ui-link-hover` | `active-300`       | hover/focus target for `ui-link`                                                                           |
+| `ui-cta-bg`     | `active-200`       | solid CTA background (`PostButtonRef` solid)                                                               |
+| `ui-cta-hover`  | `active-300`       | hover/focus target for `ui-cta-bg`                                                                         |
+| `ui-cta-text`   | `surface-on-brand` | text/icon sitting on `ui-cta-bg`                                                                           |
 
-| Token                 | Default            | Role                                                                                           |
-| --------------------- | ------------------ | ---------------------------------------------------------------------------------------------- |
-| `ui-table-head-bg`    | `primary-300`      | `PostDataTable` head row                                                                       |
-| `ui-table-head-text`  | `surface-text`     | `PostDataTable` head row text                                                                  |
-| `ui-table-row`        | `primary-200`      | even data-table row                                                                            |
-| `ui-table-row-alt`    | `primary-300`      | odd row, row divider                                                                           |
-| `ui-table-row-border` | `primary-100`      | data-table outer border                                                                        |
-| `ui-badge-bg`         | `accent-200`       | author/position badge background                                                               |
-| `ui-badge-text`       | `surface-on-brand` | text on `ui-badge-bg`                                                                          |
-| `ui-marker`           | `accent-200`       | `#article` list markers, author avatar ring, `data-h2` decor                                   |
-| `ui-accent-strong`    | `accent-300`       | rating score, entity ribbon cutout                                                             |
-| `ui-accent-soft`      | `accent-100`       | bonus amount (needs the lighter shade for contrast — same reason as the old `text-accent-100`) |
+| Token                 | Default        | Role                                                                                  |
+| --------------------- | -------------- | ------------------------------------------------------------------------------------- |
+| `ui-table-head-bg`    | `primary-300`  | `PostDataTable` head row                                                              |
+| `ui-table-head-text`  | `surface-text` | `PostDataTable` head row text                                                         |
+| `ui-table-row`        | `primary-200`  | even data-table row                                                                   |
+| `ui-table-row-alt`    | `primary-300`  | odd row, row divider                                                                  |
+| `ui-table-row-border` | `primary-100`  | data-table outer border                                                               |
+| `ui-marker`           | `accent-200`   | `#article` list markers and numbers, author avatar ring, outline of the `glow` shadow |
+| `ui-h2-decor`         | `accent-200`   | `data-h2` decor: underline, dot, number, line, second colour of the gradient          |
 
-Two families exist only because the code did: `ui-highlight-*` was `PostButtonRef`'s `soft`
-variant, and nothing reads it since that variant went. The token stays because the panel's
-scheme editor writes it, and dropping it is an edit on both sides. `ui-accent-strong`/`ui-accent-soft` split
-`accent-300`/`accent-100` out from `ui-heading` (`accent-200`) the same way the brand family
-itself splits by shade — same hue, different weight, independently tunable later.
+`ui-h2-decor` was split off `ui-marker`. A stored scheme without it paints the decor with its own
+`marker` (`resolveScheme`), not with the default, so a site whose operator recoloured the
+markers does not get an H2 decor of another colour after an update. The scheme used to carry
+eight more keys — `highlight-*`, `badge-*`, `muted`, `header-text`, `accent-strong`,
+`accent-soft`; a stored theme that still has them resolves fine, the loop in `resolveScheme`
+never looks at them.
 
 ### `/* UI scheme */` is the default wiring, the runtime theme overrides it
 
@@ -157,7 +152,7 @@ Tailwind class would. There is no separate machine check for either yet.
 Every `--color-ui-*` value is a `var(--color-<family>-<shade>)` or `var(--color-surface-*)`
 reference, never a literal hex — that's what makes the scheme swappable later without
 touching the nine brand values themselves. `:root[data-theme="light"]` is untouched by this
-layer: `ui-text`/`ui-muted`/`ui-cta-text` resolve through `surface-*`, which is what already
+layer: `ui-text`/`ui-cta-text` resolve through `surface-*`, which is what already
 flips with the theme.
 
 ### `settings.uiTheme`
@@ -388,9 +383,9 @@ the page is always breadcrumbs, the date line and one column of sections, and a 
 contents is only the `table-content` block in the text. Posts written for sites below v1.11.0
 still carry `frame.hero`/`sidebar`/`width` in the database — the panel keeps them on save for
 those sites — and this template does not read them. `headerInverted`, `heroStyle` and `bands`
-are long gone too: header text always resolves through the `header-text` scheme token
-(`resolveRef` picks a colour that contrasts with `header-bg` on its own), and sections are
-never banded. `resolvePageFrame(theme, postFrame)` (`shared/utils/ui-theme.ts`) takes the
+are long gone too: header text is the ordinary `ui-text` scheme token (a dark header on a
+light site has to say so in the panel's contrast block, nothing picks a colour for it), and
+sections are never banded. `resolvePageFrame(theme, postFrame)` (`shared/utils/ui-theme.ts`) takes the
 width from the theme and sticky from the post, dropping a value that isn't one of the axis's
 own — old data, a typo — rather than let it reach the CSS; `useUiTheme().frameAttrs` then
 turns the result into `data-*` attributes on the page root — `<div id="site">` in
@@ -436,11 +431,11 @@ Where the frame parts are drawn:
   `position` (left / centre / right), each item drawn by `HeaderNavItem.vue`. "Logo on the
   left, login and register on the right" is what the items say, not a variant — another page
   or button is an edit in the panel's header constructor. There is no `headerInverted` axis
-  any more: `.site-header` always sets its text/heading/link colour from the `header-text`
-  scheme token, and `resolveRef` picks that token's colour to contrast with `header-bg` on
-  its own — the white-over-brand-surface look an inverted header used to force by hand now
-  falls out of the scheme automatically. A `frame.header`/`frame.headerInverted` still stored
-  in an older theme record is not read.
+  any more: `.site-header` takes its text, heading and link colour from the ordinary `ui-text`
+  scheme token. Nothing picks a contrasting colour for it, so a header whose background is
+  the opposite of the page (dark on a light site) fails the contrast block in the panel
+  rather than fixing itself. A `frame.header`/`frame.headerInverted` still stored in an
+  older theme record is not read.
   **On a phone the header is one row and never wider than the screen.** Nothing is hidden:
   below `md` the buttons lose most of their side padding (`px-4` instead of `px-7`), gaps
   drop to `gap-2`, and an empty group is `max-md:empty:hidden` so it does not cost a gap.

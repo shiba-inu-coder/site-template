@@ -90,14 +90,14 @@ const CARDS_CELL: Record<DataTableCellKind, string> = {
   logo: "max-sm:block max-sm:border-b-0 max-sm:pb-2 max-sm:text-center",
   button: "max-sm:block max-sm:border-b-0 max-sm:pt-2 max-sm:[&_a]:w-full",
   labeled:
-    "max-sm:flex max-sm:items-center max-sm:justify-between max-sm:gap-3 max-sm:border-b-0 max-sm:border-t max-sm:border-ui-table-row-alt max-sm:first:border-t-0 max-sm:text-right max-sm:before:shrink-0 max-sm:before:text-left max-sm:before:text-ui-muted max-sm:before:content-[attr(data-label)]",
+    "max-sm:flex max-sm:items-center max-sm:justify-between max-sm:gap-3 max-sm:border-b-0 max-sm:border-t max-sm:border-ui-table-row-alt max-sm:first:border-t-0 max-sm:text-right max-sm:before:shrink-0 max-sm:before:text-left max-sm:before:text-ui-text max-sm:before:content-[attr(data-label)]",
   plain: "max-sm:block max-sm:border-b-0",
 };
 
 const HEAD_CLASSES: Record<string, string> = {
   solid: "bg-ui-table-head-bg text-ui-table-head-text",
   subtle:
-    "text-ui-muted uppercase tracking-wide border-b-2 border-ui-table-row-border",
+    "text-ui-text uppercase tracking-wide border-b-2 border-ui-table-row-border",
   none: "",
 };
 

@@ -10,7 +10,7 @@
       {{ bonusTitle }}
     </span>
     <span
-      class="text-ui-accent-soft font-bold text-step-4 text-center flex justify-center items-center px-1.5"
+      class="text-ui-heading font-bold text-step-4 text-center flex justify-center items-center px-1.5"
       >{{ bonusText }}</span
     >
   </div>

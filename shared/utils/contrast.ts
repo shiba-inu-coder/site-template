@@ -52,7 +52,7 @@ export interface ContrastPairDef {
   required: boolean;
 }
 
-// Семь обязательных пар — гейт пресета (`ui-presets.test.js`, 1e/6a). Ещё
+// Шесть обязательных пар — гейт пресета (`ui-presets.test.js`, 1e/6a). Ещё
 // четыре информационные: не блокируют пресет, но входят в отчёт, потому что
 // у них тоже случается text-on-text.
 export const CONTRAST_PAIRS: ContrastPairDef[] = [
@@ -89,13 +89,6 @@ export const CONTRAST_PAIRS: ContrastPairDef[] = [
     label: "Ссылка на странице",
     fg: "link",
     bg: "page-bg",
-    required: true,
-  },
-  {
-    id: "badge-text-badge-bg",
-    label: "Текст бейджа",
-    fg: "badge-text",
-    bg: "badge-bg",
     required: true,
   },
   {

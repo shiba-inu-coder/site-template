@@ -1,7 +1,7 @@
 <template>
   <div
     v-if="data"
-    class="bg-ui-accent-strong/10 rounded-primary px-3 py-4 border-2 border-ui-card-border no-format"
+    class="bg-ui-heading/10 rounded-primary px-3 py-4 border-2 border-ui-card-border no-format"
   >
     <div v-html="safeHTMLWrap(data.title)"></div>
 

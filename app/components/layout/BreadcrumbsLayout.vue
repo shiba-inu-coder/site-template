@@ -26,7 +26,7 @@
         </span>
         <svg-icon
           v-if="index !== items.length - 1"
-          class="mx-2 size-5 rotate-90 text-ui-muted"
+          class="mx-2 size-5 rotate-90 text-ui-text"
           name="client/chevron-up"
         />
       </li>

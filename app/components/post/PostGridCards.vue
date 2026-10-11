@@ -38,7 +38,7 @@
         </div>
         <span
           v-if="item.title"
-          class="p-3 text-step-8 text-ui-muted"
+          class="p-3 text-step-8 text-ui-text"
           v-html="safeHTMLWrap(item.title)"
         ></span>
       </component>

@@ -15,7 +15,7 @@
       <b class="block truncate text-step-8 text-ui-heading">{{ bonus }}</b>
       <span
         v-if="terms"
-        class="block truncate text-ui-muted"
+        class="block truncate text-ui-text"
         >{{ terms }}</span
       >
     </div>
