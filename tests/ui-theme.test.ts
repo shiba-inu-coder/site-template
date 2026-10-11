@@ -9,6 +9,7 @@ import {
   resolveScheme,
   googleFontsHref,
   DEFAULT_UI_THEME_DARK,
+  UI_TOKENS,
 } from "../shared/utils/ui-theme.ts";
 import type { SectionBgToken } from "../shared/utils/ui-theme.ts";
 
@@ -70,35 +71,55 @@ test("themeToCssVars: без цветов своих переменных бре
   assert.doesNotMatch(css, /--color-(primary|active|accent)-/);
 });
 
-const withHeaderBg = (
-  headerBg: string,
-  overrides: Record<string, string> = {},
-) => ({
-  ...DEFAULT_UI_THEME_DARK,
-  scheme: {
-    ...DEFAULT_UI_THEME_DARK.scheme,
-    "header-bg": headerBg,
-    ...overrides,
-  },
+test("resolveScheme: старая схема с удалёнными ключами резолвится без них", () => {
+  const resolved = resolveScheme({
+    ...DEFAULT_UI_THEME_DARK,
+    scheme: {
+      ...DEFAULT_UI_THEME_DARK.scheme,
+      "header-text": "auto",
+      muted: "surface-muted",
+      "badge-bg": "accent-200",
+      "accent-soft": "accent-100",
+    } as typeof DEFAULT_UI_THEME_DARK.scheme,
+  });
+
+  assert.deepEqual(Object.keys(resolved), [...UI_TOKENS]);
+  assert.equal(resolved.text, "#ffffff");
 });
 
-test("header-text: auto даёт белый на тёмном header-bg", () => {
-  const resolved = resolveScheme(withHeaderBg("#0f172a"));
+test("resolveScheme: h2-decor без записи наследует marker, а не дефолт", () => {
+  const { "h2-decor": _decor, ...withoutDecor } = DEFAULT_UI_THEME_DARK.scheme;
+  const resolved = resolveScheme({
+    ...DEFAULT_UI_THEME_DARK,
+    scheme: {
+      ...withoutDecor,
+      marker: "#ff0000",
+    } as typeof DEFAULT_UI_THEME_DARK.scheme,
+  });
 
-  assert.equal(resolved["header-text"], "#ffffff");
+  assert.equal(resolved["h2-decor"], "#ff0000");
 });
 
-test("header-text: auto даёт #0f172a на светлом header-bg", () => {
-  const resolved = resolveScheme(withHeaderBg("#ffffff"));
+test("resolveScheme: явный h2-decor важнее marker", () => {
+  const resolved = resolveScheme({
+    ...DEFAULT_UI_THEME_DARK,
+    scheme: {
+      ...DEFAULT_UI_THEME_DARK.scheme,
+      marker: "#ff0000",
+      "h2-decor": "#00ff00",
+    },
+  });
 
-  assert.equal(resolved["header-text"], "#0f172a");
+  assert.equal(resolved["h2-decor"], "#00ff00");
 });
 
-test("header-text: явный primary-100 резолвится в свой цвет", () => {
-  const theme = withHeaderBg("#0f172a", { "header-text": "primary-100" });
-  const resolved = resolveScheme(theme);
+test("resolveScheme: без marker и h2-decor декор берёт дефолт", () => {
+  const resolved = resolveScheme({
+    ...DEFAULT_UI_THEME_DARK,
+    scheme: {} as typeof DEFAULT_UI_THEME_DARK.scheme,
+  });
 
-  assert.equal(resolved["header-text"], theme.colors.primary[100]);
+  assert.equal(resolved["h2-decor"], DEFAULT_UI_THEME_DARK.colors.accent[200]);
 });
 
 const withFonts = (body: string, display = body) => ({

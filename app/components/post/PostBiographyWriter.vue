@@ -19,7 +19,7 @@
       }}</span>
       <span
         v-if="writer.position"
-        class="block text-step-9 text-ui-muted"
+        class="block text-step-9 text-ui-text"
         >{{ writer.position }}</span
       >
       <p

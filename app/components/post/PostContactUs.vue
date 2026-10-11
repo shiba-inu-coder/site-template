@@ -8,7 +8,7 @@
     </h3>
     <p
       v-if="strings.subtitle"
-      class="mt-0 mb-5 text-center text-step-7 text-ui-muted"
+      class="mt-0 mb-5 text-center text-step-7 text-ui-text"
     >
       {{ strings.subtitle }}
     </p>

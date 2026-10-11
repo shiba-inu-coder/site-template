@@ -22,7 +22,7 @@
     calc(100% - var(--r)) 100%,
     -100vw 100%
   );
-  border-image: conic-gradient(var(--color-ui-accent-strong) 0 0) fill 0;
+  border-image: conic-gradient(var(--color-ui-heading) 0 0) fill 0;
   width: fit-content;
 }
 </style>

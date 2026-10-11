@@ -1,7 +1,6 @@
 // Чистый модуль: без импортов из Nuxt/Vue и без auto-import. Схема темы
 // читается и панелью (appspro), и этим сайтом, и превью — там, где Nuxt не
 // поднят вовсе.
-import { contrastRatio } from "./contrast.ts";
 
 export type UiThemeMode = "dark" | "light";
 
@@ -25,7 +24,6 @@ export type UiSurfaceToken = "text" | "muted" | "raised" | "on-brand";
 export const UI_TOKENS = [
   "page-bg",
   "header-bg",
-  "header-text",
   "footer-bg",
   "footer-bg-alt",
 
@@ -39,12 +37,8 @@ export const UI_TOKENS = [
   "input-bg",
   "input-border",
 
-  "highlight-bg",
-  "highlight-text",
-
   "heading",
   "text",
-  "muted",
 
   "link",
   "link-hover",
@@ -59,12 +53,8 @@ export const UI_TOKENS = [
   "table-row-alt",
   "table-row-border",
 
-  "badge-bg",
-  "badge-text",
   "marker",
-
-  "accent-strong",
-  "accent-soft",
+  "h2-decor",
 ] as const;
 
 export type UiToken = (typeof UI_TOKENS)[number];
@@ -155,7 +145,6 @@ export interface UiTheme {
 export const DEFAULT_UI_SCHEME: UiScheme = {
   "page-bg": "primary-300",
   "header-bg": "primary-300",
-  "header-text": "auto",
   "footer-bg": "primary-200",
   "footer-bg-alt": "primary-300",
 
@@ -169,12 +158,8 @@ export const DEFAULT_UI_SCHEME: UiScheme = {
   "input-bg": "primary-100",
   "input-border": "primary-100",
 
-  "highlight-bg": "active-100",
-  "highlight-text": "primary-300",
-
   heading: "accent-200",
   text: "surface-text",
-  muted: "surface-muted",
 
   link: "active-200",
   "link-hover": "active-300",
@@ -189,12 +174,8 @@ export const DEFAULT_UI_SCHEME: UiScheme = {
   "table-row-alt": "primary-300",
   "table-row-border": "primary-100",
 
-  "badge-bg": "accent-200",
-  "badge-text": "surface-on-brand",
   marker: "accent-200",
-
-  "accent-strong": "accent-300",
-  "accent-soft": "accent-100",
+  "h2-decor": "accent-200",
 };
 
 // Нейтральный слой по режиму — те же пары, что `:root` / `:root[data-theme="light"]`
@@ -216,20 +197,7 @@ const SURFACE_BY_MODE: Record<UiThemeMode, Record<UiSurfaceToken, string>> = {
 
 const BRAND_FAMILIES = ["primary", "active", "accent"] as const;
 
-// header-text: "auto" сравнивает контраст с уже резолвленным header-bg —
-// порядок в UI_TOKENS (header-bg раньше header-text) это гарантирует.
-const resolveRef = (
-  ref: UiSchemeRef,
-  theme: UiTheme,
-  resolved: Partial<Record<UiToken, string>>,
-): string => {
-  if (ref === "auto") {
-    const bg = resolved["header-bg"] as string;
-    return contrastRatio("#ffffff", bg) >= contrastRatio("#0f172a", bg)
-      ? "#ffffff"
-      : "#0f172a";
-  }
-
+const resolveRef = (ref: UiSchemeRef, theme: UiTheme): string => {
   if (ref.startsWith("#")) {
     return ref;
   }
@@ -288,13 +256,20 @@ export const resolvePageFrame = (
 });
 
 // `scheme` может не покрывать все токены (старая запись до добавления нового
-// токена) — недостающие достраиваются дефолтом, а не роняют резолв.
+// токена) — недостающие достраиваются дефолтом, а не роняют резолв. Лишние
+// ключи (удалённые токены старой записи) обход по `UI_TOKENS` не видит.
+// `h2-decor` в записи до его появления красился по `marker`, так что без явного
+// значения он наследует маркер, а не дефолт: сайт, где оператор перекрасил
+// маркеры, не должен после обновления получить декор H2 другого цвета.
 export const resolveScheme = (theme: UiTheme): Record<UiToken, string> => {
   const result = {} as Record<UiToken, string>;
 
   for (const token of UI_TOKENS) {
-    const ref = theme.scheme?.[token] ?? DEFAULT_UI_SCHEME[token];
-    result[token] = resolveRef(ref, theme, result);
+    const ref =
+      theme.scheme?.[token] ??
+      (token === "h2-decor" ? theme.scheme?.marker : undefined) ??
+      DEFAULT_UI_SCHEME[token];
+    result[token] = resolveRef(ref, theme);
   }
 
   return result;

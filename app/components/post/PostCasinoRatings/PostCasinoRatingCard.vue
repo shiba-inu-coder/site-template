@@ -68,7 +68,7 @@
         </span>
         <!-- Button More Info  -->
         <button
-          class="mt-3 py-2 bg-ui-panel-bg text-step-8 text-ui-muted hover:text-ui-text transition duration-500 ease-in-out flex items-center justify-center gap-x-2 rounded-b-primary"
+          class="mt-3 py-2 bg-ui-panel-bg text-step-8 text-ui-text flex items-center justify-center gap-x-2 rounded-b-primary"
           @click="toggle(true)"
         >
           <span>{{ siteConfig.translates.btnMoreInfo }}</span>
