@@ -52,7 +52,11 @@ const needsContent = computed(() =>
 );
 
 const stickyVariant = computed(() =>
-  pickVariant(["none", "bar", "button"] as const, "none", frame.value.sticky),
+  pickVariant(
+    ["none", "bar", "bar-float", "button"] as const,
+    "none",
+    frame.value.sticky,
+  ),
 );
 
 const SITE_URL = computed(() => useRuntimeConfig().public.SITE_URL);

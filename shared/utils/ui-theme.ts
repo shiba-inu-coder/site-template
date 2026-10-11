@@ -104,7 +104,7 @@ export interface UiFrame {
 }
 
 export interface PostFrame {
-  sticky?: "none" | "bar" | "button";
+  sticky?: "none" | "bar" | "bar-float" | "button";
 }
 
 export type PageFrame = UiFrame & PostFrame;
@@ -266,7 +266,7 @@ export const isUiThemeConfigured = (
   );
 
 const WIDTH_VALUES = ["narrow", "wide"] as const;
-const STICKY_VALUES = ["none", "bar", "button"] as const;
+const STICKY_VALUES = ["none", "bar", "bar-float", "button"] as const;
 
 const knownOrUndefined = <T extends string>(
   allowed: readonly T[],

@@ -402,7 +402,7 @@ would otherwise lose the frame.
 | `data-borders`          | `uiTheme.geometry.borders`      | `0` / `1` / `2`                                                 | `1`             |
 | `data-shadow`           | `uiTheme.geometry.shadow`       | `none` / `soft` / `glow`                                        | `none`          |
 | `data-width`            | `uiTheme.frame.width`           | `narrow` / `wide`                                               | `wide`          |
-| `data-sticky`           | **post** `frame.sticky`         | `none` / `bar` / `button`                                       | `none`          |
+| `data-sticky`           | **post** `frame.sticky`         | `none` / `bar` / `bar-float` / `button`                         | `none`          |
 | `data-h2`               | `uiTheme.decor.h2`              | `none`/`underline`/`left-rule`/`dot`/`gradient`/`number`/`line` | `none`          |
 | `data-section-bg-width` | `uiTheme.decor.sectionBg.width` | `container` / `full`                                            | none            |
 
@@ -457,7 +457,10 @@ Where the frame parts are drawn:
 - **Sticky CTA** — `StickyCtaLayout.vue`, phone only, `bar` (bonus line plus button) or
   `button`, from the post's own `frame.sticky`. It **replaced `BonusLayout.vue`**, the
   floating gift that used to sit in the corner of every page; a page with no `frame.sticky`
-  now shows nothing there.
+  now shows nothing there. `bar-float` is `bar` detached from the screen edge: inset by
+  `0.5rem`, rounded, with a border and a shadow. The back-to-top button is `fixed` too and
+  would sit under the bar, so `tailwind.css` lifts `.site-fast-up` above it per `data-sticky`
+  value; the footer gets matching bottom padding.
 - **Breadcrumbs** — `BreadcrumbsLayout.vue`, one look: text links (`ui-link`) separated by a
   chevron, the current page as plain `ui-text` with no link. The first crumb is always the
   home page labelled with the brand name, `site.name`: the server takes that label from the

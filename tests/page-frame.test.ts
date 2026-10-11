@@ -12,6 +12,12 @@ test("resolvePageFrame: ширина с темы, sticky с поста", () => {
   assert.deepEqual(frame, { width: "narrow", sticky: "bar" });
 });
 
+test("resolvePageFrame: плавающая панель проходит", () => {
+  const frame = resolvePageFrame(null, { sticky: "bar-float" });
+
+  assert.equal(frame.sticky, "bar-float");
+});
+
 test("resolvePageFrame: ширина старой эпохи на посте не читается", () => {
   const frame = resolvePageFrame(
     null,
