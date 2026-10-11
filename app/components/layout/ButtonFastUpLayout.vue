@@ -2,7 +2,7 @@
   <PostShowOnScroll>
     <button
       type="button"
-      class="bg-ui-panel-bg border-2 border-ui-link group hover:border-ui-link-hover transition duration-500 ease-in-out rounded-full fixed right-5 bottom-[3%] z-20 size-15 lg:h-14 lg:w-14 flex items-center justify-center outline-none cursor-pointer"
+      class="site-fast-up bg-ui-panel-bg border-2 border-ui-link group hover:border-ui-link-hover transition duration-500 ease-in-out rounded-full fixed right-5 bottom-[3%] z-20 size-15 lg:h-14 lg:w-14 flex items-center justify-center outline-none cursor-pointer"
       @click="onClick"
     >
       <svg-icon

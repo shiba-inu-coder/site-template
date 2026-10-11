@@ -607,4 +607,18 @@ button:not(:disabled),
   #site[data-sticky="button"] .site-footer {
     padding-bottom: 4.5rem;
   }
+
+  #site[data-sticky="bar-float"] .site-footer {
+    padding-bottom: 5.5rem;
+  }
+
+  /* Кнопка «вверх» fixed, как и панель, и без сдвига панель её закрывает. */
+  #site[data-sticky="bar"] .site-fast-up,
+  #site[data-sticky="button"] .site-fast-up {
+    bottom: 4.75rem;
+  }
+
+  #site[data-sticky="bar-float"] .site-fast-up {
+    bottom: 5.25rem;
+  }
 }
