@@ -53,7 +53,7 @@ export interface ContrastPairDef {
 }
 
 // Шесть обязательных пар — гейт пресета (`ui-presets.test.js`, 1e/6a). Ещё
-// четыре информационные: не блокируют пресет, но входят в отчёт, потому что
+// восемь информационных: не блокируют пресет, но входят в отчёт, потому что
 // у них тоже случается text-on-text.
 export const CONTRAST_PAIRS: ContrastPairDef[] = [
   {
@@ -124,6 +124,34 @@ export const CONTRAST_PAIRS: ContrastPairDef[] = [
     label: "Текст на панели",
     fg: "text",
     bg: "panel-bg",
+    required: false,
+  },
+  {
+    id: "header-text-header-bg",
+    label: "Текст шапки",
+    fg: "header-text",
+    bg: "header-bg",
+    required: false,
+  },
+  {
+    id: "footer-text-footer-bg",
+    label: "Текст подвала",
+    fg: "footer-text",
+    bg: "footer-bg",
+    required: false,
+  },
+  {
+    id: "footer-text-footer-bg-alt",
+    label: "Текст строки копирайта",
+    fg: "footer-text",
+    bg: "footer-bg-alt",
+    required: false,
+  },
+  {
+    id: "table-btn-text-bg",
+    label: "Текст кнопки таблицы",
+    fg: "table-btn-text",
+    bg: "table-btn-bg",
     required: false,
   },
 ];

@@ -51,13 +51,16 @@ export const UiThemeSchema = new Schema(
       },
       body: {
         family: { type: String },
+        weight: { type: Number },
       },
     },
 
     geometry: {
       radius: { type: String },
+      // Свободная CSS-длина ("0", "1px", "0.1rem"); `borders` 0/1/2 — записи
+      // до 1.16.0, которые панель ещё не пересохранила.
+      borderWidth: { type: String },
       borders: { type: Number, enum: [0, 1, 2] },
-      shadow: { type: String, enum: ["none", "soft", "glow"] },
       // Свободные CSS-длины, не enum — та же причина, что у radius.
       blockGap: { type: String },
       paragraphGap: { type: String },

@@ -90,7 +90,7 @@ const CARDS_CELL: Record<DataTableCellKind, string> = {
   logo: "max-sm:block max-sm:border-b-0 max-sm:pb-2 max-sm:text-center",
   button: "max-sm:block max-sm:border-b-0 max-sm:pt-2 max-sm:[&_a]:w-full",
   labeled:
-    "max-sm:flex max-sm:items-center max-sm:justify-between max-sm:gap-3 max-sm:border-b-0 max-sm:border-t max-sm:border-ui-table-row-alt max-sm:first:border-t-0 max-sm:text-right max-sm:before:shrink-0 max-sm:before:text-left max-sm:before:text-ui-text max-sm:before:content-[attr(data-label)]",
+    "max-sm:flex max-sm:items-center max-sm:justify-between max-sm:gap-3 max-sm:border-b-0 max-sm:border-t max-sm:border-ui-table-row-border max-sm:first:border-t-0 max-sm:text-right max-sm:before:shrink-0 max-sm:before:text-left max-sm:before:text-ui-text max-sm:before:content-[attr(data-label)]",
   plain: "max-sm:block max-sm:border-b-0",
 };
 
@@ -127,5 +127,5 @@ const rowClasses = (index: number) =>
   striped && index % 2 !== 0 ? "bg-ui-table-row-alt" : "bg-ui-table-row";
 
 const borderClass = (index: number) =>
-  rows.length - 1 !== index ? "border-b border-ui-table-row-alt" : undefined;
+  rows.length - 1 !== index ? "border-b border-ui-table-row-border" : undefined;
 </script>

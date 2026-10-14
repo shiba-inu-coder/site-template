@@ -227,7 +227,7 @@
         },
         "updatedAt": "2026-09-27T09:25:27.768Z"
       },
-      "output": ":root {\n  --color-primary-300: #0e0f20;\n  --color-primary-200: #1a1c33;\n  --color-primary-100: #2b2e4a;\n  --color-active-300: #b8860b;\n  --color-active-200: #daa520;\n  --color-active-100: #f0c75e;\n  --color-accent-300: #8b0000;\n  --color-accent-200: #b22222;\n  --color-accent-100: #dc5c5c;\n  --color-ui-page-bg: #0e0f20;\n  --color-ui-header-bg: #0e0f20;\n  --color-ui-footer-bg: #1a1c33;\n  --color-ui-footer-bg-alt: #0e0f20;\n  --color-ui-card-bg: #2b2e4a;\n  --color-ui-card-border: #0e0f20;\n  --color-ui-card-title: #b22222;\n  --color-ui-panel-bg: #1a1c33;\n  --color-ui-panel-border: #0e0f20;\n  --color-ui-input-bg: #2b2e4a;\n  --color-ui-input-border: #2b2e4a;\n  --color-ui-heading: #b22222;\n  --color-ui-text: #ffffff;\n  --color-ui-link: #daa520;\n  --color-ui-link-hover: #b8860b;\n  --color-ui-cta-bg: #daa520;\n  --color-ui-cta-hover: #b8860b;\n  --color-ui-cta-text: #0f172a;\n  --color-ui-table-head-bg: #0e0f20;\n  --color-ui-table-head-text: #ffffff;\n  --color-ui-table-row: #1a1c33;\n  --color-ui-table-row-alt: #0e0f20;\n  --color-ui-table-row-border: #2b2e4a;\n  --color-ui-marker: #b22222;\n  --color-ui-h2-decor: #b22222;\n  --radius-primary: 0.75rem;\n  --font-primary: \"Raleway\", sans-serif;\n  --font-heading: \"Pinyon Script\", sans-serif;\n  --font-heading-weight: 700;\n  --font-heading-tracking: 0.02em;\n  --block-gap: 24px;\n  --paragraph-gap: 12px;\n  --ui-section-bg: #1a1c33;\n}"
+      "output": ":root {\n  --color-primary-300: #0e0f20;\n  --color-primary-200: #1a1c33;\n  --color-primary-100: #2b2e4a;\n  --color-active-300: #b8860b;\n  --color-active-200: #daa520;\n  --color-active-100: #f0c75e;\n  --color-accent-300: #8b0000;\n  --color-accent-200: #b22222;\n  --color-accent-100: #dc5c5c;\n  --color-ui-page-bg: #0e0f20;\n  --color-ui-header-bg: #0e0f20;\n  --color-ui-header-text: #0f172a;\n  --color-ui-footer-bg: #1a1c33;\n  --color-ui-footer-bg-alt: #0e0f20;\n  --color-ui-footer-text: #0f172a;\n  --color-ui-card-bg: #2b2e4a;\n  --color-ui-card-border: #0e0f20;\n  --color-ui-card-title: #b22222;\n  --color-ui-panel-bg: #1a1c33;\n  --color-ui-panel-border: #0e0f20;\n  --color-ui-input-bg: #2b2e4a;\n  --color-ui-input-border: #2b2e4a;\n  --color-ui-heading: #b22222;\n  --color-ui-text: #0f172a;\n  --color-ui-link: #daa520;\n  --color-ui-link-hover: #b8860b;\n  --color-ui-cta-bg: #daa520;\n  --color-ui-cta-hover: #b8860b;\n  --color-ui-cta-text: #ffffff;\n  --color-ui-table-head-bg: #0e0f20;\n  --color-ui-table-head-text: #0f172a;\n  --color-ui-table-row: #1a1c33;\n  --color-ui-table-row-alt: #0e0f20;\n  --color-ui-table-row-border: #2b2e4a;\n  --color-ui-table-btn-bg: #daa520;\n  --color-ui-table-btn-hover: #b8860b;\n  --color-ui-table-btn-text: #ffffff;\n  --color-ui-marker: #b22222;\n  --color-ui-h2-decor: #b22222;\n  --radius-primary: 0.75rem;\n  --font-primary: \"Raleway\", sans-serif;\n  --font-heading: \"Pinyon Script\", sans-serif;\n  --font-heading-weight: 700;\n  --font-heading-tracking: 0.02em;\n  --block-gap: 24px;\n  --paragraph-gap: 12px;\n}"
     },
     {
       "theme": {
@@ -269,7 +269,7 @@
         "decor": {},
         "updatedAt": "2026-09-27T09:25:27.768Z"
       },
-      "output": ":root {\n  --color-primary-300: #0e0f20;\n  --color-primary-200: #1a1c33;\n  --color-primary-100: #2b2e4a;\n  --color-active-300: #b8860b;\n  --color-active-200: #daa520;\n  --color-active-100: #f0c75e;\n  --color-accent-300: #8b0000;\n  --color-accent-200: #b22222;\n  --color-accent-100: #dc5c5c;\n  --color-ui-page-bg: #0e0f20;\n  --color-ui-header-bg: #ff0000ff;\n  --color-ui-footer-bg: #1a1c33;\n  --color-ui-footer-bg-alt: #0e0f20;\n  --color-ui-card-bg: #2b2e4a;\n  --color-ui-card-border: #0e0f20;\n  --color-ui-card-title: #b22222;\n  --color-ui-panel-bg: #1a1c33;\n  --color-ui-panel-border: #0e0f20;\n  --color-ui-input-bg: #2b2e4a;\n  --color-ui-input-border: #2b2e4a;\n  --color-ui-heading: #b22222;\n  --color-ui-text: #0f172a;\n  --color-ui-link: #daa520;\n  --color-ui-link-hover: #b8860b;\n  --color-ui-cta-bg: #daa520;\n  --color-ui-cta-hover: #b8860b;\n  --color-ui-cta-text: #ffffff;\n  --color-ui-table-head-bg: #0e0f20;\n  --color-ui-table-head-text: #0f172a;\n  --color-ui-table-row: #1a1c33;\n  --color-ui-table-row-alt: #0e0f20;\n  --color-ui-table-row-border: #2b2e4a;\n  --color-ui-marker: #b22222;\n  --color-ui-h2-decor: #b22222;\n}"
+      "output": ":root {\n  --color-primary-300: #0e0f20;\n  --color-primary-200: #1a1c33;\n  --color-primary-100: #2b2e4a;\n  --color-active-300: #b8860b;\n  --color-active-200: #daa520;\n  --color-active-100: #f0c75e;\n  --color-accent-300: #8b0000;\n  --color-accent-200: #b22222;\n  --color-accent-100: #dc5c5c;\n  --color-ui-page-bg: #0e0f20;\n  --color-ui-header-bg: #ff0000ff;\n  --color-ui-header-text: #0f172a;\n  --color-ui-footer-bg: #1a1c33;\n  --color-ui-footer-bg-alt: #0e0f20;\n  --color-ui-footer-text: #0f172a;\n  --color-ui-card-bg: #2b2e4a;\n  --color-ui-card-border: #0e0f20;\n  --color-ui-card-title: #b22222;\n  --color-ui-panel-bg: #1a1c33;\n  --color-ui-panel-border: #0e0f20;\n  --color-ui-input-bg: #2b2e4a;\n  --color-ui-input-border: #2b2e4a;\n  --color-ui-heading: #b22222;\n  --color-ui-text: #0f172a;\n  --color-ui-link: #daa520;\n  --color-ui-link-hover: #b8860b;\n  --color-ui-cta-bg: #daa520;\n  --color-ui-cta-hover: #b8860b;\n  --color-ui-cta-text: #ffffff;\n  --color-ui-table-head-bg: #0e0f20;\n  --color-ui-table-head-text: #0f172a;\n  --color-ui-table-row: #1a1c33;\n  --color-ui-table-row-alt: #0e0f20;\n  --color-ui-table-row-border: #2b2e4a;\n  --color-ui-table-btn-bg: #daa520;\n  --color-ui-table-btn-hover: #b8860b;\n  --color-ui-table-btn-text: #ffffff;\n  --color-ui-marker: #b22222;\n  --color-ui-h2-decor: #b22222;\n}"
     },
     {
       "theme": {
@@ -351,7 +351,116 @@
         },
         "updatedAt": "2026-09-27T09:25:27.768Z"
       },
-      "output": ":root {\n  --color-primary-300: #0e0f20;\n  --color-primary-200: #1a1c33;\n  --color-primary-100: #2b2e4a;\n  --color-active-300: #b8860b;\n  --color-active-200: #daa520;\n  --color-active-100: #f0c75e;\n  --color-accent-300: #8b0000;\n  --color-accent-200: #b22222;\n  --color-accent-100: #dc5c5c;\n  --color-ui-page-bg: #0e0f20;\n  --color-ui-header-bg: #0e0f20;\n  --color-ui-footer-bg: #1a1c33;\n  --color-ui-footer-bg-alt: #0e0f20;\n  --color-ui-card-bg: #2b2e4a;\n  --color-ui-card-border: #0e0f20;\n  --color-ui-card-title: #b22222;\n  --color-ui-panel-bg: #1a1c33;\n  --color-ui-panel-border: #0e0f20;\n  --color-ui-input-bg: #2b2e4a;\n  --color-ui-input-border: #2b2e4a;\n  --color-ui-heading: #b22222;\n  --color-ui-text: #ffffff;\n  --color-ui-link: #daa520;\n  --color-ui-link-hover: #b8860b;\n  --color-ui-cta-bg: #daa520;\n  --color-ui-cta-hover: #b8860b;\n  --color-ui-cta-text: #0f172a;\n  --color-ui-table-head-bg: #0e0f20;\n  --color-ui-table-head-text: #ffffff;\n  --color-ui-table-row: #1a1c33;\n  --color-ui-table-row-alt: #0e0f20;\n  --color-ui-table-row-border: #2b2e4a;\n  --color-ui-marker: #aa0000;\n  --color-ui-h2-decor: #aa0000;\n  --radius-primary: 0.75rem;\n  --font-primary: \"Raleway\", sans-serif;\n  --font-heading: \"Pinyon Script\", sans-serif;\n  --font-heading-weight: 700;\n  --font-heading-tracking: 0.02em;\n  --block-gap: 24px;\n  --paragraph-gap: 12px;\n  --ui-section-bg: #1a1c33;\n}"
+      "output": ":root {\n  --color-primary-300: #0e0f20;\n  --color-primary-200: #1a1c33;\n  --color-primary-100: #2b2e4a;\n  --color-active-300: #b8860b;\n  --color-active-200: #daa520;\n  --color-active-100: #f0c75e;\n  --color-accent-300: #8b0000;\n  --color-accent-200: #b22222;\n  --color-accent-100: #dc5c5c;\n  --color-ui-page-bg: #0e0f20;\n  --color-ui-header-bg: #0e0f20;\n  --color-ui-header-text: #ffffff;\n  --color-ui-footer-bg: #1a1c33;\n  --color-ui-footer-bg-alt: #0e0f20;\n  --color-ui-footer-text: #ffffff;\n  --color-ui-card-bg: #2b2e4a;\n  --color-ui-card-border: #0e0f20;\n  --color-ui-card-title: #b22222;\n  --color-ui-panel-bg: #1a1c33;\n  --color-ui-panel-border: #0e0f20;\n  --color-ui-input-bg: #2b2e4a;\n  --color-ui-input-border: #2b2e4a;\n  --color-ui-heading: #b22222;\n  --color-ui-text: #ffffff;\n  --color-ui-link: #daa520;\n  --color-ui-link-hover: #b8860b;\n  --color-ui-cta-bg: #daa520;\n  --color-ui-cta-hover: #b8860b;\n  --color-ui-cta-text: #0f172a;\n  --color-ui-table-head-bg: #0e0f20;\n  --color-ui-table-head-text: #ffffff;\n  --color-ui-table-row: #1a1c33;\n  --color-ui-table-row-alt: #0e0f20;\n  --color-ui-table-row-border: #2b2e4a;\n  --color-ui-table-btn-bg: #daa520;\n  --color-ui-table-btn-hover: #b8860b;\n  --color-ui-table-btn-text: #0f172a;\n  --color-ui-marker: #aa0000;\n  --color-ui-h2-decor: #aa0000;\n  --radius-primary: 0.75rem;\n  --font-primary: \"Raleway\", sans-serif;\n  --font-heading: \"Pinyon Script\", sans-serif;\n  --font-heading-weight: 700;\n  --font-heading-tracking: 0.02em;\n  --block-gap: 24px;\n  --paragraph-gap: 12px;\n}"
+    },
+    {
+      "output": ":root {\n  --color-primary-300: #0e0f20;\n  --color-primary-200: #1a1c33;\n  --color-primary-100: #2b2e4a;\n  --color-active-300: #b8860b;\n  --color-active-200: #daa520;\n  --color-active-100: #f0c75e;\n  --color-accent-300: #8b0000;\n  --color-accent-200: #b22222;\n  --color-accent-100: #dc5c5c;\n  --color-ui-page-bg: #0e0f20;\n  --color-ui-header-bg: #0e0f20;\n  --color-ui-header-text: #112233;\n  --color-ui-footer-bg: #1a1c33;\n  --color-ui-footer-bg-alt: #0e0f20;\n  --color-ui-footer-text: #445566;\n  --color-ui-card-bg: #2b2e4a;\n  --color-ui-card-border: #0e0f20;\n  --color-ui-card-title: #b22222;\n  --color-ui-panel-bg: #1a1c33;\n  --color-ui-panel-border: #0e0f20;\n  --color-ui-input-bg: #2b2e4a;\n  --color-ui-input-border: #2b2e4a;\n  --color-ui-heading: #b22222;\n  --color-ui-text: #112233;\n  --color-ui-link: #daa520;\n  --color-ui-link-hover: #b8860b;\n  --color-ui-cta-bg: #daa520;\n  --color-ui-cta-hover: #b8860b;\n  --color-ui-cta-text: #ffffff;\n  --color-ui-table-head-bg: #0e0f20;\n  --color-ui-table-head-text: #0f172a;\n  --color-ui-table-row: #1a1c33;\n  --color-ui-table-row-alt: #0e0f20;\n  --color-ui-table-row-border: #2b2e4a;\n  --color-ui-table-btn-bg: #aa0000;\n  --color-ui-table-btn-hover: #b8860b;\n  --color-ui-table-btn-text: #ffffff;\n  --color-ui-marker: #b22222;\n  --color-ui-h2-decor: #b22222;\n  --radius-primary: 0.5rem;\n  --font-primary: \"Raleway\", sans-serif;\n  --font-heading: \"Raleway\", sans-serif;\n  --font-body-weight: 300;\n  --font-heading-weight: 700;\n  --ui-border-width: 0.1rem;\n}",
+      "theme": {
+        "templateId": "parity-1-16",
+        "templateName": "Рамки, жирность текста и первая секция",
+        "mode": "light",
+        "colors": {
+          "primary": {
+            "100": "#2b2e4a",
+            "200": "#1a1c33",
+            "300": "#0e0f20"
+          },
+          "active": {
+            "100": "#f0c75e",
+            "200": "#daa520",
+            "300": "#b8860b"
+          },
+          "accent": {
+            "100": "#dc5c5c",
+            "200": "#b22222",
+            "300": "#8b0000"
+          }
+        },
+        "scheme": {
+          "text": "#112233",
+          "footer-text": "#445566",
+          "table-btn-bg": "#aa0000"
+        },
+        "type": {
+          "display": {
+            "family": "Raleway",
+            "weight": 700
+          },
+          "body": {
+            "family": "Raleway",
+            "weight": 300
+          }
+        },
+        "geometry": {
+          "radius": "0.5rem",
+          "borderWidth": "0.1rem"
+        },
+        "variants": {},
+        "decor": {
+          "firstSection": {
+            "mode": "color",
+            "bg": {
+              "token": "primary-100",
+              "hex": "",
+              "opacity": 100
+            },
+            "heading": "accent-200"
+          }
+        },
+        "updatedAt": "2026-10-14T09:00:00.000Z"
+      }
+    },
+    {
+      "output": ":root {\n  --color-primary-300: #0e0f20;\n  --color-primary-200: #1a1c33;\n  --color-primary-100: #2b2e4a;\n  --color-active-300: #b8860b;\n  --color-active-200: #daa520;\n  --color-active-100: #f0c75e;\n  --color-accent-300: #8b0000;\n  --color-accent-200: #b22222;\n  --color-accent-100: #dc5c5c;\n  --color-ui-page-bg: #0e0f20;\n  --color-ui-header-bg: #0e0f20;\n  --color-ui-header-text: #ffffff;\n  --color-ui-footer-bg: #1a1c33;\n  --color-ui-footer-bg-alt: #0e0f20;\n  --color-ui-footer-text: #ffffff;\n  --color-ui-card-bg: #2b2e4a;\n  --color-ui-card-border: #0e0f20;\n  --color-ui-card-title: #b22222;\n  --color-ui-panel-bg: #1a1c33;\n  --color-ui-panel-border: #0e0f20;\n  --color-ui-input-bg: #2b2e4a;\n  --color-ui-input-border: #2b2e4a;\n  --color-ui-heading: #b22222;\n  --color-ui-text: #ffffff;\n  --color-ui-link: #daa520;\n  --color-ui-link-hover: #b8860b;\n  --color-ui-cta-bg: #daa520;\n  --color-ui-cta-hover: #b8860b;\n  --color-ui-cta-text: #0f172a;\n  --color-ui-table-head-bg: #0e0f20;\n  --color-ui-table-head-text: #0f172a;\n  --color-ui-table-row: #1a1c33;\n  --color-ui-table-row-alt: #0e0f20;\n  --color-ui-table-row-border: #2b2e4a;\n  --color-ui-table-btn-bg: #daa520;\n  --color-ui-table-btn-hover: #b8860b;\n  --color-ui-table-btn-text: #0f172a;\n  --color-ui-marker: #b22222;\n  --color-ui-h2-decor: #b22222;\n  --radius-primary: 0.5rem;\n  --font-primary: \"Inter\", sans-serif;\n  --font-heading: \"Inter\", sans-serif;\n  --ui-border-width: 2px;\n}",
+      "theme": {
+        "templateId": "parity-borders-legacy",
+        "templateName": "Старые borders и surface-* в схеме",
+        "mode": "dark",
+        "colors": {
+          "primary": {
+            "100": "#2b2e4a",
+            "200": "#1a1c33",
+            "300": "#0e0f20"
+          },
+          "active": {
+            "100": "#f0c75e",
+            "200": "#daa520",
+            "300": "#b8860b"
+          },
+          "accent": {
+            "100": "#dc5c5c",
+            "200": "#b22222",
+            "300": "#8b0000"
+          }
+        },
+        "scheme": {
+          "text": "surface-text",
+          "cta-text": "surface-on-brand",
+          "header-text": "auto"
+        },
+        "type": {
+          "display": {
+            "family": "Inter"
+          },
+          "body": {
+            "family": "Inter",
+            "weight": 50
+          }
+        },
+        "geometry": {
+          "radius": "0.5rem",
+          "borders": 2,
+          "shadow": "glow"
+        },
+        "variants": {},
+        "decor": {
+          "sectionBg": {
+            "token": "primary-200",
+            "width": "full"
+          }
+        },
+        "updatedAt": "2026-10-14T09:00:00.000Z"
+      }
     }
   ]
 }

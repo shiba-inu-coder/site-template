@@ -2,7 +2,7 @@
   <PostButtonRef
     :slug="slug"
     size="small-medium"
-    variant="solid"
+    variant="table"
     :padding="false"
   >
     <template #default>

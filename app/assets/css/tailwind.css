@@ -29,8 +29,10 @@
      токен стоит за каждым, решает блок "UI scheme" в :root ниже. */
   --color-ui-page-bg: var(--color-ui-page-bg);
   --color-ui-header-bg: var(--color-ui-header-bg);
+  --color-ui-header-text: var(--color-ui-header-text);
   --color-ui-footer-bg: var(--color-ui-footer-bg);
   --color-ui-footer-bg-alt: var(--color-ui-footer-bg-alt);
+  --color-ui-footer-text: var(--color-ui-footer-text);
 
   --color-ui-card-bg: var(--color-ui-card-bg);
   --color-ui-card-border: var(--color-ui-card-border);
@@ -57,6 +59,9 @@
   --color-ui-table-row: var(--color-ui-table-row);
   --color-ui-table-row-alt: var(--color-ui-table-row-alt);
   --color-ui-table-row-border: var(--color-ui-table-row-border);
+  --color-ui-table-btn-bg: var(--color-ui-table-btn-bg);
+  --color-ui-table-btn-hover: var(--color-ui-table-btn-hover);
+  --color-ui-table-btn-text: var(--color-ui-table-btn-text);
 
   --color-ui-marker: var(--color-ui-marker);
   --color-ui-h2-decor: var(--color-ui-h2-decor);
@@ -142,13 +147,15 @@
     /* UI scheme. Слой между брендом и компонентами: какой брендовый или
        нейтральный токен стоит за каждым ui-*, решает только этот блок —
        компоненты сами брендовую шкалу больше не трогают. Дефолты один в один
-       воспроизводят то, что раньше было захардкожено по месту; с этапа 6 схему
-       сможет переписывать панель. Ссылки на surface-* (не на литералы) — так
-       text/cta-text остаются тем, что переворачивается вместе с темой. */
+       воспроизводят то, что раньше было захардкожено по месту; схему
+       переписывает панель. Текст и текст кнопки — литералы светлого «Пустого»,
+       а не surface-*: цвет элементов идёт только через ui-*. */
     --color-ui-page-bg: var(--color-primary-300);
     --color-ui-header-bg: var(--color-primary-300);
+    --color-ui-header-text: var(--color-ui-text);
     --color-ui-footer-bg: var(--color-primary-200);
     --color-ui-footer-bg-alt: var(--color-primary-300);
+    --color-ui-footer-text: var(--color-ui-text);
 
     --color-ui-card-bg: var(--color-primary-100);
     --color-ui-card-border: var(--color-primary-300);
@@ -161,20 +168,23 @@
     --color-ui-input-border: var(--color-primary-100);
 
     --color-ui-heading: var(--color-accent-200);
-    --color-ui-text: var(--color-surface-text);
+    --color-ui-text: #0f172a;
 
     --color-ui-link: var(--color-active-200);
     --color-ui-link-hover: var(--color-active-300);
 
     --color-ui-cta-bg: var(--color-active-200);
     --color-ui-cta-hover: var(--color-active-300);
-    --color-ui-cta-text: var(--color-surface-on-brand);
+    --color-ui-cta-text: #ffffff;
 
     --color-ui-table-head-bg: var(--color-primary-300);
-    --color-ui-table-head-text: var(--color-surface-text);
+    --color-ui-table-head-text: #0f172a;
     --color-ui-table-row: var(--color-primary-200);
     --color-ui-table-row-alt: var(--color-primary-300);
     --color-ui-table-row-border: var(--color-primary-100);
+    --color-ui-table-btn-bg: var(--color-ui-cta-bg);
+    --color-ui-table-btn-hover: var(--color-ui-cta-hover);
+    --color-ui-table-btn-text: var(--color-ui-cta-text);
 
     --color-ui-marker: var(--color-accent-200);
     --color-ui-h2-decor: var(--color-accent-200);
@@ -210,7 +220,8 @@
       var(--fs-max)
     );
     line-height: 1.6;
-    color: var(--color-surface-text);
+    color: var(--color-ui-text);
+    font-weight: var(--font-body-weight, 400);
   }
 
   #article {
@@ -241,7 +252,7 @@
 
     p {
       font-size: 1.1rem;
-      font-weight: 400;
+      font-weight: inherit;
       margin-block: var(--paragraph-gap, 15px);
     }
 
@@ -525,51 +536,50 @@ button:not(:disabled),
   border-bottom: 2px solid var(--color-ui-h2-decor);
 }
 
-#site[data-borders="0"] #article .border-ui-card-border,
-#site[data-borders="0"] #article .border-ui-panel-border,
-#site[data-borders="0"] #article .border-ui-input-border {
-  border-color: transparent;
+/* Рамки: толщина одна на сайт. Без `--ui-border-width` fallback `revert-layer`
+   откатывает объявление к слою утилит — рамка остаётся такой, какой её
+   рисует класс компонента (`border` или `border-2`). Элементы с рамкой лишь
+   с одной стороны (`border-b`, `border-x-2`) не трогаются: `border-width`
+   нарисовал бы им рамку со всех сторон. */
+#site
+  #article
+  :is(
+    .border-ui-card-border,
+    .border-ui-panel-border,
+    .border-ui-input-border
+  ):not(
+    [class*="border-b"],
+    [class*="border-t"],
+    [class*="border-x"],
+    [class*="border-y"],
+    [class*="border-l"],
+    [class*="border-r"]
+  ) {
+  border-width: var(--ui-border-width, revert-layer);
 }
 
-#site[data-borders="2"] #article .border-ui-card-border,
-#site[data-borders="2"] #article .border-ui-panel-border,
-#site[data-borders="2"] #article .border-ui-input-border {
-  border-width: 2px;
-}
-
-#site[data-shadow="soft"] #article .bg-ui-card-bg,
-#site[data-shadow="soft"] #article .bg-ui-panel-bg {
-  box-shadow: 0 8px 22px rgb(0 0 0 / 0.12);
-}
-
-#site[data-shadow="glow"] #article .bg-ui-card-bg,
-#site[data-shadow="glow"] #article .bg-ui-panel-bg {
-  box-shadow:
-    0 0 0 1px color-mix(in srgb, var(--color-ui-marker) 35%, transparent),
-    0 12px 34px color-mix(in srgb, var(--color-ui-cta-bg) 22%, transparent);
-}
-
-/* Текст шапки — основной текст страницы: схема его отдельно не подбирает, и
-   тёмная шапка на светлом сайте провалит контраст — это видно в блоке
-   «Контраст» панели. card-border/panel-border/input-bg — те же доли, что
+/* Шапка красится своим `header-text`: тёмная шапка на светлом сайте не
+   зависит от основного текста. heading/link/border/input внутри шапки
+   переведены на него же. card-border/panel-border/input-bg — те же доли, что
    раньше давал rgb(255 255 255 / …) поверх гарантированно тёмной подложки;
    color-mix держит их верными и при светлом тексте. */
 .site-header {
-  --color-ui-heading: var(--color-ui-text);
-  --color-ui-link: var(--color-ui-text);
+  color: var(--color-ui-header-text);
+  --color-ui-heading: var(--color-ui-header-text);
+  --color-ui-link: var(--color-ui-header-text);
   --color-ui-card-border: color-mix(
     in srgb,
-    var(--color-ui-text) 18%,
+    var(--color-ui-header-text) 18%,
     transparent
   );
   --color-ui-panel-border: color-mix(
     in srgb,
-    var(--color-ui-text) 22%,
+    var(--color-ui-header-text) 22%,
     transparent
   );
   --color-ui-input-bg: color-mix(
     in srgb,
-    var(--color-ui-text) 10%,
+    var(--color-ui-header-text) 10%,
     transparent
   );
 }

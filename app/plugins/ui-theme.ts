@@ -37,8 +37,7 @@ export default defineNuxtPlugin({
     // теги, которые сам поставил на клиенте.
     const fontFaceCss = ref("");
     // Адрес, чьи @font-face уже в странице. Ссылка на Google нужна, только
-    // если адрес темы с ним разошёлся: сервер не достал CSS или превью панели
-    // сменило шрифт на лету.
+    // если адрес темы с ним разошёлся: сервер не достал CSS.
     const inlinedFontsHref = useState("ui-theme-fonts-href", () => "");
     const fontsLinkHref = computed(() =>
       fontsHref.value !== inlinedFontsHref.value ? fontsHref.value : "",

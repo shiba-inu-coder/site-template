@@ -1,5 +1,5 @@
 <template>
-  <footer class="site-footer bg-ui-footer-bg text-ui-text">
+  <footer class="site-footer bg-ui-footer-bg text-ui-footer-text">
     <div
       v-if="siteConfig.logo.src || body || legalLogos.length || links.length"
       class="flex flex-col items-center gap-6 px-5 py-8 md:px-8"
@@ -53,7 +53,7 @@
 
     <p
       v-if="copyright"
-      class="bg-ui-footer-bg-alt px-5 py-3 text-center text-step-9 text-ui-text md:px-8"
+      class="bg-ui-footer-bg-alt px-5 py-3 text-center text-step-9 text-ui-footer-text md:px-8"
     >
       {{ copyright }}
     </p>

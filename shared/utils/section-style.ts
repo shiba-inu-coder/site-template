@@ -5,9 +5,9 @@ import type { UiDecor } from "./ui-theme.ts";
 // сборщик HTML для неперевезённых сайтов (article-sections.js) и этот файл.
 // Зеркальную копию в панели нужно держать в синхроне с этим файлом.
 
-// "site" — фон темы (decor.sectionBg) целиком, "none" гасит его даже там,
-// где он есть, "color"/"image" — секция несёт фон сама. Тот же список несёт
-// Section.ts (Mongoose enum) — один источник на оба места.
+// "site" — первая секция берёт `decor.firstSection` темы, остальным фона нет;
+// "none" гасит и его, "color"/"image" — секция несёт фон сама. Тот же список
+// несёт Section.ts (Mongoose enum) — один источник на оба места.
 export const SECTION_BG_MODES = ["site", "color", "image", "none"] as const;
 
 type SectionBgMode = (typeof SECTION_BG_MODES)[number];
@@ -170,31 +170,145 @@ export interface SectionBgPlacement {
   // Коробки со скруглением, поставленные встык, читаются одной плашкой со
   // щербинами. Полосы во всю ширину, наоборот, встык и задуманы.
   gap: boolean;
+  // Свои цвета заголовка и текста первой секции: переопределяют токены схемы
+  // только внутри неё. Уходит инлайном на <section>.
+  vars: string;
+  // Вертикальные отступы первой секции; `null` — как задумано шаблоном.
+  padding: SectionPadding;
 }
 
+export interface SectionPadding {
+  top: number | null;
+  bottom: number | null;
+}
+
+const NO_PADDING: SectionPadding = { top: null, bottom: null };
+
+const PALETTE_TOKEN = /^(?:primary|active|accent)-(?:100|200|300)$/;
+const HEX_COLOR = /^#(?:[0-9a-f]{3,4}|[0-9a-f]{6}|[0-9a-f]{8})$/i;
+
+// Токен палитры или hex; остальное — как будто поле пусто. Значение уходит в
+// атрибут `style`, поэтому проходит только то, что точно цвет.
+const paletteOrHex = (value: unknown): string => {
+  if (typeof value !== "string") {
+    return "";
+  }
+
+  const color = value.trim();
+
+  if (PALETTE_TOKEN.test(color)) {
+    return `var(--color-${color})`;
+  }
+
+  return HEX_COLOR.test(color) ? color : "";
+};
+
+const optionalPx = (value: unknown): number | null => {
+  if (value === undefined || value === null || value === "") {
+    return null;
+  }
+
+  return Number.isFinite(Number(value))
+    ? clampPx(value, SECTION_PADDING_MAX)
+    : null;
+};
+
+interface FirstSectionBg {
+  width: "container" | "full";
+  color: string;
+  image: string;
+  vars: string;
+  padding: SectionPadding;
+}
+
+// Первая секция статьи — та, что с H1. `none` и пустая запись — «ничего не
+// задано»: ни фона, ни цветов, ни отступов, даже если поля ниже ещё хранят
+// старые значения.
+const resolveFirstSection = (
+  decor: UiDecor | undefined,
+  cloudName: string,
+): FirstSectionBg | null => {
+  const first = decor?.firstSection;
+
+  if (first?.mode !== "color" && first?.mode !== "image") {
+    return null;
+  }
+
+  let color = "";
+  let image = "";
+
+  if (first.mode === "color") {
+    const token = first.bg?.token;
+    const hex = first.bg?.hex;
+
+    color = sectionBackgroundColor({
+      token:
+        typeof token === "string" && PALETTE_TOKEN.test(token) ? token : "",
+      hex: typeof hex === "string" && HEX_COLOR.test(hex) ? hex : "",
+      opacity: first.bg?.opacity ?? 100,
+    });
+  } else {
+    image = sectionBackgroundImage(
+      {
+        path: first.image?.path ?? "",
+        alt: "",
+        overlay: first.image?.overlay ?? 0,
+      },
+      cloudName,
+    );
+  }
+
+  const heading = paletteOrHex(first.heading);
+  const text = paletteOrHex(first.text);
+  const vars = [
+    heading && `--color-ui-heading:${heading}`,
+    text && `--color-ui-text:${text};color:${text}`,
+  ]
+    .filter(Boolean)
+    .join(";");
+
+  return {
+    width: first.width === "full" ? "full" : "container",
+    color,
+    image,
+    vars,
+    padding: {
+      top: optionalPx(first.padding?.top),
+      bottom: optionalPx(first.padding?.bottom),
+    },
+  };
+};
+
 /**
- * "color"/"image" несут фон сами, своей width; "site" берёт --ui-section-bg
- * и width темы целиком — width самой секции здесь не в счёт, оператор явно
- * выбрал «как у сайта»; "none" гасит фон темы даже там, где он есть.
+ * "color"/"image" несут фон сами, своей width; "site" — у первой секции
+ * (`index === 0`) берёт `decor.firstSection` целиком, width секции здесь не в
+ * счёт, оператор явно выбрал «как у сайта», у остальных подложки нет; "none"
+ * гасит и фон первой секции, и её цвета с отступами.
  */
 export const resolveSectionBg = (
   layout: RawPostSectionLayout | null | undefined,
   decor: UiDecor | undefined,
   cloudName: string,
+  index: number,
 ): SectionBgPlacement => {
   const normalized = normalizeSectionLayout(layout);
 
   let width = normalized.width;
   let color = "";
   let image = "";
+  let vars = "";
+  let padding = NO_PADDING;
 
   if (normalized.mode === "color") {
     color = sectionBackgroundColor(normalized.bg);
   } else if (normalized.mode === "image") {
     image = sectionBackgroundImage(normalized.image, cloudName);
-  } else if (normalized.mode === "site") {
-    width = decor?.sectionBg?.width === "full" ? "full" : "container";
-    color = decor?.sectionBg?.token ? "var(--ui-section-bg)" : "";
+  } else if (normalized.mode === "site" && index === 0) {
+    const first = resolveFirstSection(decor, cloudName);
+
+    if (first) {
+      ({ width, color, image, vars, padding } = first);
+    }
   }
 
   const style = [
@@ -205,12 +319,45 @@ export const resolveSectionBg = (
     .join(";");
 
   if (!style) {
-    return { target: "none", style: "", gap: false };
+    return { target: "none", style: "", gap: false, vars, padding };
   }
 
   return width === "full"
-    ? { target: "wrap", style, gap: false }
-    : { target: "box", style, gap: true };
+    ? { target: "wrap", style, gap: false, vars, padding }
+    : { target: "box", style, gap: true, vars, padding };
+};
+
+const joinStyle = (...parts: string[]): string =>
+  parts.filter(Boolean).join(";");
+
+export const sectionPaddingStyle = (padding: SectionPadding): string =>
+  [
+    padding.top !== null && `padding-top:${padding.top}px`,
+    padding.bottom !== null && `padding-bottom:${padding.bottom}px`,
+  ]
+    .filter(Boolean)
+    .join(";");
+
+/**
+ * Куда что ложится: фон и отступы — на элемент с фоном (обёртку полосы или
+ * саму коробку), а без фона отступы идут на <section>. Цвета — всегда на
+ * <section>, внутри которого заголовок и текст. Вертикаль `p-primary-1`
+ * перебивается, горизонталь остаётся.
+ */
+export const sectionElementStyles = (
+  placement: SectionBgPlacement,
+): { wrap: string; section: string } => {
+  const padding = sectionPaddingStyle(placement.padding);
+
+  return {
+    wrap:
+      placement.target === "wrap" ? joinStyle(placement.style, padding) : "",
+    section: joinStyle(
+      placement.vars,
+      placement.target === "box" ? placement.style : "",
+      placement.target === "wrap" ? "" : padding,
+    ),
+  };
 };
 
 /**
