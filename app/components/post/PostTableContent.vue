@@ -1,10 +1,11 @@
 <template>
   <nav
     v-if="tableContent.length"
-    class="toc-block max-w-[420px] text-step-7 bg-ui-panel-bg border border-ui-panel-border rounded-primary"
+    class="toc-block text-step-7 bg-ui-panel-bg border border-ui-panel-border rounded-primary"
   >
     <component
       :is="variant === 'accordion' ? 'details' : 'div'"
+      :open="variant === 'accordion' ? true : undefined"
       class="group p-4"
     >
       <summary
