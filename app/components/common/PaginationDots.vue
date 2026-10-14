@@ -7,7 +7,7 @@
     >
       <svg-icon
         name="arrow-up"
-        class="text-surface-text text-step-9 rotate-270"
+        class="text-ui-text text-step-9 rotate-270"
       />
     </button>
     <button
@@ -16,7 +16,7 @@
       class="rounded-full border border-active-300 transition ease-in-out duration-500 hover:bg-active-300 w-[10px] h-[10px] flex justify-center items-center"
       :class="{
         'bg-active-200': current === idx,
-        'bg-surface-raised': current !== idx,
+        'bg-ui-panel-bg': current !== idx,
       }"
       :aria-label="`Go to slide ${idx + 1}`"
       @click="goTo(idx)"
@@ -28,7 +28,7 @@
     >
       <svg-icon
         name="arrow-up"
-        class="text-surface-text text-step-9 rotate-90"
+        class="text-ui-text text-step-9 rotate-90"
       />
     </button>
   </div>

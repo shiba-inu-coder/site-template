@@ -115,7 +115,7 @@ types/constants/utils). Aliases: `#sg` → `server/`, `#rc` → `app/`.
   `/_theme-fonts/…` (a Nitro route that downloads each woff2 once per node), and
   `app/plugins/ui-theme.ts` inlines the `@font-face` rules into the SSR HTML — not into the
   payload. A `<link>` to Google appears only as a fallback: the server could not get the
-  CSS, or the panel preview changed the font live. See `docs/ui.md`, "Fonts".
+  CSS. See `docs/ui.md`, "Fonts".
 - No auth/JWT anywhere: inactive (`isActive: false`) and deleted posts are 404 for everyone.
 - env vars: see `.env.example` (MONGO_URI, DB_NAME, SITE_URL, DOMAIN_NAME, CACHE_PURGE_SECRET).
   `.env` is for local dev only — in the container the same values come from Vault. The one
@@ -131,8 +131,9 @@ component's classes, or a new page. The three rules that break things silently:
   (CTA, links, hover, focus), `accent` = static brightness (badges, ribbons, article
   headings). The scale is inverted: 300 is darkest, 200 is the base, hover moves one step.
   These nine values come from the site's `uiTheme.colors` at runtime, so a misplaced family
-  puts a brand's button colour on a heading. Body text is `text-surface-text`, never `text-white`
-  — that token is what flips between the light and dark themes.
+  puts a brand's button colour on a heading. Body text is `text-ui-text`, never `text-white` or
+  `text-surface-*` — the colour of an element comes from a `ui-*` token of the scheme, and the
+  light/dark mode no longer picks one (`tests/theme-color-source.test.ts`).
 - **Sizes come from `text-step-1` … `text-step-9`** (1 is the largest), radii from
   `rounded-primary`. Not `text-sm`/`rounded-lg`.
 - **`:root` in `tailwind.css` holds the template's neutral defaults, not a brand.** A site's

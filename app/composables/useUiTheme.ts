@@ -58,17 +58,9 @@ export const useUiTheme = () => {
     const frameValue = frame.value;
 
     const attrs: Record<string, unknown> = {
-      "data-borders": value?.geometry?.borders,
-      "data-shadow": value?.geometry?.shadow,
       "data-width": frameValue.width,
       "data-sticky": frameValue.sticky,
       "data-h2": value?.decor?.h2,
-      // Ширина фона секций по умолчанию — читает PostSections.vue у секций
-      // с mode "site" напрямую через useUiTheme().theme, а не через этот
-      // атрибут; он здесь для той же CSS-развязки, что и остальные оси.
-      "data-section-bg-width": value?.decor?.sectionBg?.token
-        ? value.decor.sectionBg.width
-        : undefined,
     };
 
     return Object.fromEntries(

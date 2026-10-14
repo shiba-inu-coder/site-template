@@ -24,8 +24,10 @@ export type UiSurfaceToken = "text" | "muted" | "raised" | "on-brand";
 export const UI_TOKENS = [
   "page-bg",
   "header-bg",
+  "header-text",
   "footer-bg",
   "footer-bg-alt",
+  "footer-text",
 
   "card-bg",
   "card-border",
@@ -52,6 +54,9 @@ export const UI_TOKENS = [
   "table-row",
   "table-row-alt",
   "table-row-border",
+  "table-btn-bg",
+  "table-btn-hover",
+  "table-btn-text",
 
   "marker",
   "h2-decor",
@@ -73,13 +78,16 @@ export interface UiTypeAxis {
   };
   body: {
     family: string;
+    weight?: number;
   };
 }
 
 export interface UiGeometry {
   radius: string;
+  // Толщина рамок карточек, панелей и полей: "0" или длина в px/rem/em.
+  borderWidth?: string;
+  // Записи до 1.16.0: 0/1/2 → 0/1px/2px, пока панель не пересохранила.
   borders?: 0 | 1 | 2;
-  shadow?: "none" | "soft" | "glow";
   // Свободные CSS-длины (12px/0.5rem), не enum — оператор набирает своё
   // значение, а не выбирает из трёх пресетов, как раньше density.
   blockGap?: string;
@@ -108,10 +116,16 @@ export interface UiVariants {
   buttonRef?: string;
 }
 
-// Три оттенка primary — та же ось, что per-секционный layout.bg.token в
-// конструкторе статьи (appspro-articles, PostSection.layout ниже), с этим
-// объектом не путать: тот перекрывает эту по одной секции, mode "site".
-export type SectionBgToken = "" | "primary-100" | "primary-200" | "primary-300";
+// Цвет из палитры ("primary-200") или свой hex; пусто — как на сайте.
+export interface UiFirstSection {
+  mode?: "none" | "color" | "image";
+  width?: "container" | "full";
+  bg?: { token?: string; hex?: string; opacity?: number };
+  image?: { path?: string; overlay?: number };
+  padding?: { top?: number | string | null; bottom?: number | string | null };
+  heading?: string;
+  text?: string;
+}
 
 export interface UiDecor {
   h2?:
@@ -122,7 +136,7 @@ export interface UiDecor {
     | "gradient"
     | "number"
     | "line";
-  sectionBg?: { token?: SectionBgToken; width?: "container" | "full" };
+  firstSection?: UiFirstSection;
 }
 
 export interface UiTheme {
@@ -141,12 +155,15 @@ export interface UiTheme {
 
 // Дефолтная схема применения — токен в токен то, что раньше было
 // захардкожено в компонентах (см. таблицу в `docs/ui.md`). Не зависит от
-// режима: тёмная/светлая тема переключает только нейтраль (surface-*) ниже.
+// режима. Текст — литералы светлого «Пустого»: цвет элементов идёт только
+// через `ui-*`, а `surface-*` остался для `color-scheme` и старых записей.
 export const DEFAULT_UI_SCHEME: UiScheme = {
   "page-bg": "primary-300",
   "header-bg": "primary-300",
+  "header-text": "#0f172a",
   "footer-bg": "primary-200",
   "footer-bg-alt": "primary-300",
+  "footer-text": "#0f172a",
 
   "card-bg": "primary-100",
   "card-border": "primary-300",
@@ -159,20 +176,23 @@ export const DEFAULT_UI_SCHEME: UiScheme = {
   "input-border": "primary-100",
 
   heading: "accent-200",
-  text: "surface-text",
+  text: "#0f172a",
 
   link: "active-200",
   "link-hover": "active-300",
 
   "cta-bg": "active-200",
   "cta-hover": "active-300",
-  "cta-text": "surface-on-brand",
+  "cta-text": "#ffffff",
 
   "table-head-bg": "primary-300",
-  "table-head-text": "surface-text",
+  "table-head-text": "#0f172a",
   "table-row": "primary-200",
   "table-row-alt": "primary-300",
   "table-row-border": "primary-100",
+  "table-btn-bg": "active-200",
+  "table-btn-hover": "active-300",
+  "table-btn-text": "#ffffff",
 
   marker: "accent-200",
   "h2-decor": "accent-200",
@@ -197,7 +217,14 @@ const SURFACE_BY_MODE: Record<UiThemeMode, Record<UiSurfaceToken, string>> = {
 
 const BRAND_FAMILIES = ["primary", "active", "accent"] as const;
 
-const resolveRef = (ref: UiSchemeRef, theme: UiTheme): string => {
+// `undefined` — ссылка цвета не дала: «auto» из записи до 028bc8e, оттенок,
+// которого в теме нет, неизвестный `surface-*`. Для схемы это отсутствие
+// значения, а не значение.
+const resolveRef = (ref: UiSchemeRef, theme: UiTheme): string | undefined => {
+  if (!ref || ref === "auto") {
+    return undefined;
+  }
+
   if (ref.startsWith("#")) {
     return ref;
   }
@@ -206,13 +233,13 @@ const resolveRef = (ref: UiSchemeRef, theme: UiTheme): string => {
     const prefix = `${family}-`;
     if (ref.startsWith(prefix)) {
       const shade = Number(ref.slice(prefix.length)) as keyof UiColorRamp;
-      return theme.colors?.[family]?.[shade] ?? ref;
+      return theme.colors?.[family]?.[shade];
     }
   }
 
   if (ref.startsWith("surface-")) {
     const key = ref.slice("surface-".length) as UiSurfaceToken;
-    return SURFACE_BY_MODE[theme.mode][key] ?? ref;
+    return SURFACE_BY_MODE[theme.mode]?.[key];
   }
 
   return ref;
@@ -255,24 +282,50 @@ export const resolvePageFrame = (
   sticky: knownOrUndefined(STICKY_VALUES, postFrame?.sticky),
 });
 
+// Ключ, которого нет в записи, берёт цвет старого ключа, а не дефолт: сайт,
+// где оператор перекрасил текст или маркеры, не перекрасится сам после
+// обновления. Родитель стоит раньше ребёнка только в логике, не в порядке
+// `UI_TOKENS`: цвет родителя считается по требованию.
+export const SCHEME_INHERIT: Partial<Record<UiToken, UiToken>> = {
+  "header-text": "text",
+  "footer-text": "text",
+  "table-btn-bg": "cta-bg",
+  "table-btn-hover": "cta-hover",
+  "table-btn-text": "cta-text",
+  "h2-decor": "marker",
+};
+
 // `scheme` может не покрывать все токены (старая запись до добавления нового
-// токена) — недостающие достраиваются дефолтом, а не роняют резолв. Лишние
-// ключи (удалённые токены старой записи) обход по `UI_TOKENS` не видит.
-// `h2-decor` в записи до его появления красился по `marker`, так что без явного
-// значения он наследует маркер, а не дефолт: сайт, где оператор перекрасил
-// маркеры, не должен после обновления получить декор H2 другого цвета.
+// токена) — недостающие достраиваются по `SCHEME_INHERIT`, потом дефолтом, а не
+// роняют резолв. Лишние ключи (удалённые токены старой записи) обход по
+// `UI_TOKENS` не видит.
 export const resolveScheme = (theme: UiTheme): Record<UiToken, string> => {
   const result = {} as Record<UiToken, string>;
 
+  const resolveToken = (token: UiToken): string => {
+    if (result[token]) {
+      return result[token];
+    }
+
+    const own = theme.scheme?.[token];
+    let color = own ? resolveRef(own, theme) : undefined;
+
+    const parent = SCHEME_INHERIT[token];
+    if (!color && parent) {
+      color = resolveToken(parent);
+    }
+
+    result[token] = color ?? resolveRef(DEFAULT_UI_SCHEME[token], theme) ?? "";
+
+    return result[token];
+  };
+
+  const ordered = {} as Record<UiToken, string>;
   for (const token of UI_TOKENS) {
-    const ref =
-      theme.scheme?.[token] ??
-      (token === "h2-decor" ? theme.scheme?.marker : undefined) ??
-      DEFAULT_UI_SCHEME[token];
-    result[token] = resolveRef(ref, theme);
+    ordered[token] = resolveToken(token);
   }
 
-  return result;
+  return ordered;
 };
 
 // Весь каталог Google Fonts (1946 семейств на 27.09.2026) укладывается в
@@ -341,8 +394,49 @@ export const resolveRadius = (value: unknown): string => {
   return radius === "0" || CSS_LENGTH.test(radius) ? radius : "";
 };
 
-// Цвета + радиус + шрифты + отступы + фон секций по умолчанию. Остальной
-// декор (variants/decor.h2) сюда не попадает: его рендерят другие слои.
+const BORDER_WIDTH = /^(?:\d+(?:\.\d+)?|\.\d+)(?:px|rem|em)$/;
+
+// `borderWidth` — то, что пишет панель с 1.16.0; `borders` 0/1/2 остался в
+// записях, которые никто не пересохранял. Мусор не пишется: тогда рамка
+// остаётся такой, какой её рисует класс компонента.
+export const resolveBorderWidth = (
+  geometry: Partial<UiGeometry> | null | undefined,
+): string => {
+  const width = geometry?.borderWidth;
+
+  if (typeof width === "string") {
+    const value = width.trim();
+
+    if (value === "0" || BORDER_WIDTH.test(value)) {
+      return value;
+    }
+  }
+
+  const legacy = geometry?.borders;
+
+  if (legacy === 0) return "0";
+  if (legacy === 1) return "1px";
+  if (legacy === 2) return "2px";
+
+  return "";
+};
+
+const BODY_WEIGHT_MIN = 100;
+const BODY_WEIGHT_MAX = 900;
+
+export const resolveBodyWeight = (value: unknown): number | undefined => {
+  const weight = typeof value === "string" ? Number(value) : value;
+
+  return typeof weight === "number" &&
+    Number.isInteger(weight) &&
+    weight >= BODY_WEIGHT_MIN &&
+    weight <= BODY_WEIGHT_MAX
+    ? weight
+    : undefined;
+};
+
+// Цвета + радиус + шрифты + отступы + рамки. Остальной декор (variants,
+// decor.h2, decor.firstSection) сюда не попадает: его рендерят другие слои.
 export const themeToCssVars = (theme: UiTheme): string => {
   const resolved = resolveScheme(theme);
 
@@ -366,6 +460,8 @@ export const themeToCssVars = (theme: UiTheme): string => {
   const radius = resolveRadius(theme.geometry?.radius);
   const bodyFont = fontFamilyCss(theme.type?.body?.family);
   const displayFont = fontFamilyCss(theme.type?.display?.family);
+  const bodyWeight = resolveBodyWeight(theme.type?.body?.weight);
+  const borderWidth = resolveBorderWidth(theme.geometry);
 
   if (radius) {
     lines.push(`  --radius-primary: ${radius};`);
@@ -375,6 +471,9 @@ export const themeToCssVars = (theme: UiTheme): string => {
   }
   if (displayFont) {
     lines.push(`  --font-heading: ${displayFont};`);
+  }
+  if (bodyWeight) {
+    lines.push(`  --font-body-weight: ${bodyWeight};`);
   }
   if (theme.type?.display?.weight) {
     lines.push(`  --font-heading-weight: ${theme.type.display.weight};`);
@@ -388,24 +487,15 @@ export const themeToCssVars = (theme: UiTheme): string => {
   if (theme.geometry?.paragraphGap) {
     lines.push(`  --paragraph-gap: ${theme.geometry.paragraphGap};`);
   }
-
-  // Только оттенок primary — тот же диапазон, что SectionBgToken; секция с
-  // mode "site" (PostSections.vue) читает эту переменную по имени, без
-  // своего резолва токена.
-  const sectionBgToken = theme.decor?.sectionBg?.token;
-  if (sectionBgToken) {
-    const shade = Number(sectionBgToken.split("-")[1]) as keyof UiColorRamp;
-    const hex = theme.colors?.primary?.[shade];
-
-    if (hex) {
-      lines.push(`  --ui-section-bg: ${hex};`);
-    }
+  if (borderWidth) {
+    lines.push(`  --ui-border-width: ${borderWidth};`);
   }
 
   return `:root {\n${lines.join("\n")}\n}`;
 };
 
 // Что реально используют шрифты шаблона: текст + полужирный + подзаголовки.
+// Вес текста и вес заголовков из темы добавляются поверх (`themeFontsHref`).
 export const GOOGLE_FONT_WEIGHTS = [400, 500, 700];
 
 // Адрес css2 собирается без @nuxt/fonts — тот модуль сканирует CSS на сборке
@@ -446,9 +536,12 @@ export const themeFontsHref = (theme: UiTheme | null | undefined): string => {
   }
 
   const type = theme.type;
-  const weights = type?.display?.weight
-    ? [...GOOGLE_FONT_WEIGHTS, type.display.weight]
-    : GOOGLE_FONT_WEIGHTS;
+  const bodyWeight = resolveBodyWeight(type?.body?.weight);
+  const weights = [
+    ...GOOGLE_FONT_WEIGHTS,
+    ...(type?.display?.weight ? [type.display.weight] : []),
+    ...(bodyWeight ? [bodyWeight] : []),
+  ];
 
   return googleFontsHref([type?.body?.family, type?.display?.family], weights);
 };

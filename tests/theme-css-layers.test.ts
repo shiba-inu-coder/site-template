@@ -14,11 +14,13 @@ const FULL_THEME = {
   ...DEFAULT_UI_THEME_DARK,
   type: {
     display: { family: "Raleway", weight: 700, tracking: "0.01em" },
-    body: { family: "Raleway" },
+    body: { family: "Raleway", weight: 300 },
   },
-  geometry: { radius: "0.5rem", blockGap: "24px", paragraphGap: "12px" },
-  decor: {
-    sectionBg: { token: "primary-200" as const, width: "full" as const },
+  geometry: {
+    radius: "0.5rem",
+    blockGap: "24px",
+    paragraphGap: "12px",
+    borderWidth: "1px",
   },
 };
 

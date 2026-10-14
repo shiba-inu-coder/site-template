@@ -7,12 +7,12 @@
     >
       <div
         :class="WRAP_CLASS[item.bg.target]"
-        :style="item.bg.target === 'wrap' ? item.bg.style : ''"
+        :style="item.styles.wrap"
       >
         <div :class="CONTAINER">
           <section
             :class="BOX_CLASS[item.bg.target]"
-            :style="item.bg.target === 'box' ? item.bg.style : ''"
+            :style="item.styles.section"
           >
             <!-- id на заголовке, а не только на секции: оглавление ищет якорь
                  через getElementById и скроллит к самому заголовку. Тот же id
@@ -40,7 +40,10 @@
 <script setup lang="ts">
 import { computed } from "vue";
 import RuntimeTemplateLayout from "#rc/components/layout/RuntimeTemplateLayout.vue";
-import { resolveSectionBg } from "#shared/utils/section-style";
+import {
+  resolveSectionBg,
+  sectionElementStyles,
+} from "#shared/utils/section-style";
 import { sectionAnchorId } from "#shared/utils/section-anchor";
 import type { SectionBgPlacement } from "#shared/utils/section-style";
 
@@ -79,17 +82,19 @@ const CLOUDINARY_CLOUD_NAME = useRuntimeConfig().public
   .CLOUDINARY_CLOUD_NAME as string;
 
 const sectionsWithBg = computed(() =>
-  sections.map((section) => {
+  sections.map((section, index) => {
     const bg = resolveSectionBg(
       section.layout,
       theme.value?.decor,
       CLOUDINARY_CLOUD_NAME,
+      index,
     );
 
     return {
       section,
       id: sectionAnchorId(section),
       bg,
+      styles: sectionElementStyles(bg),
       imageLayout: { ...pageLayout.value, sectionBg: bg.target },
     };
   }),

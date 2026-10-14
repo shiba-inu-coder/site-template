@@ -9,41 +9,24 @@ import {
   resolveScheme,
   googleFontsHref,
   DEFAULT_UI_THEME_DARK,
+  SCHEME_INHERIT,
+  themeFontsHref,
   UI_TOKENS,
 } from "../shared/utils/ui-theme.ts";
-import type { SectionBgToken } from "../shared/utils/ui-theme.ts";
+import type { UiTheme } from "../shared/utils/ui-theme.ts";
 
-const withSectionBg = (sectionBg: {
-  token: SectionBgToken;
-  width: "container" | "full";
-}) => ({
+const withScheme = (scheme: Record<string, string>): UiTheme => ({
   ...DEFAULT_UI_THEME_DARK,
-  decor: { ...DEFAULT_UI_THEME_DARK.decor, sectionBg },
+  scheme: scheme as UiTheme["scheme"],
 });
 
-test("themeToCssVars: без decor.sectionBg своей переменной нет", () => {
-  const css = themeToCssVars(DEFAULT_UI_THEME_DARK);
+test("themeToCssVars: в записи нет ни --ui-section-bg, ни тени", () => {
+  const css = themeToCssVars({
+    ...DEFAULT_UI_THEME_DARK,
+    decor: { firstSection: { mode: "color" } },
+  });
 
-  assert.doesNotMatch(css, /--ui-section-bg/);
-});
-
-test("themeToCssVars: пустой token — то же самое, что фона нет", () => {
-  const css = themeToCssVars(withSectionBg({ token: "", width: "container" }));
-
-  assert.doesNotMatch(css, /--ui-section-bg/);
-});
-
-test("themeToCssVars: фон секций по умолчанию идёт через оттенок primary", () => {
-  const css = themeToCssVars(
-    withSectionBg({ token: "primary-200", width: "full" }),
-  );
-
-  assert.match(
-    css,
-    new RegExp(
-      `--ui-section-bg: ${DEFAULT_UI_THEME_DARK.colors.primary[200]};`,
-    ),
-  );
+  assert.doesNotMatch(css, /--ui-section-bg|shadow/);
 });
 
 test("themeToCssVars: девять цветов бренда пишутся своими переменными", () => {
@@ -84,7 +67,7 @@ test("resolveScheme: старая схема с удалёнными ключа�
   });
 
   assert.deepEqual(Object.keys(resolved), [...UI_TOKENS]);
-  assert.equal(resolved.text, "#ffffff");
+  assert.equal(resolved.text, "#0f172a");
 });
 
 test("resolveScheme: h2-decor без записи наследует marker, а не дефолт", () => {
@@ -175,4 +158,153 @@ test("радиус: неизвестный токен, отрицательны�
       radius,
     );
   }
+});
+
+test("resolveScheme: новые ключи без записи наследуют старые, а не дефолт", () => {
+  const resolved = resolveScheme(
+    withScheme({
+      text: "#112233",
+      "cta-bg": "#aa0000",
+      "cta-hover": "#bb0000",
+      "cta-text": "#eeeeee",
+    }),
+  );
+
+  assert.equal(resolved["header-text"], "#112233");
+  assert.equal(resolved["footer-text"], "#112233");
+  assert.equal(resolved["table-btn-bg"], "#aa0000");
+  assert.equal(resolved["table-btn-hover"], "#bb0000");
+  assert.equal(resolved["table-btn-text"], "#eeeeee");
+});
+
+test("resolveScheme: «auto» из старой записи — отсутствие, шапка берёт text", () => {
+  const resolved = resolveScheme(
+    withScheme({ text: "#112233", "header-text": "auto" }),
+  );
+
+  assert.equal(resolved["header-text"], "#112233");
+});
+
+test("resolveScheme: явное значение нового ключа важнее наследования", () => {
+  const resolved = resolveScheme(
+    withScheme({ text: "#112233", "footer-text": "#445566" }),
+  );
+
+  assert.equal(resolved["footer-text"], "#445566");
+  assert.equal(resolved["header-text"], "#112233");
+});
+
+test("resolveScheme: ссылка на оттенок, которого в теме нет, — отсутствие", () => {
+  const resolved = resolveScheme(
+    withScheme({ text: "#112233", "footer-text": "primary-999" }),
+  );
+
+  assert.equal(resolved["footer-text"], "#112233");
+});
+
+test("resolveScheme: старый surface-* резолвится по режиму темы", () => {
+  const scheme = {
+    text: "surface-text",
+    "cta-text": "surface-on-brand",
+    "table-head-text": "surface-muted",
+  };
+  const dark = resolveScheme(withScheme(scheme));
+  const light = resolveScheme({ ...withScheme(scheme), mode: "light" });
+
+  assert.equal(dark.text, "#ffffff");
+  assert.equal(dark["cta-text"], "#0f172a");
+  assert.equal(dark["header-text"], "#ffffff");
+  assert.equal(light.text, "#0f172a");
+  assert.equal(light["cta-text"], "#ffffff");
+  assert.equal(light["table-head-text"], "#475569");
+});
+
+test("SCHEME_INHERIT: каждый ключ и его родитель — токены схемы", () => {
+  for (const [token, parent] of Object.entries(SCHEME_INHERIT)) {
+    assert.ok((UI_TOKENS as readonly string[]).includes(token), token);
+    assert.ok((UI_TOKENS as readonly string[]).includes(parent), parent);
+  }
+});
+
+const withGeometry = (geometry: Record<string, unknown>) =>
+  ({
+    ...DEFAULT_UI_THEME_DARK,
+    geometry: { ...DEFAULT_UI_THEME_DARK.geometry, ...geometry },
+  }) as UiTheme;
+
+test("рамки: borderWidth уходит переменной в px, rem и em", () => {
+  for (const width of ["0", "1px", "2.5px", "0.1rem", ".2em"]) {
+    assert.match(
+      themeToCssVars(withGeometry({ borderWidth: width })),
+      new RegExp(`--ui-border-width: ${width.replace(".", "\\.")};`),
+      width,
+    );
+  }
+});
+
+test("рамки: старое borders 0/1/2 даёт 0/1px/2px, borderWidth главнее", () => {
+  assert.match(
+    themeToCssVars(withGeometry({ borders: 2 })),
+    /--ui-border-width: 2px;/,
+  );
+  assert.match(
+    themeToCssVars(withGeometry({ borders: 1 })),
+    /--ui-border-width: 1px;/,
+  );
+  assert.match(
+    themeToCssVars(withGeometry({ borders: 0 })),
+    /--ui-border-width: 0;/,
+  );
+  assert.match(
+    themeToCssVars(withGeometry({ borders: 2, borderWidth: "3px" })),
+    /--ui-border-width: 3px;/,
+  );
+});
+
+test("рамки: мусор не пишется, запись без рамок — тоже", () => {
+  for (const geometry of [
+    {},
+    { borderWidth: "thick" },
+    { borderWidth: "-1px" },
+    { borderWidth: "2px;}body{x:y" },
+    { borderWidth: "5" },
+    { borders: 7 },
+    { borders: null },
+  ]) {
+    assert.doesNotMatch(
+      themeToCssVars(withGeometry(geometry)),
+      /--ui-border-width/,
+      JSON.stringify(geometry),
+    );
+  }
+});
+
+const withBodyWeight = (weight: unknown) =>
+  ({
+    ...DEFAULT_UI_THEME_DARK,
+    type: {
+      display: { family: "Raleway" },
+      body: { family: "Raleway", weight },
+    },
+  }) as UiTheme;
+
+test("жирность текста: --font-body-weight только при заданном весе", () => {
+  assert.match(themeToCssVars(withBodyWeight(300)), /--font-body-weight: 300;/);
+  assert.doesNotMatch(
+    themeToCssVars(DEFAULT_UI_THEME_DARK),
+    /--font-body-weight/,
+  );
+
+  for (const junk of [0, 50, 1000, 400.5, "bold", null]) {
+    assert.doesNotMatch(
+      themeToCssVars(withBodyWeight(junk)),
+      /--font-body-weight/,
+      String(junk),
+    );
+  }
+});
+
+test("жирность текста: вес попадает в адрес шрифта", () => {
+  assert.match(themeFontsHref(withBodyWeight(300)), /wght@300;400;500;700/);
+  assert.doesNotMatch(themeFontsHref(withBodyWeight(null)), /300/);
 });

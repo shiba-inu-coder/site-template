@@ -46,20 +46,17 @@ winner on `<html data-theme>` and emits the matching `<meta name="color-scheme">
 is not decoration, without it scrollbars, autofill and native controls stay dark on a light
 page. See "Runtime theme" below.
 
-What flips is only the **neutral layer**:
+The mode no longer colours a single element. **Text colour comes from the scheme, not from the
+mode**: `html { color: var(--color-ui-text) }`, and every component reads a `ui-*` token
+(`text-ui-text`, `text-ui-cta-text`, …). The `--color-surface-*` variables
+(`text`/`muted`/`raised`/`on-brand`) and `:root[data-theme="light"]` still exist, but only for
+three things: `color-scheme` and native controls, a site with no theme record, and a stored
+scheme that still points at `surface-*` (`resolveScheme` resolves those by the theme's mode). A
+`text-surface-*` class in a component is a bug — it ignores both the scheme and the operator's
+"Основной текст" (`tests/theme-color-source.test.ts` fails on it).
 
-| Token                   | Role                                                 |
-| ----------------------- | ---------------------------------------------------- |
-| `text-surface-text`     | body text — never write `text-white` again           |
-| `text-surface-muted`    | secondary text                                       |
-| `bg-surface-raised`     | a tile that must contrast with the page (logo chips) |
-| `text-surface-on-brand` | text lying on `bg-active-*` / `bg-accent-*`          |
-
-`surface-on-brand` is the one that is easy to get wrong. A CTA button's label sits on a
-**brand** colour, not on the page, so it is contrasted against `active`, not against the
-ground — writing `bg-active-200 text-surface-text` there gives dark-on-dark the moment the
-site is light. Its value is the inverse of `surface-text`, and it flips with the theme for
-the same reason.
+A CTA button's label sits on a **brand** colour, not on the page, so it takes `ui-cta-text`,
+contrasted against `ui-cta-bg`, never `ui-text`.
 
 `active` and `accent` do **not** flip: a brand's CTA colour works on either ground. `primary`
 does not flip either, because it is already the brand's own surface ramp — a light brand's
@@ -84,7 +81,7 @@ switcher of its own.
 ## UI tokens
 
 **A component is coloured only by a `ui-*` token — never `bg-primary-200`, never
-`text-accent-100`, never `text-surface-text` directly.** Which brand or neutral token
+`text-accent-100`, never `text-surface-*`.** Which brand or neutral token
 stands behind each `ui-*` one is decided in exactly one place, the `/* UI scheme */` block
 in `:root` below — components don't know or care that `bg-ui-cta-bg` happens to resolve to
 `active-200` today. That indirection is the whole point: from stage 6 the panel rewrites the
@@ -97,12 +94,14 @@ this layer existed — this was a pure refactor, not a redesign. A default is wr
 brand or surface ref it resolves to, the same string `shared/utils/ui-theme.ts` uses in
 `scheme[token]`.
 
-| Token              | Default       | Role                               |
-| ------------------ | ------------- | ---------------------------------- |
-| `ui-page-bg`       | `primary-300` | page/layout background             |
-| `ui-header-bg`     | `primary-300` | `HeaderLayout`, its dropdown panel |
-| `ui-footer-bg`     | `primary-200` | footer background                  |
-| `ui-footer-bg-alt` | `primary-300` | footer copyright line              |
+| Token              | Default       | Role                                                                  |
+| ------------------ | ------------- | --------------------------------------------------------------------- |
+| `ui-page-bg`       | `primary-300` | page/layout background                                                |
+| `ui-header-bg`     | `primary-300` | `HeaderLayout`, its dropdown panel                                    |
+| `ui-header-text`   | `ui-text`     | text, headings, links and borders inside `.site-header` (see "Frame") |
+| `ui-footer-bg`     | `primary-200` | footer background                                                     |
+| `ui-footer-bg-alt` | `primary-300` | footer copyright line                                                 |
+| `ui-footer-text`   | `ui-text`     | footer text and the copyright line                                    |
 
 | Token             | Default       | Role                                              |
 | ----------------- | ------------- | ------------------------------------------------- |
@@ -114,32 +113,47 @@ brand or surface ref it resolves to, the same string `shared/utils/ui-theme.ts` 
 | `ui-input-bg`     | `primary-100` | form input background                             |
 | `ui-input-border` | `primary-100` | form input border, small logo/divider borders     |
 
-| Token           | Default            | Role                                                                                                       |
-| --------------- | ------------------ | ---------------------------------------------------------------------------------------------------------- |
-| `ui-heading`    | `accent-200`       | `#article h1`–`h6`, eyebrow labels, gift/bonus icons, rating score, ribbon, mini-review tint, bonus amount |
-| `ui-text`       | `surface-text`     | body text, header text, captions and the copyright                                                         |
-| `ui-link`       | `active-200`       | inline links, outline-button text/border                                                                   |
-| `ui-link-hover` | `active-300`       | hover/focus target for `ui-link`                                                                           |
-| `ui-cta-bg`     | `active-200`       | solid CTA background (`PostButtonRef` solid)                                                               |
-| `ui-cta-hover`  | `active-300`       | hover/focus target for `ui-cta-bg`                                                                         |
-| `ui-cta-text`   | `surface-on-brand` | text/icon sitting on `ui-cta-bg`                                                                           |
+| Token           | Default      | Role                                                                                                       |
+| --------------- | ------------ | ---------------------------------------------------------------------------------------------------------- |
+| `ui-heading`    | `accent-200` | `#article h1`–`h6`, eyebrow labels, gift/bonus icons, rating score, ribbon, mini-review tint, bonus amount |
+| `ui-text`       | `#0f172a`    | body text — `html { color }`, so article text, FAQ, table cells, captions                                  |
+| `ui-link`       | `active-200` | inline links, outline-button text/border                                                                   |
+| `ui-link-hover` | `active-300` | hover/focus target for `ui-link`                                                                           |
+| `ui-cta-bg`     | `active-200` | solid CTA background (`PostButtonRef` solid)                                                               |
+| `ui-cta-hover`  | `active-300` | hover/focus target for `ui-cta-bg`                                                                         |
+| `ui-cta-text`   | `#ffffff`    | text/icon sitting on `ui-cta-bg`                                                                           |
 
 | Token                 | Default        | Role                                                                                  |
 | --------------------- | -------------- | ------------------------------------------------------------------------------------- |
 | `ui-table-head-bg`    | `primary-300`  | `PostDataTable` head row                                                              |
-| `ui-table-head-text`  | `surface-text` | `PostDataTable` head row text                                                         |
+| `ui-table-head-text`  | `#0f172a`      | `PostDataTable` head row text                                                         |
 | `ui-table-row`        | `primary-200`  | even data-table row                                                                   |
-| `ui-table-row-alt`    | `primary-300`  | odd row, row divider                                                                  |
-| `ui-table-row-border` | `primary-100`  | data-table outer border                                                               |
+| `ui-table-row-alt`    | `primary-300`  | background of every second row and card                                               |
+| `ui-table-row-border` | `primary-100`  | data-table outer border, the divider between rows and between a card's cells          |
+| `ui-table-btn-bg`     | `ui-cta-bg`    | the button in a data-table cell (`PostButtonRef` variant `table`)                     |
+| `ui-table-btn-hover`  | `ui-cta-hover` | its hover/focus background                                                            |
+| `ui-table-btn-text`   | `ui-cta-text`  | its label                                                                             |
 | `ui-marker`           | `accent-200`   | `#article` list markers and numbers, author avatar ring, outline of the `glow` shadow |
 | `ui-h2-decor`         | `accent-200`   | `data-h2` decor: underline, dot, number, line, second colour of the gradient          |
 
-`ui-h2-decor` was split off `ui-marker`. A stored scheme without it paints the decor with its own
-`marker` (`resolveScheme`), not with the default, so a site whose operator recoloured the
-markers does not get an H2 decor of another colour after an update. The scheme used to carry
-eight more keys — `highlight-*`, `badge-*`, `muted`, `header-text`, `accent-strong`,
-`accent-soft`; a stored theme that still has them resolves fine, the loop in `resolveScheme`
-never looks at them.
+`ui-h2-decor` was split off `ui-marker`, and `ui-header-text`, `ui-footer-text` and the three
+`ui-table-btn-*` came later (1.16.0). **A stored scheme without a key does not get the default —
+it inherits the older key** (`SCHEME_INHERIT`, `shared/utils/ui-theme.ts`; the panel keeps the
+same map), so a site whose operator recoloured the text or the CTA does not repaint itself after
+an update:
+
+| Key                                                   | Inherits                            |
+| ----------------------------------------------------- | ----------------------------------- |
+| `h2-decor`                                            | `marker`                            |
+| `header-text`, `footer-text`                          | `text`                              |
+| `table-btn-bg` / `table-btn-hover` / `table-btn-text` | `cta-bg` / `cta-hover` / `cta-text` |
+
+**`header-text` was removed once and came back.** Records written before commit 028bc8e carry
+`"header-text": "auto"` — a value `resolveRef` cannot turn into a colour. Any ref that gives no
+colour (`"auto"`, a shade the theme lacks, an unknown `surface-*`) counts as an absent key, so
+such a record reads as "the header takes `text`" exactly as it did. The scheme also used to
+carry `highlight-*`, `badge-*`, `muted`, `accent-strong`, `accent-soft`; a stored theme that
+still has them resolves fine, the loop in `resolveScheme` never looks at them.
 
 ### `/* UI scheme */` is the default wiring, the runtime theme overrides it
 
@@ -149,11 +163,10 @@ breaks the themed site — `themeToCssVars` would write a variable nothing reads
 it without renaming the component class breaks every site, the same way a typo in any
 Tailwind class would. There is no separate machine check for either yet.
 
-Every `--color-ui-*` value is a `var(--color-<family>-<shade>)` or `var(--color-surface-*)`
-reference, never a literal hex — that's what makes the scheme swappable later without
-touching the nine brand values themselves. `:root[data-theme="light"]` is untouched by this
-layer: `ui-text`/`ui-cta-text` resolve through `surface-*`, which is what already
-flips with the theme.
+Every `--color-ui-*` default is a `var(--color-<family>-<shade>)` reference, a `var()` of the
+older `ui-*` it inherits, or one of three literals taken from the light "Пустой" preset —
+`ui-text` and `ui-table-head-text` `#0f172a`, `ui-cta-text` `#ffffff`. They are literals, not
+`surface-*`, so the mode never picks a colour; the same three are in `DEFAULT_UI_SCHEME`.
 
 ### `settings.uiTheme`
 
@@ -169,24 +182,25 @@ removed outright, not moved anywhere else (see "Frame"):
 UiTheme = {
   templateId, templateName, mode: "dark" | "light",
   colors: { primary, active, accent } × { 300, 200, 100 },
-  scheme: { [uiToken]: "primary-200" | "surface-text" | "#hex" }, // ~31 keys, see table above
-  type: { display: { family, weight?, tracking? }, body: { family } },
-  geometry: { radius, borders?, shadow?, blockGap?, paragraphGap? },
+  scheme: { [uiToken]: "primary-200" | "#hex" }, // 30 keys, see tables above; old records may still say "surface-text"
+  type: { display: { family, weight?, tracking? }, body: { family, weight? } },
+  geometry: { radius, borderWidth?, blockGap?, paragraphGap? }, // old records: borders 0/1/2
   variants: { toc?, gridCards?, faq?, buttonRef? }, // see "Shortcodes"
-  decor: { h2?, sectionBg? }, // see "Frame"
+  decor: { h2?, firstSection? }, // see "Frame" and "Sections"
   frame?: { width? }, // see "Frame"
   updatedAt,
 }
 ```
 
 `resolveScheme(theme)` turns `scheme` into `Record<uiToken, hex>` — a ref starting with
-`primary-`/`active-`/`accent-` reads `theme.colors`, one starting with `surface-` reads a
-fixed dark/light neutral pair (the same values as `:root`/`:root[data-theme="light"]`), and
-anything else (a `#hex`) passes through unchanged. `themeToCssVars(theme)` wraps the nine
+`primary-`/`active-`/`accent-` reads `theme.colors`, one starting with `surface-` (an old record)
+reads a fixed dark/light neutral pair by the theme's mode, and anything else (a `#hex`) passes
+through unchanged. A ref that gives no colour is an absent key: it inherits (`SCHEME_INHERIT`),
+then falls to `DEFAULT_UI_SCHEME`. `themeToCssVars(theme)` wraps the nine
 brand colours themselves (`--color-<family>-<shade>`), `resolveScheme`'s output, plus
 `--radius-primary`/`--font-primary`/`--font-heading` /
-`--font-heading-weight`/`--font-heading-tracking`/`--block-gap`/`--paragraph-gap`/
-`--ui-section-bg` in one
+`--font-body-weight`/`--font-heading-weight`/`--font-heading-tracking`/`--block-gap`/
+`--paragraph-gap`/`--ui-border-width` in one
 `:root { … }` string. **The nine brand colours are not redundant with the `ui-*` layer**:
 a section's own `mode: "color"` background (`var(--color-primary-200)`, see "Sections") and the few
 classes still on a brand family directly (`bg-active-200` in `PaginationDots.vue`) read
@@ -216,8 +230,8 @@ every interface string, the logo, the favicon, the brand slug and the language a
 that site's `settings` document; `seo.conf.ts` is the template's neutral default underneath
 them — empty name, `lang: "en"`, English strings, empty menus. Editing a brand in the panel is
 a write into Mongo plus a `settings` cache purge: no commit, no image, no deploy. The live
-preview (`ui-manifest`, see "Preview protocol" below) writes into that same state directly,
-bypassing the public settings route and its cache entirely.
+panel does not talk to the page while the operator edits: it shows a staging slot (below) or the
+published site.
 
 Three subdocuments carry it (`server/adapters/repository/mongodb/models/schemas/`):
 
@@ -351,26 +365,9 @@ problem, not this module's.
 "Shortcodes"), `frame` (`{ width, sticky }`, see "Frame") and `frameAttrs` (the `data-*` attributes for the page
 root, see "Frame"). `setTheme()` replaces the theme in state; the head is described as a
 getter, so the style tag, `data-theme`, the font link and the attributes all repaint without
-a reload. `isPreview`, `panelOrigins` and `notifyPanel(message)` are the same preview-bridge
-plumbing the plugin uses for `ui-ready`/`ui-contrast`.
-
-### Preview protocol
-
-The panel previews a theme by embedding the site and talking to it over `postMessage`.
-
-| Message                             | Direction    | When                                                                                                                             |
-| ----------------------------------- | ------------ | -------------------------------------------------------------------------------------------------------------------------------- |
-| `{ type: "ui-ready" }`              | site → panel | once, on mount                                                                                                                   |
-| `{ type: "ui-theme", theme }`       | panel → site | on every change the operator makes                                                                                               |
-| `{ type: "ui-manifest", settings }` | panel → site | on every manifest field edit, debounced — merges `brand`/`layout`/`strings` into state, leaves `uiTheme`/`redirectsRoutes` alone |
-| `{ type: "ui-contrast", report }`   | site → panel | after each applied theme, from `contrastReport`                                                                                  |
-
-Two gates, both required: the URL carries `?preview=` (the same query the staging pass
-already uses) **and** `event.origin` is listed in `runtimeConfig.public.PANEL_ORIGINS`, a
-comma-separated env value (`.env` locally, the site's Vault record in production, so adding
-a panel domain needs no rebuild). Without them a message is dropped: an unlisted origin —
-or the live URL of the same page — must not be able to repaint a production site. An empty
-`PANEL_ORIGINS` accepts nothing, which is the right default for a site nobody previews.
+a reload. Nothing in the repository calls it: the page has no channel to the panel (no
+`postMessage`, no `PANEL_ORIGINS`), and a theme change reaches a visitor through the
+database and a `settings` purge.
 
 ## Frame
 
@@ -383,40 +380,41 @@ the page is always breadcrumbs, the date line and one column of sections, and a 
 contents is only the `table-content` block in the text. Posts written for sites below v1.11.0
 still carry `frame.hero`/`sidebar`/`width` in the database — the panel keeps them on save for
 those sites — and this template does not read them. `headerInverted`, `heroStyle` and `bands`
-are long gone too: header text is the ordinary `ui-text` scheme token (a dark header on a
-light site has to say so in the panel's contrast block, nothing picks a colour for it), and
-sections are never banded. `resolvePageFrame(theme, postFrame)` (`shared/utils/ui-theme.ts`) takes the
+are long gone too: header text is its own scheme token, `ui-header-text`, and sections are
+never banded. `resolvePageFrame(theme, postFrame)` (`shared/utils/ui-theme.ts`) takes the
 width from the theme and sticky from the post, dropping a value that isn't one of the axis's
 own — old data, a typo — rather than let it reach the CSS; `useUiTheme().frameAttrs` then
 turns the result into `data-*` attributes on the page root — `<div id="site">` in
 `layouts/default.vue` **and in `error.vue`**, because a 404 is not drawn by the layout and
 would otherwise lose the frame.
 
-| Attribute               | Axis                            | Values                                                          | Without a value |
-| ----------------------- | ------------------------------- | --------------------------------------------------------------- | --------------- |
-| `data-borders`          | `uiTheme.geometry.borders`      | `0` / `1` / `2`                                                 | `1`             |
-| `data-shadow`           | `uiTheme.geometry.shadow`       | `none` / `soft` / `glow`                                        | `none`          |
-| `data-width`            | `uiTheme.frame.width`           | `narrow` / `wide`                                               | `wide`          |
-| `data-sticky`           | **post** `frame.sticky`         | `none` / `bar` / `bar-float` / `button`                         | `none`          |
-| `data-h2`               | `uiTheme.decor.h2`              | `none`/`underline`/`left-rule`/`dot`/`gradient`/`number`/`line` | `none`          |
-| `data-section-bg-width` | `uiTheme.decor.sectionBg.width` | `container` / `full`                                            | none            |
+| Attribute     | Axis                    | Values                                                          | Without a value |
+| ------------- | ----------------------- | --------------------------------------------------------------- | --------------- |
+| `data-width`  | `uiTheme.frame.width`   | `narrow` / `wide`                                               | `wide`          |
+| `data-sticky` | **post** `frame.sticky` | `none` / `bar` / `bar-float` / `button`                         | `none`          |
+| `data-h2`     | `uiTheme.decor.h2`      | `none`/`underline`/`left-rule`/`dot`/`gradient`/`number`/`line` | `none`          |
 
 There is no `data-hero`, `data-sidebar`, `data-header-inverted`, `data-hero-style`,
-`data-bands` or `data-badge` attribute any more, and nothing in `tailwind.css` selects on
-them.
+`data-bands`, `data-badge`, `data-borders`, `data-shadow` or `data-section-bg-width`
+attribute any more, and nothing in `tailwind.css` selects on them.
+
+**Border width is a variable, not an attribute.** `themeToCssVars` writes
+`--ui-border-width` from `geometry.borderWidth` (`"0"` or a length in px/rem/em; anything else
+is not written), and for a record from before 1.16.0 from `geometry.borders` — `0`/`1`/`2` →
+`0`/`1px`/`2px`. One rule in `tailwind.css` applies it:
+`#site #article :is(.border-ui-card-border, .border-ui-panel-border, .border-ui-input-border)`
+takes `border-width: var(--ui-border-width, revert-layer)`. The `revert-layer` fallback is the
+point: without the variable the rule rolls back to the utility layer, so a `border` stays 1px
+and a `border-2` stays 2px, exactly as the component wrote it. Elements that carry a border on
+one side only (`border-b`, `border-x-2` — the drawers, the bonus-card divider) are excluded by
+`:not([class*="border-…"])`: `border-width` would draw them a frame on every side. **There is
+no shadow axis.** A card's glow is the template's own `shadow-primary`, which cannot be
+repainted at runtime (see below); `geometry.shadow` in an old record is not read.
 
 **An axis nothing carries is not written as an attribute at all**, and the `/* UI axes */`
 block in `tailwind.css` only ever styles a _deviation_ — so a page with no frame and a site
 with no theme render exactly what they rendered before this existed. That is the rule to keep
 when adding a value: never write the default branch.
-
-**`data-section-bg-width` is the one exception with no CSS rule behind it.** Nothing in
-`tailwind.css` selects on it — `PostSections.vue` (see "Sections") reads
-`useUiTheme().theme.value.decor.sectionBg` directly for its own per-section rendering
-decision, more reliably than re-deriving it from the DOM. The attribute exists only for
-the same consistency/inspection value the other axes get, and is written only when
-`decor.sectionBg.token` is non-empty (an empty token means "no default background",
-whatever `width` says).
 
 That block is plain CSS on purpose. `@config` turns off Tailwind's source scanning, so a
 class assembled at runtime is never compiled — an attribute selector is not a class and is
@@ -431,11 +429,12 @@ Where the frame parts are drawn:
   `position` (left / centre / right), each item drawn by `HeaderNavItem.vue`. "Logo on the
   left, login and register on the right" is what the items say, not a variant — another page
   or button is an edit in the panel's header constructor. There is no `headerInverted` axis
-  any more: `.site-header` takes its text, heading and link colour from the ordinary `ui-text`
-  scheme token. Nothing picks a contrasting colour for it, so a header whose background is
-  the opposite of the page (dark on a light site) fails the contrast block in the panel
-  rather than fixing itself. A `frame.header`/`frame.headerInverted` still stored in an
-  older theme record is not read.
+  any more: `.site-header` takes its text from its own scheme token, `ui-header-text` — `color`
+  on the header, with `--color-ui-heading`, `--color-ui-link` and the `color-mix` borders and
+  input background inside it remapped onto the same token. A dark header on a light site is
+  one colour pick in the panel; nothing chooses a contrasting colour on its own, and the pair
+  `header-text`/`header-bg` is in the panel's contrast block. A `frame.header`/
+  `frame.headerInverted` still stored in an older theme record is not read.
   **On a phone the header is one row and never wider than the screen.** Nothing is hidden:
   below `md` the buttons lose most of their side padding (`px-4` instead of `px-7`), gaps
   drop to `gap-2`, and an empty group is `max-md:empty:hidden` so it does not cost a gap.
@@ -475,7 +474,8 @@ Where the frame parts are drawn:
   skipped with no text fallback when the site has none), the text (`layout.footer.body`, the disclaimer HTML the brand run generates,
   left-aligned inside the centered column), a row of badges (`layout.footer.legalLogos` — 18+,
   GamCare, the licence; Cloudinary public ids through `NuxtImg`), a row of links
-  (`layout.footer.links`), and the copyright line. That line keeps its own `bg-ui-footer-bg-alt`
+  (`layout.footer.links`), and the copyright line. The footer's text is `ui-footer-text`; links
+  keep `ui-link`. The copyright line keeps its own `bg-ui-footer-bg-alt`
   strip below the column, text centred; it is `layout.footer.title`, which the panel assembles
   as "domain © year rights" when a brand is applied, so its year is the year of the last apply
   — a site with no brand record gets `© <year> <DOMAIN_NAME>`.
@@ -604,7 +604,7 @@ self-hosted at runtime instead, and the browser never talks to Google:
   there itself on the client. What does go into state is the URL whose faces are inlined
   (`useState("ui-theme-fonts-href")`).
 - **The old link is a fallback.** When the theme's URL differs from the inlined one — the
-  server could not get the CSS, or the panel preview switched the font live — the plugin
+  server could not get the CSS — the plugin
   emits the Google `preconnect`s and `<link rel="stylesheet">` exactly as before.
   `vitalizer.disableStylesheets` cannot eat that link: it only strips `css` entries from the
   build manifest.
@@ -633,11 +633,14 @@ identical copy: it builds its preview with mirrored functions, and the two must 
 An example changes in both repositories at once.
 
 `defaults.weights` in `nuxt.config.ts` covers only the build-time Inter; nothing patches it per
-site any more. The theme pair's weights are `GOOGLE_FONT_WEIGHTS` plus `type.display.weight`,
-and loading them is only half of it: `themeFontsHref` adds that weight so the _file_ is
-fetched, and `--font-heading-weight` (`themeToCssVars`,
-`h1…h6`'s `font-weight`) is what actually _sets_ it — a theme with a weight the Google Fonts
-request didn't carry would render the browser's synthetic-bold fallback instead. Letter-spacing
+site any more. The theme pair's weights are `GOOGLE_FONT_WEIGHTS` plus `type.display.weight`
+and `type.body.weight`, and loading them is only half of it: `themeFontsHref` adds those
+weights so the _file_ is fetched, and `--font-heading-weight` (`themeToCssVars`, `h1…h6`'s
+`font-weight`) and `--font-body-weight` (`html { font-weight: var(--font-body-weight, 400) }`;
+`#article p` inherits it instead of pinning 400) are what actually _set_ them — a theme with a
+weight the Google Fonts request didn't carry would render the browser's synthetic-bold
+fallback instead. The body weight is written only when it is an integer from 100 to 900, so a
+site without one stays at 400. Letter-spacing
 has no separate loading step: `--font-heading-tracking` is a raw CSS value passed straight
 through from `type.display.tracking` into `letter-spacing`.
 
@@ -746,7 +749,9 @@ plus `PostFAQ/components/PostFAQItem.vue`).
 **`PostButtonRef` is the only button.** It carries the affiliate contract — `useFakeRefLink`,
 `target="_blank"`, `rel="nofollow noopener"`, `data-id="ref_link"` — plus its variants
 (`outline` and `solid`, and `link` for a button that reads as text inside a table cell —
-the last one by prop only). **A CTA inside another block passes no `variant` at all** — left alone the
+the last one by prop only; and `table`, the button of a data-table cell, coloured by its own
+`ui-table-btn-*` tokens and set only by `PostDataTableRefLinkBtn` — it is not in the list a
+theme or a record can pick from). **A CTA inside another block passes no `variant` at all** — left alone the
 button asks the theme, which is the whole point of `variants.buttonRef`; pass one only where
 the button is chrome rather than a call to action. Never copy its class string into a template; that copy
 in `PostCasinoRatingCard.vue` is how `easy-in-out` (a typo for `ease-in-out`, silently
@@ -855,8 +860,11 @@ and the picture keeps `object-cover` there (`imgFitClass`). `image` has no box a
 
 The header, the breadcrumbs and the footer have no key here: each has one look, see "Frame".
 
-**The table of contents' accordion is `<details>`/`<summary>`** — no script, closed until
-clicked, and the links are in the HTML either way. Neither view numbers the items.
+**The table of contents' accordion is `<details open>`/`<summary>`** — no script, open
+until the reader folds it, and the links are in the HTML either way. Neither view numbers the
+items, and on desktop the block takes the whole column (no `max-w`). **FAQ items are open
+too**: every question of both views, not only the first; the answer stays in the DOM under
+`v-show` when the reader folds it.
 
 **Every prop a block reads is optional.** A record written before this stage carries no
 `variant`, no `horizontal`, no `density` — and has to render. That is why the Mongoose
@@ -872,9 +880,10 @@ and the models have to stay compatible with the panel's.
 enum the panel offers the operator — a variant the panel cannot write is a variant nobody
 will ever see.
 
-The axes a variant does **not** read: `geometry.borders`/`shadow` arrive as `data-*`
-attributes on the page root, so a component must not hardcode a border or a shadow where
-those are meant to reach it.
+The axes a variant does **not** read: the border width arrives as `--ui-border-width` (see
+"Frame"), so a component must not hardcode a width on a `border-ui-card-border`,
+`border-ui-panel-border` or `border-ui-input-border` frame beyond the plain `border` /
+`border-2` class it carries.
 
 **A `data-table` cell is its own second runtime-compile surface.** `row[column.name]` goes
 through `PostDataTableRuntime.vue` the same way the article body goes through
@@ -905,8 +914,11 @@ a cell is "label left, value right" with the label from `data-label` through
 `before:content-[attr(data-label)]`. What a cell is comes from its template
 (`dataTableCellKind`, `shared/utils/data-table-cell.ts`): a `logo` image and a `ref-link-btn`
 stand full width with no label (the button's `<a>` takes the whole card), a column without a
-title has no label either. Cells keep the column order; nothing is moved. The classes are
-literal for the same `@config` reason as everywhere.
+title has no label either. Cells keep the column order; nothing is moved. The divider between
+a card's rows (and between rows on desktop) is `ui-table-row-border`, the colour of the card's
+own frame: it used to be `ui-table-row-alt`, which is also the background of every second
+card, so on those cards the line was the colour of the ground and could not be seen. The
+classes are literal for the same `@config` reason as everywhere.
 
 A header item of kind `ref` carries its own casino in `link` (`/go/<slug>/`); an empty `link`
 falls back to the site's `brandSlug` as before.
@@ -982,10 +994,13 @@ anything new that reads `content` gets `undefined` on a page with sections. The 
 the purge are untouched; a value cached before a deploy is never read again anyway (a restart
 gets a new boot id, see "Cache purge").
 
-**A section's background comes from `layout.mode`, read on every render.** `"site"` takes the
-theme's own `decor.sectionBg` whole — `--ui-section-bg` **and** its `width` — the section's own
-`width` is not consulted in this mode, since the operator picked "as the site" precisely to
-inherit it. `"none"` suppresses even a configured theme default. `"color"`/`"image"` carry the
+**A section's background comes from `layout.mode`, read on every render.** `"site"` means
+"as the theme says", and the theme says something only about the **first** section — the one
+with the H1 (`index === 0`): it takes `decor.firstSection` whole, its `width` too (the section's
+own `width` is not consulted, since the operator picked "as the site" precisely to inherit it).
+Every other section in `"site"` mode has no background; the old "background of all sections by
+default" (`decor.sectionBg`, `--ui-section-bg`) is gone and a stored one is not read. `"none"`
+suppresses the first section's block as well — background, colours and padding together. `"color"`/`"image"` carry the
 section's own background and its own `width`. `width: "full"` paints the background on the
 wrapper **outside** `CONTAINER`, edge to edge, no rounding; `width: "container"` paints it on
 the `<section>` itself, **inside** `CONTAINER`, with `rounded-primary` and the `p-primary-1`
@@ -998,8 +1013,22 @@ which element carries the background and whether it gets the gap out — is
 `target` onto literal class strings, because `@config` never scans a `.ts` file (see "Tailwind
 v4 traps"). `CONTAINER` itself is unconditional either way — its own horizontal padding
 (`px-2.5 md:px-4 xl:px-0`) is the same `BasePostView.vue`'s legacy `content` path has always
-used, and a section with no background at all (mode `"none"`, or `"site"` with no theme default
-set) renders exactly as it did before this axis existed.
+used, and a section with no background at all (mode `"none"`, or `"site"` with nothing in
+`firstSection`) renders exactly as it did before this axis existed.
+
+**`decor.firstSection`** is `{ mode: "none"|"color"|"image", width, bg: { token, hex, opacity },
+image: { path, overlay }, padding: { top, bottom }, heading, text }`. `none` or an empty record
+is "nothing set": no background, colours or padding, whatever the other fields still hold.
+`bg.token` and `heading`/`text` are a palette token (`primary-200`) or a hex — anything else is
+dropped, because the value lands in a `style` attribute. `heading` and `text` do not paint the
+section: they redefine `--color-ui-heading` and `--color-ui-text` (plus `color`) inline on its
+`<section>`, the same device as `.site-header`, so the H1 and every `text-ui-text` inside take
+them; empty means "as on the rest of the site". `padding.top`/`bottom` are pixels clamped to
+0–200 and replace the vertical part of `p-primary-1` only — inline on the element that carries
+the background (the band wrapper or the box), and on the `<section>` itself when there is no
+background; the horizontal padding stays. `resolveSectionBg` returns all of it
+(`target`, `style`, `gap`, `vars`, `padding`) and `sectionElementStyles` says which element
+gets which string.
 
 Section bodies go through the same `RuntimeTemplateLayout`, so shortcodes work untouched:
 `shortcodesConfig` sits on the post as a whole and `uniqId` addresses a block across the
@@ -1054,7 +1083,7 @@ directory, this workflow's `--exclude` list and this paragraph both need it.
 **What survives a sync**: nothing in the repository — only what lives outside
 it. That is exactly the split "Site config from DB" describes: the site's
 `settings` document in Mongo (brand, layout, strings, theme) and its Vault
-record (`MONGO_URI`, `DOMAIN_NAME`, `CACHE_PURGE_SECRET`, `PANEL_ORIGINS`, …).
+record (`MONGO_URI`, `DOMAIN_NAME`, `CACHE_PURGE_SECRET`, …).
 A sync touches neither.
 
 Cutting a release (bumping `TEMPLATE_VERSION`/`package.json`, tagging) is

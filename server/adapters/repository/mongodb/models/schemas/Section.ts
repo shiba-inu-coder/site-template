@@ -65,8 +65,8 @@ const legacyPaddingToPx = (preset: string) => {
 
 const SectionLayoutSchema = new Schema(
   {
-    // "site" — фон темы (decor.sectionBg) целиком, "none" гасит его даже там,
-    // где он есть; появилось позже остальных полей этой схемы — запись без
+    // "site" — первая секция берёт decor.firstSection темы, "none" гасит его;
+    // появилось позже остальных полей этой схемы — запись без
     // него нормализуется в "site" на чтении (normalizeSectionLayout).
     mode: { type: String, enum: [...SECTION_BG_MODES], default: "site" },
     width: { type: String, default: "container", trim: true },

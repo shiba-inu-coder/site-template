@@ -34,7 +34,7 @@ import { computed } from "vue";
 import { useFakeRefLink } from "#rc/composables/useFakeRefLink";
 import { pickVariant } from "#shared/utils/block-variant";
 
-type ButtonVariant = "solid" | "outline" | "link";
+type ButtonVariant = "solid" | "outline" | "link" | "table";
 
 interface Props {
   variant?: ButtonVariant;
@@ -69,6 +69,8 @@ const refSlug = computed(() => slug || siteConfig.value.site.brandSlug);
 // Тема умеет только первые два; link — кнопка-текст внутри таблицы, её
 // ставят пропом руками. Список общий, потому что проп и тема проходят один и
 // тот же фильтр, а link в `uiTheme.variants.buttonRef` — уже ошибка панели.
+// `table` в список не входит: это не вид кнопки, а её цвета в таблице, и ни
+// тема, ни запись выбрать его не могут — только `PostDataTableRefLinkBtn`.
 const VARIANTS = ["solid", "outline", "link"] as const;
 
 const positionClassesMap: Record<NonNullable<Props["position"]>, string> = {
@@ -83,6 +85,8 @@ const variantClasses: Record<ButtonVariant, string> = {
   outline:
     "border text-ui-link bg-ui-panel-bg border-ui-link hover:bg-ui-cta-bg transition duration-500 ease-in-out hover:text-ui-cta-text focus:bg-ui-cta-hover",
   link: "app-link text-left text-step-6!",
+  table:
+    "border border-transparent bg-ui-table-btn-bg text-ui-table-btn-text hover:bg-ui-table-btn-hover focus:bg-ui-table-btn-hover",
 };
 
 const textClasses: Record<NonNullable<Props["size"]>, string> = {
@@ -104,8 +108,10 @@ const paddingClasses: Record<NonNullable<Props["size"]>, string> = {
 // Проп руками > вариант темы > outline. Проп без значения по умолчанию —
 // единственный способ отличить «вызывающий попросил outline» от «не просил
 // ничего», а значит и дать теме сказать своё слово.
-const resolvedVariant = computed(() =>
-  pickVariant(VARIANTS, "outline", variant, variantFor("buttonRef")),
+const resolvedVariant = computed<ButtonVariant>(() =>
+  variant === "table"
+    ? "table"
+    : pickVariant(VARIANTS, "outline", variant, variantFor("buttonRef")),
 );
 
 const containerClasses = computed(() => [
