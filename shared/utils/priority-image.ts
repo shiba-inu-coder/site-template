@@ -21,6 +21,7 @@ const LIGHT_BLOCKS: Record<string, number> = {
 const BUTTON_TEXT = 60;
 
 export interface PriorityImageInput {
+  banner?: { img?: { path?: string } | null } | null;
   sections: { body?: string }[];
   content?: string;
   textImages: {
@@ -36,8 +37,10 @@ export interface PriorityImageInput {
 
 export interface PriorityImage {
   uniqId: string;
-  place: "lead";
+  place: "lead" | "hero";
 }
+
+export const HERO_UNIQ_ID = "hero";
 
 const textLength = (html: string) =>
   html
@@ -47,16 +50,23 @@ const textLength = (html: string) =>
     .trim().length;
 
 /**
- * Одна приоритетная картинка на страницу или ни одной: первая `text-image`
- * лида с картинкой, если та на первом экране;
+ * Одна приоритетная картинка на страницу или ни одной: картинка баннера,
+ * если она есть, иначе первая `text-image` лида с картинкой, если та на первом экране;
  * у старой статьи без секций лид — весь `content`. Нет такой — LCP у
  * страницы текст, и приоритет с preload не нужны никому.
  */
 export const resolvePriorityImage = ({
+  banner,
   sections,
   content,
   textImages,
 }: PriorityImageInput): PriorityImage | null => {
+  // Баннер стоит над всем текстом страницы: если у него есть картинка, первый
+  // экран её, а картинка лида приоритета не получает.
+  if (banner?.img?.path) {
+    return { uniqId: HERO_UNIQ_ID, place: "hero" };
+  }
+
   const lead = postNeedsContent({ sections })
     ? content || ""
     : sections[0].body || "";

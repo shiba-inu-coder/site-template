@@ -697,7 +697,7 @@ Four rules:
   the picture is `object-contain`ed into it, so the original's dimensions say nothing there.
   A horizontal card and the `image` variant get them.
 - **At most one priority image per page.** `resolvePriorityImage`
-  (`shared/utils/priority-image.ts`) picks it once: the lead's first `text-image` that has a picture, **if it is on the first screen**
+  (`shared/utils/priority-image.ts`) picks it once: the banner's picture when the page has one (`place: "hero"`, rendered by `PostHeroLayout` or the brand's `Hero.vue`; the lead then gets none), otherwise the lead's first `text-image` that has a picture, **if it is on the first screen**
   — no more than `FIRST_SCREEN_TEXT` (300) characters of text above it, a `button-ref` or an
   author card counted at their height, and any other block above it (a table of contents, a
   table, cards) pushes it off. `bottom` puts the picture under the block's own text, so that
