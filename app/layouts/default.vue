@@ -4,7 +4,7 @@
     class="relative font-primary bg-ui-page-bg"
     v-bind="frameAttrs"
   >
-    <HeaderLayout></HeaderLayout>
+    <component :is="BrandHeader || HeaderLayout"></component>
     <div>
       <slot></slot>
     </div>
@@ -17,6 +17,7 @@ import HeaderLayout from "#rc/components/layout/HeaderLayout.vue";
 // Оси темы висят атрибутами на корне страницы, а не классами: по ним
 // разводится блок `/* UI axes */` в `tailwind.css`. Тот же набор обязан быть
 // и на `error.vue` — 404 рисует не этот файл.
+const BrandHeader = getBrandPart("Header");
 const { frameAttrs } = useUiTheme();
 
 const FooterLayout = defineLazyHydrationComponent(

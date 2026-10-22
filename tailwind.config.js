@@ -6,5 +6,6 @@ export default {
     "./app/pages/**/*.vue",
     "./app/layouts/**/*.vue",
     "./app/views/**/*.vue",
+    "./brand/**/*.vue",
   ],
 };

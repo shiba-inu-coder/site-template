@@ -3,7 +3,7 @@ import tailwindcss from "@tailwindcss/vite";
 import { getCloudinaryBaseUrl } from "./app/utils/get-cloudinary-base-url";
 import { fileURLToPath } from "url";
 import { dirname, join } from "path";
-import { readFileSync } from "fs";
+import { existsSync, readFileSync } from "fs";
 import { defineNuxtConfig } from "nuxt/config";
 
 function getCurrentDirectory(p: string) {
@@ -19,6 +19,8 @@ const TEMPLATE_VERSION = readFileSync(
   getCurrentDirectory("./TEMPLATE_VERSION"),
   "utf-8",
 ).trim();
+
+const BRAND_STYLES = getCurrentDirectory("./brand/styles.css");
 
 export default defineNuxtConfig({
   app: {
@@ -39,6 +41,8 @@ export default defineNuxtConfig({
       ],
     },
   },
+
+  css: existsSync(BRAND_STYLES) ? [BRAND_STYLES] : [],
 
   modules: [
     "@nuxtjs/sitemap",
