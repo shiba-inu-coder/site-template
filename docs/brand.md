@@ -14,6 +14,8 @@
 
 Перекраска общих блоков без копии — стилями в `brand/styles.css` по `[data-part="table|faq|toc|button"]`.
 
+Обёртки статьи — `<aside class="brand-tip|brand-warning|brand-card|brand-quote">` и `<aside class="brand-cols">` с двумя `<aside class="brand-col">` внутри — приходят в тексте статьи из панели (импорт из Markdown, набор `ARTICLE_WRAPPERS` в appspro). Своих стилей у шаблона для них нет: оформляет их `brand/styles.css`, без него это обычные блоки.
+
 Hero-картинка бренда выбирается только через `usePriorityImage` / `useResponsiveImage`: на странице не больше одной приоритетной картинки (`perf-smoke --expect-priority`).
 
 schema.org строит `usePostSchema()`; в `brand/` его не вызывают и не подменяют.
