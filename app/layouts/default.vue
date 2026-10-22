@@ -8,7 +8,7 @@
     <div>
       <slot></slot>
     </div>
-    <FooterLayout></FooterLayout>
+    <component :is="BrandFooter || FooterLayout"></component>
   </div>
 </template>
 <script lang="ts" setup>
@@ -18,6 +18,7 @@ import HeaderLayout from "#rc/components/layout/HeaderLayout.vue";
 // разводится блок `/* UI axes */` в `tailwind.css`. Тот же набор обязан быть
 // и на `error.vue` — 404 рисует не этот файл.
 const BrandHeader = getBrandPart("Header");
+const BrandFooter = getBrandPart("Footer");
 const { frameAttrs } = useUiTheme();
 
 const FooterLayout = defineLazyHydrationComponent(

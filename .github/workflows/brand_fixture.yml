@@ -1,0 +1,29 @@
+name: Brand fixture build
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      # Сборка с фикстурой ловит правку шаблона, после которой код `brand/`
+      # у сайтов перестаёт собираться (контракт — docs/brand.md).
+      - name: Build with brand fixture
+        run: |
+          cp -r tests/fixtures/brand-sample brand
+          npm run build
+        env:
+          MONGO_URI: mongodb://localhost:27017
+          DB_NAME: ci
+          SITE_URL: https://example.test
+          DOMAIN_NAME: example.test
+          CACHE_PURGE_SECRET: ci

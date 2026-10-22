@@ -106,6 +106,7 @@ const SITE_CONFIG_STRUCTURE: SiteConfig = {
 export const buildSiteConfig = (
   template: DeepPartial<SiteConfig>,
   settings?: ISettingPublic | null,
+  brandSite?: DeepPartial<SiteConfig> | null,
 ): SiteConfig => {
   const brand = settings?.brand || {};
 
@@ -125,7 +126,12 @@ export const buildSiteConfig = (
     translates: settings?.strings || undefined,
   };
 
-  return deepMerge(deepMerge(SITE_CONFIG_STRUCTURE, template), fromDb);
+  // `brand/site.json` ложится последним: сайт с кастомной вёрсткой правит
+  // меню и тексты там, а не в панели.
+  return deepMerge(
+    deepMerge(deepMerge(SITE_CONFIG_STRUCTURE, template), fromDb),
+    brandSite,
+  );
 };
 
 // `<html lang>` и `inLanguage` в schema.org обязаны совпадать — поэтому правило

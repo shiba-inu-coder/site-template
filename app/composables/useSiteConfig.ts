@@ -1,5 +1,6 @@
 import { seoConfig } from "@@/seo.conf";
 import { buildSiteConfig } from "#shared/utils/site-config";
+import { getBrandSite } from "#rc/utils/brand";
 
 // Меню, тексты, логотип и язык сайта живут в его базе, а `seo.conf.ts` —
 // нейтральный дефолт шаблона под ними. Настройки кладёт в состояние
@@ -8,5 +9,7 @@ import { buildSiteConfig } from "#shared/utils/site-config";
 export const useSiteConfig = () => {
   const { settings } = useSettings();
 
-  return computed<SiteConfig>(() => buildSiteConfig(seoConfig, settings.value));
+  return computed<SiteConfig>(() =>
+    buildSiteConfig(seoConfig, settings.value, getBrandSite()),
+  );
 };
