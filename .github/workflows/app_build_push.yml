@@ -10,6 +10,13 @@ on:
         description: "Request ID (ставится appspro, вручную не заполнять)"
         required: false
         default: ""
+      # Черновик кастомной вёрстки (appspro, ветка `layout-draft`) собирается
+      # под своим тегом и не трогает `latest`, на котором стоит прод сайта.
+      # Объявлять обязательно: необъявленный input GitHub отклоняет с 422.
+      image_tag:
+        description: "Тег образа вместо latest (ставится appspro)"
+        required: false
+        default: ""
 
 jobs:
   build_push:
@@ -41,9 +48,9 @@ jobs:
           file: ./Dockerfile
           push: true
           tags: |
-            ${{ secrets.DOCKERHUB_USERNAME }}/${{ secrets.DOCKERHUB_REPO_NAME }}:latest
+            ${{ secrets.DOCKERHUB_USERNAME }}/${{ secrets.DOCKERHUB_REPO_NAME }}:${{ inputs.image_tag || 'latest' }}
             ${{ secrets.DOCKERHUB_USERNAME }}/${{ secrets.DOCKERHUB_REPO_NAME }}:${{ github.sha }}
-            ${{ secrets.DOCKERHUB_USERNAME }}/${{ secrets.DOCKERHUB_REPO_NAME }}:template-${{ steps.template_version.outputs.value }}
+            ${{ inputs.image_tag == '' && format('{0}/{1}:template-{2}', secrets.DOCKERHUB_USERNAME, secrets.DOCKERHUB_REPO_NAME, steps.template_version.outputs.value) || '' }}
           # Ни build-аргументов, ни похода в Vault: конфигурация целиком
           # подставляется на ноде переменными NUXT_*. Образ одинаков для любого
           # окружения, и в его слоях нечему утечь.
