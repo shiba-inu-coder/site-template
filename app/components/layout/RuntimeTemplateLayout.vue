@@ -2,6 +2,7 @@
 import type { PropType } from "vue";
 import { computed } from "#imports";
 import ButtonRef from "#rc/components/post/PostButtonRef.vue";
+import { getBrandBlocks } from "#rc/utils/brand";
 import { compileSafeTemplate } from "#shared/utils/safe-runtime-template";
 import type { ImageLayout } from "#shared/utils/image-sizes";
 
@@ -78,6 +79,7 @@ const components = {
   DataTable,
   ContactUs,
   TextImage,
+  ...getBrandBlocks(),
   // CasinoRatings,
   // BookmakerRatings,
   // MiniCasinoReview,

@@ -1,6 +1,7 @@
 <template>
   <nav
     v-if="tableContent.length"
+    data-part="toc"
     class="toc-block text-step-7 bg-ui-panel-bg border border-ui-panel-border rounded-primary"
   >
     <component

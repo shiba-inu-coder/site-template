@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div data-part="table">
     <PostDataTableGrid
       :columns="data.columns"
       :rows="formatedRows"

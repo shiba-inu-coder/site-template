@@ -1,6 +1,7 @@
 <template>
   <div
     v-if="faq.data.length"
+    data-part="faq"
     :class="containerClasses"
   >
     <PostFAQItem

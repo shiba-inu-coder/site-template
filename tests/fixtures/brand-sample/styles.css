@@ -1,0 +1,7 @@
+.brand-sample-header {
+  border-bottom-width: 3px;
+}
+
+[data-part="table"] {
+  outline: 1px solid currentColor;
+}

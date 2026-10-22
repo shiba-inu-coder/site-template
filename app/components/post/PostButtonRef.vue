@@ -1,5 +1,6 @@
 <template>
   <span
+    data-part="button"
     class="flex"
     :class="containerClasses"
   >

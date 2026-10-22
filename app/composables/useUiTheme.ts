@@ -1,3 +1,5 @@
+import { getBrandTheme } from "#rc/utils/brand";
+import { pickUiTheme } from "#shared/utils/brand";
 import { contrastReport } from "#shared/utils/contrast";
 import type { ContrastReportEntry } from "#shared/utils/contrast";
 import {
@@ -19,9 +21,11 @@ export const useUiTheme = () => {
   const siteConfig = useSiteConfig();
   const { frame: postFrame } = usePost();
 
-  const theme = computed<UiTheme | null>(() =>
-    isUiThemeConfigured(uiTheme.value) ? uiTheme.value : null,
-  );
+  const theme = computed<UiTheme | null>(() => {
+    const picked = pickUiTheme(getBrandTheme(), uiTheme.value);
+
+    return isUiThemeConfigured(picked) ? picked : null;
+  });
 
   const mode = computed<UiThemeMode>(
     () => theme.value?.mode || (siteConfig.value.site.theme as UiThemeMode),

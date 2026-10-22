@@ -8,7 +8,7 @@
       id="error"
       class="flex min-h-screen items-center flex-col bg-ui-card-bg"
     >
-      <HeaderLayout></HeaderLayout>
+      <component :is="BrandHeader || HeaderLayout"></component>
       <main
         class="grid min-h-[85vh] place-items-center px-6 py-24 sm:py-32 lg:px-8"
       >
@@ -40,11 +40,13 @@
 
 <script lang="ts" setup>
 import HeaderLayout from "#rc/components/layout/HeaderLayout.vue";
+import { getBrandPart } from "#rc/utils/brand";
 
 defineProps<{
   error: any;
 }>();
 
+const BrandHeader = getBrandPart("Header");
 const siteConfig = useSiteConfig();
 const { frameAttrs } = useUiTheme();
 

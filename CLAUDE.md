@@ -82,6 +82,9 @@ types/constants/utils). Aliases: `#sg` → `server/`, `#rc` → `app/`.
   Stored HTML goes through `compileSafeTemplate` (`shared/utils/safe-runtime-template.ts`), never
   `compile` from `vue`: a binding left in the HTML would run on the server during SSR. See
   `docs/ui.md`, "Shortcodes".
+- `brand/` — кастомная вёрстка сайта (шапка, футер, hero, свои блоки, тема, тексты); есть только в
+  репо сайта, `sync_site_template.yml` его не трогает. Контракт — `docs/brand.md`; сборку с
+  `tests/fixtures/brand-sample/` гоняет CI.
 - `app/plugins/api.ts` — thin `$api()` / `$apiAbort()` wrapper around `$fetch` (no auth).
 - SVG icons: `app/assets/icons/` compiled to sprites by nuxt-svg-sprite-icon (`<svg-icon>`).
 

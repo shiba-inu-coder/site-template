@@ -39,14 +39,15 @@ jobs:
           token: ${{ secrets.TEMPLATE_TOKEN }}
           path: .template
 
-      # Белого списка нет намеренно: своего кода на сайте нет, шаблон
-      # перезаписывает дерево целиком. Появится site/ — добавить сюда ещё
-      # --exclude site/ и в docs/ui.md, раздел "Template sync".
+      # Белого списка нет намеренно: шаблон перезаписывает дерево целиком,
+      # кроме `brand/` — кастомной вёрстки сайта (docs/brand.md). Появится
+      # ещё папка сайта — добавить сюда --exclude и в docs/ui.md, раздел
+      # "Template sync".
       - name: Sync template into site
         env:
           TEMPLATE_REF: ${{ inputs.template_ref }}
         run: |
-          rsync -a --delete ./.template/ ./ --exclude .git --exclude .template
+          rsync -a --delete ./.template/ ./ --exclude .git --exclude .template --exclude brand/
           rm -rf .template
           git add -A
 
