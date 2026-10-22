@@ -35,3 +35,7 @@ schema.org строит `usePostSchema()`; в `brand/` его не вызыва�
 - Побайтное совпадение SSR у сайта без `brand/` — нужна страница с контентом (этап 2a).
 - Гидрация кастомной шапки в браузере.
 - Совместимость `brand/styles.css` с `theme-css-layers.test.ts`.
+
+## Сборка черновика
+
+appspro собирает ветку `layout-draft` через `app_build_push.yml` с input `image_tag: draft`: образ уходит под `:draft` и `:<sha>`, `latest` и `template-*` не трогаются. Input объявлен в workflow — без него GitHub отвечает 422 `Unexpected inputs provided: ["image_tag"]`. Ветка `layout-draft` получает новый workflow, только когда appspro подтягивает в неё `main`.
