@@ -127,3 +127,25 @@ test("приоритет: старая статья без секций ищет
 
   assert.deepEqual(found, { uniqId: "lead", place: "lead" });
 });
+
+test("приоритет: картинка баннера — первый экран, картинка лида приоритета не получает", () => {
+  const found = resolvePriorityImage({
+    banner: { img: { path: "v1/articles/hero" } },
+    sections: [{ body: marker("text-image", "lead") + paragraph(50) }],
+    content: "",
+    textImages: [picture("lead")],
+  });
+
+  assert.deepEqual(found, { uniqId: "hero", place: "hero" });
+});
+
+test("приоритет: баннер без картинки ничего не меняет", () => {
+  const found = resolvePriorityImage({
+    banner: { img: null },
+    sections: [{ body: marker("text-image", "lead") + paragraph(50) }],
+    content: "",
+    textImages: [picture("lead")],
+  });
+
+  assert.deepEqual(found, { uniqId: "lead", place: "lead" });
+});

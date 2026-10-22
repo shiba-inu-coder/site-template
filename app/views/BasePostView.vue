@@ -5,6 +5,7 @@
         :is="BrandHero"
         v-if="BrandHero"
       />
+      <PostHeroLayout v-else-if="hero.img.value" />
       <template v-if="!needsContent">
         <div
           class="px-2.5 md:px-4 xl:px-0 w-full max-w-7xl mx-auto pt-4 md:pt-6"
@@ -34,6 +35,7 @@
   </div>
 </template>
 <script setup lang="ts">
+import PostHeroLayout from "#rc/components/layout/PostHeroLayout.vue";
 import PostMetaLayout from "#rc/components/layout/PostMetaLayout.vue";
 import RuntimeTemplateLayout from "#rc/components/layout/RuntimeTemplateLayout.vue";
 import StickyCtaLayout from "#rc/components/layout/StickyCtaLayout.vue";
@@ -48,6 +50,7 @@ const { content, sections, slug } = usePost();
 const { frame } = useUiTheme();
 
 const BrandHero = getBrandPart("Hero");
+const hero = usePageHero();
 
 const needsContent = computed(() =>
   postNeedsContent({ sections: sections.value }),

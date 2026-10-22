@@ -202,6 +202,13 @@ export interface PostFaq {
 export interface PostBanner {
   ribbon: string;
   text: string;
+  buttonText?: string;
+  img?: {
+    path: string;
+    alt: string;
+    width?: number;
+    height?: number;
+  } | null;
   entity: {
     _id: ObjectId;
     title: string;
