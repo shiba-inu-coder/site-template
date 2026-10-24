@@ -21,6 +21,7 @@ const TEMPLATE_VERSION = readFileSync(
 ).trim();
 
 const BRAND_STYLES = getCurrentDirectory("./brand/styles.css");
+const BRAND_THEME = getCurrentDirectory("./brand/theme.json");
 
 export default defineNuxtConfig({
   app: {
@@ -178,6 +179,13 @@ export default defineNuxtConfig({
 
   nitro: {
     debug: isDev,
+    // Страница видит `brand/theme.json` через `import.meta.glob`, а Nitro его
+    // не умеет: без этого модуля сервер встраивал шрифт темы из базы, и
+    // шрифт бренда уходил ссылкой на Google.
+    virtual: {
+      "#brand-theme": () =>
+        `export default ${existsSync(BRAND_THEME) ? readFileSync(BRAND_THEME, "utf-8") : "null"};`,
+    },
     compressPublicAssets: false,
     minify: !isDev,
     storage: {

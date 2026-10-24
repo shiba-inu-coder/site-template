@@ -9,7 +9,7 @@
 | `brand/Header.vue`, `Footer.vue`, `Hero.vue` | подменяют стандартные части; нет файла — стандартная часть                                                                                                                                                                   |
 | `brand/styles.css`                           | подключается в сборку, если файл есть                                                                                                                                                                                        |
 | `brand/blocks/<Key>.vue`                     | свой блок вместо общего; `<Key>` — имя из карты шорткодов `RuntimeTemplateLayout` (`DataTable`, `Faq`, `TableContent`, `ButtonRef`, …). Пропсы те же, что у стандартного блока. Фиксы общего блока до такой копии не доходят |
-| `brand/theme.json`                           | тема целиком вместо `settings.uiTheme`; недонастроенная (нет `mode` или любого из 9 цветов) игнорируется                                                                                                                     |
+| `brand/theme.json`                           | тема целиком вместо `settings.uiTheme`; недонастроенная (нет `mode` или любого из 9 цветов) игнорируется. Шрифт из её `type` сервер встраивает так же, как шрифт темы из базы (`#brand-theme` в `nuxt.config.ts`)            |
 | `brand/site.json`                            | форма `SiteConfig` (меню, CTA, футер, тексты) поверх `seo.conf.ts` и `settings`; пустые значения не перекрывают                                                                                                              |
 
 Перекраска общих блоков без копии — стилями в `brand/styles.css` по `[data-part="table|faq|toc|button"]`.

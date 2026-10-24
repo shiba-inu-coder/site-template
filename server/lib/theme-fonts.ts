@@ -1,5 +1,6 @@
+import brandTheme from "#brand-theme";
 import { SettingComposition } from "#sg/settings";
-import { themeFontsHref } from "#shared/utils/ui-theme";
+import { siteThemeFontsHref } from "#shared/utils/brand";
 import {
   THEME_FONTS_PREFIX,
   isCompleteWoff2,
@@ -49,7 +50,7 @@ const failedAt = new Map<string, number>();
 
 export const themeFontsCss = async (): Promise<ThemeFonts> => {
   const settings = await SettingComposition.GetPublicSettings();
-  const href = themeFontsHref(settings?.uiTheme);
+  const href = siteThemeFontsHref(brandTheme, settings?.uiTheme);
 
   if (
     !href ||

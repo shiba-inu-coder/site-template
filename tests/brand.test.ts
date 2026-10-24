@@ -1,6 +1,6 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { pickUiTheme } from "../shared/utils/brand.ts";
+import { pickUiTheme, siteThemeFontsHref } from "../shared/utils/brand.ts";
 import { buildSiteConfig } from "../shared/utils/site-config.ts";
 import { DEFAULT_UI_THEME_DARK } from "../shared/utils/ui-theme.ts";
 import type { UiTheme } from "../shared/utils/ui-theme.ts";
@@ -21,6 +21,26 @@ test("pickUiTheme: недонастроенная тема бренда не б�
   const partial = { mode: "dark", colors: {} } as unknown as UiTheme;
 
   assert.equal(pickUiTheme(partial, fromBase), fromBase);
+});
+
+test("siteThemeFontsHref: шрифт берётся из theme.json, а не из темы в базе", () => {
+  const brand = {
+    ...fromBrand,
+    type: { display: { family: "Raleway" }, body: { family: "Raleway" } },
+  } as UiTheme;
+
+  const href = siteThemeFontsHref(brand, fromBase);
+
+  assert.match(href, /family=Raleway/);
+  assert.doesNotMatch(href, /family=Inter/);
+});
+
+test("siteThemeFontsHref: без theme.json — шрифт темы из базы", () => {
+  assert.equal(
+    siteThemeFontsHref(null, fromBase),
+    siteThemeFontsHref(fromBase, null),
+  );
+  assert.equal(siteThemeFontsHref(null, null), "");
 });
 
 test("buildSiteConfig: site.json перекрывает запись из базы, пустое — нет", () => {

@@ -1,4 +1,4 @@
-import { isUiThemeConfigured } from "./ui-theme.ts";
+import { isUiThemeConfigured, themeFontsHref } from "./ui-theme.ts";
 import type { UiTheme } from "./ui-theme.ts";
 
 /**
@@ -11,3 +11,11 @@ export const pickUiTheme = (
   settingsTheme: UiTheme | null | undefined,
 ): UiTheme | null | undefined =>
   isUiThemeConfigured(brandTheme) ? brandTheme : settingsTheme;
+
+// Сервер встраивает @font-face по этому адресу, страница сверяет с ним свой
+// (`useUiTheme`). Тема для обоих выбирается одинаково, иначе шрифт бренда
+// уходил бы ссылкой на Google.
+export const siteThemeFontsHref = (
+  brandTheme: UiTheme | null | undefined,
+  settingsTheme: UiTheme | null | undefined,
+): string => themeFontsHref(pickUiTheme(brandTheme, settingsTheme));

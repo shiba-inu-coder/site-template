@@ -1,12 +1,11 @@
 import { getBrandTheme } from "#rc/utils/brand";
-import { pickUiTheme } from "#shared/utils/brand";
+import { pickUiTheme, siteThemeFontsHref } from "#shared/utils/brand";
 import { contrastReport } from "#shared/utils/contrast";
 import type { ContrastReportEntry } from "#shared/utils/contrast";
 import {
   isUiThemeConfigured,
   resolvePageFrame,
   resolveScheme,
-  themeFontsHref,
   themeToCssVars,
 } from "#shared/utils/ui-theme";
 import type {
@@ -35,7 +34,9 @@ export const useUiTheme = () => {
     theme.value ? themeToCssVars(theme.value) : "",
   );
 
-  const fontsHref = computed(() => themeFontsHref(theme.value));
+  const fontsHref = computed(() =>
+    siteThemeFontsHref(getBrandTheme(), uiTheme.value),
+  );
 
   const frame = computed<PageFrame>(() =>
     resolvePageFrame(theme.value, postFrame.value),
