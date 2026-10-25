@@ -149,3 +149,15 @@ test("приоритет: баннер без картинки ничего не
 
   assert.deepEqual(found, { uniqId: "lead", place: "lead" });
 });
+
+test("приоритет: баннер с картинкой забирает приоритет у лида", () => {
+  assert.deepEqual(
+    resolvePriorityImage({
+      banner: { img: { path: "site/banner" } },
+      sections: [{ body: marker("text-image", "lead") + paragraph(50) }],
+      content: "",
+      textImages: [picture("lead")],
+    }),
+    { uniqId: "hero", place: "hero" },
+  );
+});

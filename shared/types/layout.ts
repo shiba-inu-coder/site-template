@@ -33,6 +33,13 @@ export interface SiteLogo {
   height: number;
 }
 
+export interface SiteBanner {
+  path: string;
+  alt: string;
+  width: number;
+  height: number;
+}
+
 // `settings.brand` в базе сайта — плоская запись бренда. В конфиг шаблона она
 // раскладывается по трём местам (`site`, `logo`, `img`), см. buildSiteConfig.
 export interface SiteBrand {
@@ -42,6 +49,7 @@ export interface SiteBrand {
   logo: SiteLogo;
   favicon: { src: string };
   imgRoundCorner: string;
+  banner?: SiteBanner;
 }
 
 export interface SiteLayout {
@@ -136,6 +144,7 @@ export interface SiteConfig {
   };
   logo: SiteLogo;
   favicon: { src: string };
+  banner: SiteBanner;
   img: { modifiers: { roundCorner: string } };
   layout: SiteLayout;
   translates: SiteStrings;

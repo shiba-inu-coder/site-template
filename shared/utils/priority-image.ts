@@ -21,6 +21,8 @@ const LIGHT_BLOCKS: Record<string, number> = {
 const BUTTON_TEXT = 60;
 
 export interface PriorityImageInput {
+  // Уже разрешённая картинка баннера (`resolveHeroImage`): общая картинка
+  // сайта тоже стоит над текстом и забирает приоритет у лида.
   banner?: { img?: { path?: string } | null } | null;
   sections: { body?: string }[];
   content?: string;

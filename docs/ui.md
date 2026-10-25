@@ -235,11 +235,11 @@ published site.
 
 Three subdocuments carry it (`server/adapters/repository/mongodb/models/schemas/`):
 
-| Field              | Schema       | Holds                                                                                                     |
-| ------------------ | ------------ | --------------------------------------------------------------------------------------------------------- |
-| `settings.brand`   | `Brand.ts`   | `name`, `lang`, `brandSlug`, `logo {src,alt,width,height}`, `favicon {src}`, `imgRoundCorner`             |
-| `settings.layout`  | `Layout.ts`  | `header {items, cta}`, `footer {title, body, links, legalLogos, paymentLogos}`, `breadcrumbs {homeLabel}` |
-| `settings.strings` | `Strings.ts` | the whole `seoConfig.translates` tree                                                                     |
+| Field              | Schema       | Holds                                                                                                                                                          |
+| ------------------ | ------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `settings.brand`   | `Brand.ts`   | `name`, `lang`, `brandSlug`, `logo {src,alt,width,height}`, `favicon {src}`, `imgRoundCorner`, `banner {path,alt,width,height}` (общий баннер, необязательный) |
+| `settings.layout`  | `Layout.ts`  | `header {items, cta}`, `footer {title, body, links, legalLogos, paymentLogos}`, `breadcrumbs {homeLabel}`                                                      |
+| `settings.strings` | `Strings.ts` | the whole `seoConfig.translates` tree                                                                                                                          |
 
 `Strings.ts` declares **no** keys and is `strict: false` on purpose: the key set is the
 panel's (`seo-conf-defaults.js`), it grows there, and the site's image does not redeploy in
@@ -249,7 +249,7 @@ literal.
 
 **`useSiteConfig()` is the only way a component reads any of this.** It is a `computed` over
 `buildSiteConfig(seoConfig, settings)` (`shared/utils/site-config.ts`, pure, no Nuxt), and it
-returns the template's own shape — `site`, `logo`, `favicon`, `img`, `layout`, `translates` —
+returns the template's own shape — `site`, `logo`, `favicon`, `banner`, `img`, `layout`, `translates` —
 so a component does not know or care which layer answered. `settings.brand` is flat in the
 database and is unfolded into `site`/`logo`/`img` by that one function.
 
@@ -697,7 +697,7 @@ Four rules:
   the picture is `object-contain`ed into it, so the original's dimensions say nothing there.
   A horizontal card and the `image` variant get them.
 - **At most one priority image per page.** `resolvePriorityImage`
-  (`shared/utils/priority-image.ts`) picks it once: the banner's picture when the page has one (`place: "hero"`, rendered by `PostHeroLayout` or the brand's `Hero.vue`; the lead then gets none), otherwise the lead's first `text-image` that has a picture, **if it is on the first screen**
+  (`shared/utils/priority-image.ts`) picks it once: the banner's picture when the page has one — its own or the site's shared one, `resolveHeroImage` (`place: "hero"`, rendered by `PostHeroLayout` or the brand's `Hero.vue`; the lead then gets none), otherwise the lead's first `text-image` that has a picture, **if it is on the first screen**
   — no more than `FIRST_SCREEN_TEXT` (300) characters of text above it, a `button-ref` or an
   author card counted at their height, and any other block above it (a table of contents, a
   table, cards) pushes it off. `bottom` puts the picture under the block's own text, so that

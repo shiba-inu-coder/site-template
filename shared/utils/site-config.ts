@@ -86,6 +86,7 @@ const SITE_CONFIG_STRUCTURE: SiteConfig = {
   site: { name: "", lang: "en", theme: "light", brandSlug: "" },
   logo: { src: "", alt: "", width: 0, height: 0 },
   favicon: { src: "" },
+  banner: { path: "", alt: "", width: 0, height: 0 },
   img: { modifiers: { roundCorner: "" } },
   layout: {
     header: {
@@ -121,6 +122,7 @@ export const buildSiteConfig = (
     },
     logo: brand.logo,
     favicon: brand.favicon,
+    banner: brand.banner,
     img: { modifiers: { roundCorner: brand.imgRoundCorner } },
     layout: settings?.layout || undefined,
     translates: settings?.strings || undefined,

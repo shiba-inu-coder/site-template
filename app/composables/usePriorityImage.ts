@@ -1,13 +1,17 @@
 import type { ComputedRef } from "vue";
+import { resolveHeroImage } from "#shared/utils/hero-image";
 import { resolvePriorityImage } from "#shared/utils/priority-image";
 
 /** Какая картинка страницы приоритетная — одна или ни одной. */
 export const usePriorityImage = () => {
   const { banner, sections, content, textImages } = usePost();
+  const siteConfig = useSiteConfig();
 
   return computed(() =>
     resolvePriorityImage({
-      banner: banner.value,
+      banner: {
+        img: resolveHeroImage(banner.value?.img, siteConfig.value.banner),
+      },
       sections: sections.value,
       content: content.value,
       textImages: textImages.value,

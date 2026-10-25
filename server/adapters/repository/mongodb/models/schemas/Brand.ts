@@ -21,6 +21,18 @@ const FaviconSchema = new Schema(
   { _id: false },
 );
 
+// Общий баннер сайта: подставляется на страницы без своей картинки баннера
+// (`resolveHeroImage`). Пока панель его не задала, поля у бренда нет вовсе.
+const BannerSchema = new Schema(
+  {
+    path: { type: String, default: "", trim: true },
+    alt: { type: String, default: "", trim: true },
+    width: { type: Number, default: 0 },
+    height: { type: Number, default: 0 },
+  },
+  { _id: false },
+);
+
 export const BrandSchema = new Schema(
   {
     name: { type: String, default: "", trim: true },
@@ -29,6 +41,7 @@ export const BrandSchema = new Schema(
     logo: { type: LogoSchema, default: () => ({}) },
     favicon: { type: FaviconSchema, default: () => ({}) },
     imgRoundCorner: { type: String, default: "", trim: true },
+    banner: { type: BannerSchema, default: undefined },
   },
   { _id: false },
 );

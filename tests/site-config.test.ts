@@ -13,6 +13,7 @@ const template: DeepPartial<SiteConfig> = {
   site: { name: "", lang: "en", theme: "light", brandSlug: "" },
   logo: { src: "", alt: "", width: 0, height: 0 },
   favicon: { src: "" },
+  banner: { path: "", alt: "", width: 0, height: 0 },
   img: { modifiers: { roundCorner: "15" } },
   layout: {
     header: {
@@ -99,4 +100,20 @@ test("язык страницы: пост перекрывает сайт, пу�
   assert.equal(resolvePageLang({ lang: "de-DE" }, site), "de-DE");
   assert.equal(resolvePageLang({ lang: "" }, site), "en");
   assert.equal(resolvePageLang(undefined, site), "en");
+});
+
+test("buildSiteConfig: общий баннер из settings.brand ложится в конфиг, без него поле пустое", () => {
+  const settings = buildMessageSettings();
+
+  assert.equal(buildSiteConfig(template, settings).banner.path, "");
+
+  settings.brand = {
+    ...settings.brand,
+    banner: { path: "site/banner", alt: "Баннер", width: 1200, height: 600 },
+  };
+
+  const { banner } = buildSiteConfig(template, settings);
+
+  assert.equal(banner.path, "site/banner");
+  assert.equal(banner.alt, "Баннер");
 });
