@@ -7,6 +7,7 @@ import {
 import { RedirectsRoutesSchema } from "./schemas/RedirectsRoutes";
 import { BrandSchema } from "./schemas/Brand";
 import { LayoutSchema } from "./schemas/Layout";
+import { NavigationSchema } from "./schemas/Navigation";
 import { StringsSchema } from "./schemas/Strings";
 import { PreviewGrantSchema } from "./schemas/PreviewGrant";
 import { UiThemeSchema } from "./schemas/UiTheme";
@@ -36,6 +37,8 @@ const ModelSchema = new Schema<ISettingDocument, ISettingModel>(
       type: StringsSchema,
       default: () => ({}),
     },
+    // Без default: у сайта, которому панель навигацию не писала, поля нет.
+    navigation: NavigationSchema,
     previewGrants: {
       type: [PreviewGrantSchema],
       default: () => [],
