@@ -22,6 +22,7 @@ export const NavigationSchema = new Schema(
     footerLinks: { type: [FooterLinkSchema], default: () => [] },
     footerTitle: { type: String, default: "", trim: true },
     footerBody: { type: String, default: "" },
+    explicit: { type: Boolean, default: false },
   },
   { _id: false },
 );

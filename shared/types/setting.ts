@@ -21,6 +21,8 @@ export interface SiteNavigation {
   footerLinks: FooterLink[];
   footerTitle: string;
   footerBody: string;
+  // Записано формой панели: пустое поле — осознанное «нет», а не «не задано».
+  explicit?: boolean;
 }
 
 // Какое казино ведёт реф-кнопка; пишет только панель. Ключи блоков и кнопок
