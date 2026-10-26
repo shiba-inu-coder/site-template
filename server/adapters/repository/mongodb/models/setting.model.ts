@@ -8,6 +8,7 @@ import { RedirectsRoutesSchema } from "./schemas/RedirectsRoutes";
 import { BrandSchema } from "./schemas/Brand";
 import { LayoutSchema } from "./schemas/Layout";
 import { NavigationSchema } from "./schemas/Navigation";
+import { RefsSchema } from "./schemas/Refs";
 import { StringsSchema } from "./schemas/Strings";
 import { PreviewGrantSchema } from "./schemas/PreviewGrant";
 import { UiThemeSchema } from "./schemas/UiTheme";
@@ -39,6 +40,8 @@ const ModelSchema = new Schema<ISettingDocument, ISettingModel>(
     },
     // Без default: у сайта, которому панель навигацию не писала, поля нет.
     navigation: NavigationSchema,
+    // Без default, как navigation: сайт без панельных рефок читает поле как null.
+    refs: RefsSchema,
     previewGrants: {
       type: [PreviewGrantSchema],
       default: () => [],

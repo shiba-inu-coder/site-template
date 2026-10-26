@@ -23,6 +23,14 @@ export interface SiteNavigation {
   footerBody: string;
 }
 
+// Какое казино ведёт реф-кнопка; пишет только панель. Ключи блоков и кнопок
+// — `shared/constants/ref-buttons.ts` и `brand/refs.json`.
+export interface SiteRefs {
+  defaultSlug: string;
+  blocks: Record<string, string>;
+  buttons: Record<string, string>;
+}
+
 export interface ISetting {
   robotsTXT: string;
   externalSitemapUrl: string;
@@ -32,6 +40,7 @@ export interface ISetting {
   layout: SiteLayout;
   strings: SiteStrings;
   navigation?: SiteNavigation | null;
+  refs?: SiteRefs | null;
 
   previewGrants: SettingPreviewGrant[];
   uiTheme: UiTheme;
@@ -54,6 +63,7 @@ export type ISettingPublic = Pick<ISetting, "redirectsRoutes"> & {
   layout?: DeepPartial<SiteLayout> | null;
   strings?: DeepPartial<SiteStrings> | null;
   navigation?: DeepPartial<SiteNavigation> | null;
+  refs?: DeepPartial<SiteRefs> | null;
   uiTheme?: UiTheme | null;
 };
 

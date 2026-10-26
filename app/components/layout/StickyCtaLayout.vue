@@ -22,6 +22,8 @@
     <CtaButtonLayout
       :label="buttonLabel"
       :link="buttonLink"
+      :ref-key="REF_KEY.stickyCta"
+      :ref-block="REF_BLOCK.sticky"
       :full-width="!hasBonus"
     />
   </div>
@@ -29,6 +31,7 @@
 
 <script setup lang="ts">
 import CtaButtonLayout from "#rc/components/layout/CtaButtonLayout.vue";
+import { REF_BLOCK, REF_KEY } from "#shared/constants/ref-buttons";
 
 // Липкая панель живёт только на телефоне: на десктопе хватает кнопок самой
 // статьи, и место внизу экрана там не дефицит.

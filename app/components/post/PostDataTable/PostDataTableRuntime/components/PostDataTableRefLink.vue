@@ -1,6 +1,7 @@
 <template>
   <PostButtonRef
     :slug="slug"
+    table-cell
     size="medium"
     variant="link"
     :padding="false"
