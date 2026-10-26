@@ -23,6 +23,8 @@
           <CtaButtonLayout
             :label="buttonLabel"
             :link="buttonLink"
+            :ref-key="REF_KEY.heroCta"
+            :ref-block="REF_BLOCK.hero"
             size="medium"
           />
         </div>
@@ -38,6 +40,7 @@
 
 <script setup lang="ts">
 import CtaButtonLayout from "#rc/components/layout/CtaButtonLayout.vue";
+import { REF_BLOCK, REF_KEY } from "#shared/constants/ref-buttons";
 import { imageLoading } from "#shared/utils/image-candidates";
 import { HERO_UNIQ_ID } from "#shared/utils/priority-image";
 

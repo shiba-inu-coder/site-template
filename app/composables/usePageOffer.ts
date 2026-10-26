@@ -7,6 +7,7 @@
 export const usePageOffer = () => {
   const { banner } = usePost();
   const siteConfig = useSiteConfig();
+  const { settings } = useSettings();
 
   const cta = computed(() => siteConfig.value.layout.header.cta);
 
@@ -22,10 +23,15 @@ export const usePageOffer = () => {
 
   const buttonLink = computed(() => cta.value.link);
 
-  // Кнопка в никуда хуже отсутствующей: без слага бренда `useFakeRefLink`
-  // отдаёт корень сайта, и липкая панель вела бы на ту же страницу.
+  // Кнопка в никуда хуже отсутствующей: без слага бренда и без казино по
+  // умолчанию `useFakeRefLink` отдаёт корень сайта, и липкая панель вела бы
+  // на ту же страницу.
   const hasCta = computed(() =>
-    Boolean(cta.value.link || siteConfig.value.site.brandSlug),
+    Boolean(
+      cta.value.link ||
+        siteConfig.value.site.brandSlug ||
+        settings.value.refs?.defaultSlug,
+    ),
   );
 
   return {

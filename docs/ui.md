@@ -920,8 +920,9 @@ own frame: it used to be `ui-table-row-alt`, which is also the background of eve
 card, so on those cards the line was the colour of the ground and could not be seen. The
 classes are literal for the same `@config` reason as everywhere.
 
-A header item of kind `ref` carries its own casino in `link` (`/go/<slug>/`); an empty `link`
-falls back to the site's `brandSlug` as before.
+A header item of kind `ref` carries its own casino in `link` (`/go/<slug>/`) only as the last
+fallback: the panel's choice (`settings.refs`, see `docs/brand.md`, "Рефки по кнопкам") wins, an
+empty `link` falls back to the site's `brandSlug` as before.
 
 `PostTextImage.vue` (`text-image` marker, `textImages` shortcode) has one layout and one
 position field, `imgSide`. `left`/`right` put the picture in one of two equal columns on

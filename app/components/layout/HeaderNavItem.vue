@@ -16,7 +16,7 @@
       <a
         v-for="(child, i) in item.children.filter((c) => c.kind === 'ref')"
         :key="`ref-${i}`"
-        :href="child.link || refLink"
+        :href="refHref(refKeyOf(child.label), REF_BLOCK.header, child.link)"
         target="_blank"
         rel="nofollow noopener"
         data-id="ref_link"
@@ -47,7 +47,7 @@
 
   <a
     v-else-if="item.kind === 'ref'"
-    :href="item.link || refLink"
+    :href="refHref(refKeyOf(item.label), REF_BLOCK.header, item.link)"
     target="_blank"
     rel="nofollow noopener"
     data-id="ref_link"
@@ -83,9 +83,13 @@
 
 <script setup lang="ts">
 import { computed } from "vue";
-import { useFakeRefLink } from "#rc/composables/useFakeRefLink";
 import { logoSize } from "#rc/utils/logo-size";
+import {
+  HEADER_REF_KEY_PREFIX,
+  REF_BLOCK,
+} from "#shared/constants/ref-buttons";
 import type { HeaderItem } from "#shared/types";
+import { refLabelSlug } from "#shared/utils/ref-link";
 
 interface Props {
   item: HeaderItem;
@@ -95,7 +99,10 @@ const { item } = defineProps<Props>();
 
 const siteConfig = useSiteConfig();
 
-const refLink = computed(() => useFakeRefLink(siteConfig.value.site.brandSlug));
+const refHref = useRefLinks();
+
+const refKeyOf = (label: string) =>
+  `${HEADER_REF_KEY_PREFIX}${refLabelSlug(label)}`;
 
 // Четыре вида — четыре полных набора классов литералами: `@config` отключает
 // скан Tailwind по всему проекту, кроме глобов `tailwind.config.js`, и класс,

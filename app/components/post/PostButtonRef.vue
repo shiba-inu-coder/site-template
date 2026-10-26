@@ -6,7 +6,7 @@
   >
     <a
       data-id="ref_link"
-      :href="useFakeRefLink(refSlug)"
+      :href="href"
       target="_blank"
       rel="nofollow noopener"
       class="font-semibold rounded-primary items-center transition-all whitespace-pre-wrap focus:outline-none focus:ring-2 text-center"
@@ -33,6 +33,7 @@
 <script setup lang="ts">
 import { computed } from "vue";
 import { useFakeRefLink } from "#rc/composables/useFakeRefLink";
+import { REF_BLOCK } from "#shared/constants/ref-buttons";
 import { pickVariant } from "#shared/utils/block-variant";
 
 type ButtonVariant = "solid" | "outline" | "link" | "table";
@@ -46,6 +47,9 @@ interface Props {
   name?: string;
   showMobileIcon?: boolean;
   slug?: string;
+  refKey?: string;
+  refBlock?: string;
+  tableCell?: boolean;
 }
 
 const {
@@ -56,6 +60,9 @@ const {
   padding = true,
   name = "",
   slug = "",
+  refKey = "",
+  refBlock = REF_BLOCK.article,
+  tableCell = false,
   showMobileIcon = false,
 } = defineProps<Props>();
 
@@ -64,8 +71,14 @@ const { variantFor } = useUiTheme();
 
 // Слаг бренда приезжает из базы, а не из сборки, поэтому он не может быть
 // значением пропа по умолчанию: то вычисляется до того, как настройки легли
-// в состояние.
-const refSlug = computed(() => slug || siteConfig.value.site.brandSlug);
+// в состояние. Свой `slug` кнопки главнее выбора панели; кнопка в таблице
+// выбора панели не знает вовсе — в таблице у каждой строки своё казино.
+const refHref = useRefLinks();
+const href = computed(() =>
+  slug || tableCell
+    ? useFakeRefLink(slug || siteConfig.value.site.brandSlug)
+    : refHref(refKey, refBlock),
+);
 
 // Тема умеет только первые два; link — кнопка-текст внутри таблицы, её
 // ставят пропом руками. Список общий, потому что проп и тема проходят один и

@@ -7,6 +7,7 @@ const emptySettings = (): ISettingPublic => ({
   brand: null,
   layout: null,
   strings: null,
+  refs: null,
   uiTheme: null,
 });
 

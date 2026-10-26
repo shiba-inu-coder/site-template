@@ -11,6 +11,8 @@
   <PostButtonRef
     v-else
     :name="label"
+    :ref-key="refKey"
+    :ref-block="refBlock"
     :size="size"
     :padding="false"
     :full-width="fullWidth"
@@ -26,11 +28,15 @@ import PostButtonRef from "#rc/components/post/PostButtonRef.vue";
 const {
   label,
   link = "",
+  refKey = "",
+  refBlock = "",
   size = "small-medium",
   fullWidth = false,
 } = defineProps<{
   label: string;
   link?: string;
+  refKey?: string;
+  refBlock?: string;
   size?: "small" | "small-medium" | "medium" | "medium-big" | "big";
   fullWidth?: boolean;
 }>();
