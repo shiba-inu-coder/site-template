@@ -15,6 +15,7 @@ export class SettingRepository implements ISettingRepository {
         brand: data.brand,
         layout: data.layout,
         strings: data.strings,
+        navigation: data.navigation ?? null,
         uiTheme: data.uiTheme,
         draft: data.draft ?? null,
       } satisfies ISettingStoredPublic;

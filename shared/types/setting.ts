@@ -14,6 +14,15 @@ export interface SettingPreviewGrant {
   createdBy: string;
 }
 
+// Меню шапки, ссылки и текст подвала, которые пишет только форма панели; на
+// сайте они перекрывают `brand/site.json` (см. applyNavigation).
+export interface SiteNavigation {
+  headerLinks: { label: string; link: string }[];
+  footerLinks: FooterLink[];
+  footerTitle: string;
+  footerBody: string;
+}
+
 export interface ISetting {
   robotsTXT: string;
   externalSitemapUrl: string;
@@ -22,6 +31,7 @@ export interface ISetting {
   brand: SiteBrand;
   layout: SiteLayout;
   strings: SiteStrings;
+  navigation?: SiteNavigation | null;
 
   previewGrants: SettingPreviewGrant[];
   uiTheme: UiTheme;
@@ -43,6 +53,7 @@ export type ISettingPublic = Pick<ISetting, "redirectsRoutes"> & {
   brand?: DeepPartial<SiteBrand> | null;
   layout?: DeepPartial<SiteLayout> | null;
   strings?: DeepPartial<SiteStrings> | null;
+  navigation?: DeepPartial<SiteNavigation> | null;
   uiTheme?: UiTheme | null;
 };
 

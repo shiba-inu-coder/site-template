@@ -104,6 +104,63 @@ const SITE_CONFIG_STRUCTURE: SiteConfig = {
   translates: {} as SiteStrings,
 };
 
+/**
+ * Навигация из панели поверх готового конфига. Нужна отдельным полем, а не
+ * приоритетом `settings.layout`: применение манифеста переписывает `layout.*`
+ * дефолтами, и они затёрли бы вёрстку, лежащую в `brand/site.json`.
+ *
+ * Пункты шапки `kind: "page"` заменяются целиком (выпадашка `children` у
+ * заменённого пункта пропадает), логотип и кнопки `ref` остаются. Новые пункты
+ * встают на место первого убранного с его `position` и `style`.
+ */
+export const applyNavigation = (
+  config: SiteConfig,
+  navigation?: DeepPartial<SiteNavigation> | null,
+): SiteConfig => {
+  if (!isPlainObject(navigation)) {
+    return config;
+  }
+
+  const { headerLinks, footerLinks, footerTitle, footerBody } = navigation;
+  const { header, footer } = config.layout;
+  let items = header.items;
+
+  if (!isEmpty(headerLinks)) {
+    const firstPage = items.find((item) => item.kind === "page");
+    const kept = items.filter((item) => item.kind !== "page");
+    const at = firstPage
+      ? items
+          .slice(0, items.indexOf(firstPage))
+          .filter((i) => i.kind !== "page").length
+      : kept.findIndex((item) => item.kind === "logo") + 1;
+    const inserted: HeaderItem[] = (headerLinks ?? []).map((link) => ({
+      kind: "page",
+      label: link?.label ?? "",
+      link: link?.link ?? "",
+      style: firstPage?.style ?? "link",
+      position: firstPage?.position ?? "left",
+    }));
+
+    items = [...kept.slice(0, at), ...inserted, ...kept.slice(at)];
+  }
+
+  return {
+    ...config,
+    layout: {
+      ...config.layout,
+      header: { ...header, items },
+      footer: {
+        ...footer,
+        links: isEmpty(footerLinks)
+          ? footer.links
+          : (footerLinks as FooterLink[]),
+        title: isEmpty(footerTitle) ? footer.title : (footerTitle as string),
+        body: isEmpty(footerBody) ? footer.body : (footerBody as string),
+      },
+    },
+  };
+};
+
 export const buildSiteConfig = (
   template: DeepPartial<SiteConfig>,
   settings?: ISettingPublic | null,
@@ -128,11 +185,13 @@ export const buildSiteConfig = (
     translates: settings?.strings || undefined,
   };
 
-  // `brand/site.json` ложится последним: сайт с кастомной вёрсткой правит
-  // меню и тексты там, а не в панели.
-  return deepMerge(
-    deepMerge(deepMerge(SITE_CONFIG_STRUCTURE, template), fromDb),
-    brandSite,
+  // `brand/site.json` перекрывает базу, а форма панели (`navigation`) — его.
+  return applyNavigation(
+    deepMerge(
+      deepMerge(deepMerge(SITE_CONFIG_STRUCTURE, template), fromDb),
+      brandSite,
+    ),
+    settings?.navigation,
   );
 };
 

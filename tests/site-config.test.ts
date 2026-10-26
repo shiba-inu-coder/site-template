@@ -5,6 +5,7 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import {
+  applyNavigation,
   buildSiteConfig,
   resolvePageLang,
 } from "../shared/utils/site-config.ts";
@@ -116,4 +117,111 @@ test("buildSiteConfig: общий баннер из settings.brand ложитс�
 
   assert.equal(banner.path, "site/banner");
   assert.equal(banner.alt, "Баннер");
+});
+
+const customSite: DeepPartial<SiteConfig> = {
+  layout: {
+    header: {
+      items: [
+        { kind: "logo", label: "", style: "link", position: "left" },
+        {
+          kind: "page",
+          label: "Старое",
+          link: "/old/",
+          style: "link",
+          position: "center",
+        },
+        {
+          kind: "page",
+          label: "Ещё",
+          link: "/more/",
+          style: "outline",
+          position: "center",
+        },
+        { kind: "ref", label: "Играть", style: "primary", position: "right" },
+      ],
+    },
+  },
+};
+
+test("навигация из панели заменяет page-пункты, логотип и ref остаются на местах", () => {
+  const settings = buildMessageSettings();
+  settings.navigation = {
+    headerLinks: [
+      { label: "Бонусы", link: "/bonusy/" },
+      { label: "Слоты", link: "/sloty/" },
+    ],
+  };
+
+  const { items } = buildSiteConfig(template, settings, customSite).layout
+    .header;
+
+  assert.deepEqual(
+    items.map((item) => [item.kind, item.label]),
+    [
+      ["logo", ""],
+      ["page", "Бонусы"],
+      ["page", "Слоты"],
+      ["ref", "Играть"],
+    ],
+  );
+  assert.equal(items[1].position, "center");
+  assert.equal(items[1].style, "link");
+  assert.equal(items[3].position, "right");
+});
+
+test("навигация из панели без page-пунктов в шапке встаёт сразу после логотипа", () => {
+  const config = buildSiteConfig(template, null, {
+    layout: {
+      header: {
+        items: [
+          { kind: "ref", label: "Играть", style: "primary", position: "right" },
+          { kind: "logo", label: "", style: "link", position: "left" },
+        ],
+      },
+    },
+  });
+
+  const { items } = applyNavigation(config, {
+    headerLinks: [{ label: "Бонусы", link: "/bonusy/" }],
+  }).layout.header;
+
+  assert.deepEqual(
+    items.map((item) => item.kind),
+    ["ref", "logo", "page"],
+  );
+  assert.equal(items[2].position, "left");
+  assert.equal(items[2].style, "link");
+});
+
+test("навигация из панели: подвал заменяется, пустые поля не перекрывают", () => {
+  const settings = buildMessageSettings();
+  const base = buildSiteConfig(template, settings);
+
+  const filled = applyNavigation(base, {
+    footerLinks: [{ name: "Kontakt", link: "/kontakt/" }],
+    footerTitle: "Новый",
+    footerBody: "<p>18+</p>",
+  }).layout.footer;
+
+  assert.deepEqual(filled.links, [{ name: "Kontakt", link: "/kontakt/" }]);
+  assert.equal(filled.title, "Новый");
+  assert.equal(filled.body, "<p>18+</p>");
+
+  const empty = applyNavigation(base, {
+    headerLinks: [],
+    footerLinks: [],
+    footerTitle: "",
+    footerBody: "",
+  });
+
+  assert.deepEqual(empty.layout, base.layout);
+});
+
+test("без navigation конфиг не меняется", () => {
+  const settings = buildMessageSettings();
+  const base = buildSiteConfig(template, settings, customSite);
+
+  assert.equal(applyNavigation(base, null), base);
+  assert.equal(applyNavigation(base, undefined), base);
 });
