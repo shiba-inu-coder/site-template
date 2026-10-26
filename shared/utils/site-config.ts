@@ -112,6 +112,11 @@ const SITE_CONFIG_STRUCTURE: SiteConfig = {
  * Пункты шапки `kind: "page"` заменяются целиком (выпадашка `children` у
  * заменённого пункта пропадает), логотип и кнопки `ref` остаются. Новые пункты
  * встают на место первого убранного с его `position` и `style`.
+ *
+ * Поле, сохранённое формой (`explicit`), главнее вёрстки целиком: удалённые
+ * пункты не возвращаются из `brand/site.json`. Запись без `explicit` — старая,
+ * в ней пустое значение не отличить от «не трогали», поэтому оно вёрстке
+ * уступает.
  */
 export const applyNavigation = (
   config: SiteConfig,
@@ -123,9 +128,10 @@ export const applyNavigation = (
 
   const { headerLinks, footerLinks, footerTitle, footerBody } = navigation;
   const { header, footer } = config.layout;
+  const explicit = navigation.explicit === true;
   let items = header.items;
 
-  if (!isEmpty(headerLinks)) {
+  if (explicit || !isEmpty(headerLinks)) {
     const firstPage = items.find((item) => item.kind === "page");
     const kept = items.filter((item) => item.kind !== "page");
     const at = firstPage
@@ -151,11 +157,18 @@ export const applyNavigation = (
       header: { ...header, items },
       footer: {
         ...footer,
-        links: isEmpty(footerLinks)
-          ? footer.links
-          : (footerLinks as FooterLink[]),
-        title: isEmpty(footerTitle) ? footer.title : (footerTitle as string),
-        body: isEmpty(footerBody) ? footer.body : (footerBody as string),
+        links:
+          explicit || !isEmpty(footerLinks)
+            ? ((footerLinks ?? []) as FooterLink[])
+            : footer.links,
+        title:
+          explicit || !isEmpty(footerTitle)
+            ? ((footerTitle ?? "") as string)
+            : footer.title,
+        body:
+          explicit || !isEmpty(footerBody)
+            ? ((footerBody ?? "") as string)
+            : footer.body,
       },
     },
   };

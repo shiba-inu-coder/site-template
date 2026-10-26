@@ -225,3 +225,55 @@ test("без navigation конфиг не меняется", () => {
   assert.equal(applyNavigation(base, null), base);
   assert.equal(applyNavigation(base, undefined), base);
 });
+
+test("навигация из формы (explicit): удалённое не возвращается из вёрстки", () => {
+  const settings = buildMessageSettings();
+  const base = buildSiteConfig(template, settings, customSite);
+
+  assert.ok(base.layout.footer.links.length > 0 || base.layout.footer.body);
+
+  const { header, footer } = applyNavigation(base, {
+    headerLinks: [],
+    footerLinks: [],
+    footerTitle: "",
+    footerBody: "",
+    explicit: true,
+  }).layout;
+
+  assert.deepEqual(footer.links, []);
+  assert.equal(footer.title, "");
+  assert.equal(footer.body, "");
+  assert.equal(header.items.filter((i) => i.kind === "page").length, 0);
+  assert.equal(
+    header.items.length,
+    base.layout.header.items.filter((i) => i.kind !== "page").length,
+  );
+});
+
+test("навигация из формы (explicit): непустое поле по-прежнему заменяет", () => {
+  const base = buildSiteConfig(template, buildMessageSettings(), customSite);
+
+  const { footer } = applyNavigation(base, {
+    footerLinks: [{ name: "Kontakt", link: "/kontakt/" }],
+    footerTitle: "",
+    footerBody: "<p>18+</p>",
+    explicit: true,
+  }).layout;
+
+  assert.deepEqual(footer.links, [{ name: "Kontakt", link: "/kontakt/" }]);
+  assert.equal(footer.body, "<p>18+</p>");
+});
+
+test("навигация без explicit: пустое значение, как и раньше, уступает вёрстке", () => {
+  const base = buildSiteConfig(template, buildMessageSettings(), customSite);
+
+  const empty = applyNavigation(base, {
+    headerLinks: [],
+    footerLinks: [],
+    footerTitle: "",
+    footerBody: "",
+    explicit: false,
+  });
+
+  assert.deepEqual(empty.layout, base.layout);
+});
