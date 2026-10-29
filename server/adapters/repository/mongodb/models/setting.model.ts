@@ -42,6 +42,8 @@ const ModelSchema = new Schema<ISettingDocument, ISettingModel>(
     navigation: NavigationSchema,
     // Без default, как navigation: сайт без панельных рефок читает поле как null.
     refs: RefsSchema,
+    // Без default: пишет только панель; у сайта без флага поля нет, а значит, не считаем.
+    refClicksEnabled: { type: Boolean },
     previewGrants: {
       type: [PreviewGrantSchema],
       default: () => [],

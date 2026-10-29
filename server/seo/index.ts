@@ -1,5 +1,6 @@
 import { CasinoRepository } from "#sg/adapters/repository/mongodb/casino.repository";
 import { BookmakerRepository } from "#sg/adapters/repository/mongodb/bookmaker.repository";
+import { RefClickRepository } from "#sg/adapters/repository/mongodb/ref-click.repository";
 import { PostRepository } from "#sg/adapters/repository/mongodb/post.repository";
 import { SeoUsecase } from "./seo.usecase";
 import { SeoController } from "./seo.controller";
@@ -7,8 +8,14 @@ import { SeoController } from "./seo.controller";
 const casinoRepo = new CasinoRepository();
 const bookmakerRepo = new BookmakerRepository();
 const postRepo = new PostRepository();
+const refClickRepo = new RefClickRepository();
 
-const seoUsecase = new SeoUsecase(casinoRepo, bookmakerRepo, postRepo);
+const seoUsecase = new SeoUsecase(
+  casinoRepo,
+  bookmakerRepo,
+  postRepo,
+  refClickRepo,
+);
 const seoController = new SeoController(seoUsecase);
 
 export class SeoComposition {

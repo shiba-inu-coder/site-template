@@ -17,6 +17,7 @@ export * from "./bookmaker";
 export * from "./comment";
 export * from "./bonus";
 export * from "./sport";
+export * from "./ref-click";
 
 export * from "./api/casino";
 export * from "./api/bookmaker";

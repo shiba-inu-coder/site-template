@@ -20,6 +20,7 @@ export class SettingRepository implements ISettingRepository {
         strings: data.strings,
         navigation: data.navigation ?? null,
         refs,
+        refClicksEnabled: data.refClicksEnabled ?? false,
         uiTheme: data.uiTheme,
         draft: data.draft ?? null,
       } satisfies ISettingStoredPublic;
