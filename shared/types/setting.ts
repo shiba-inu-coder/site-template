@@ -43,6 +43,7 @@ export interface ISetting {
   strings: SiteStrings;
   navigation?: SiteNavigation | null;
   refs?: SiteRefs | null;
+  refClicksEnabled?: boolean;
 
   previewGrants: SettingPreviewGrant[];
   uiTheme: UiTheme;
@@ -66,6 +67,7 @@ export type ISettingPublic = Pick<ISetting, "redirectsRoutes"> & {
   strings?: DeepPartial<SiteStrings> | null;
   navigation?: DeepPartial<SiteNavigation> | null;
   refs?: DeepPartial<SiteRefs> | null;
+  refClicksEnabled?: boolean;
   uiTheme?: UiTheme | null;
 };
 

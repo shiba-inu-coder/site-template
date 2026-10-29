@@ -11,6 +11,7 @@ export enum EntityModel {
   GameType = "GameType",
   Sport = "Sport",
   Bonus = "Bonus",
+  RefClick = "RefClick",
 }
 
 export type DropdowOptionsList = "image" | "refLink" | "refLinkBtn" | "default";

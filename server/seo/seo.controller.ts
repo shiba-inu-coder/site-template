@@ -27,6 +27,11 @@ export class SeoController {
           return sendRedirect(e, "/", 302);
         }
 
+        // Без await: редирект не ждёт Mongo, а сбой счётчика не должен его ломать.
+        void this.seoUsecase.countRefClick(e.method).catch((error: any) =>
+          log.warn("Ref click not counted", { error: error.message, slug }),
+        );
+
         log.info("Resolved ref link successfully", { slug });
         // 302, не 301: партнёрская ссылка меняется, а 301 браузер
         // закэшировал бы бессрочно и увёл бы юзеров на мёртвый URL.

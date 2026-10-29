@@ -924,6 +924,19 @@ A header item of kind `ref` carries its own casino in `link` (`/go/<slug>/`) onl
 fallback: the panel's choice (`settings.refs`, see `docs/brand.md`, "Рефки по кнопкам") wins, an
 empty `link` falls back to the site's `brandSlug` as before.
 
+**Clicks on ref links are counted in `/go/`, not on the page.** Every ref button ends in
+`/go/<slug>/` (`no-store`, so each click reaches Node), and the redirect handler fires
+`SeoUsecase.countRefClick` before `sendRedirect` without awaiting it: a Mongo hiccup never
+delays or breaks the transition. One `GET` is one click; `HEAD`, a slug that resolved to `/`
+and a site without `settings.refClicksEnabled` (written only by the panel, no default) count
+nothing. The row is `refclicks`, one document per domain and day, `_id = "<domain>|<day>"`
+(`refClickKey`) with `$inc` + upsert: production runs with `autoIndex`/`autoCreate` off, so a
+unique index on the pair would never exist, while `_id` is unique always. The day is cut in
+`Europe/Amsterdam` (`REF_CLICKS_TIMEZONE`, a copy lives in the panel). The domain is
+`public.DOMAIN_NAME`, never the request host — a staging slot or an IP hit would otherwise
+write junk domains. Not counted: raw external `<a>` tags typed into an article's HTML, which
+skip `/go/` altogether.
+
 `PostTextImage.vue` (`text-image` marker, `textImages` shortcode) has one layout and one
 position field, `imgSide`. `left`/`right` put the picture in one of two equal columns on
 desktop, `top`/`bottom` keep a single column with the picture first or last. On a phone
