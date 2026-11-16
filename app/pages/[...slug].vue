@@ -3,9 +3,11 @@
 </template>
 <script setup lang="ts">
 import BasePostView from "#rc/views/BasePostView.vue";
+import { postMissAction } from "#shared/utils/post-miss";
 
 const { setPost, GET_POST_BY_SLUG } = usePost();
 const route = useRoute();
+const nuxtApp = useNuxtApp();
 
 const params = computed(() => {
   const data = route.params.slug as string[];
@@ -19,7 +21,7 @@ const slug = computed(() => params.value.join("/"));
 const preview = computed(() => (route.query.preview as string) || "");
 const markVolatile = useVolatilePageMark();
 
-const { data, status } = await useAsyncData(
+const { data, status, error } = await useAsyncData(
   `post-${slug.value}${preview.value ? ":preview" : ""}`,
   () => {
     return GET_POST_BY_SLUG(slug.value, preview.value, markVolatile);
@@ -36,10 +38,19 @@ if (data.value) {
   useMetaHead();
 }
 if (status.value === "error") {
-  showError({
-    statusCode: 404,
-    statusMessage: "Post not found",
+  const miss = postMissAction({
+    isClient: import.meta.client,
+    isHydrating: Boolean(nuxtApp.isHydrating),
+    statusCode: error.value?.statusCode,
   });
+  if (miss === "reload") {
+    window.location.replace(route.fullPath);
+  } else {
+    showError({
+      statusCode: 404,
+      statusMessage: "Post not found",
+    });
+  }
 }
 
 onBeforeRouteLeave(() => {
